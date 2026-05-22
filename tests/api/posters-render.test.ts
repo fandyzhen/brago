@@ -183,6 +183,14 @@ describe("POST /api/posters/render — success path", () => {
     expect(res.headers.get("Content-Type")).toBe("image/png");
   });
 
+  it("calls deductCredits and db.insert even when R2 returns null (not configured)", async () => {
+    // uploadPosterToR2 returns null by default (from beforeEach) — R2 not configured
+    const res = await POST(makeRequest(makeFormData()));
+    expect(res.status).toBe(200);
+    expect(deductCredits).toHaveBeenCalledWith("user-123", 10, "poster_generation");
+    expect(db.insert).toHaveBeenCalledOnce();
+  });
+
   it("returns 500 when satori throws", async () => {
     const { default: satoriMock } = await import("satori");
     (satoriMock as ReturnType<typeof vi.fn>).mockRejectedValueOnce(new Error("satori crash"));

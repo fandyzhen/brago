@@ -155,6 +155,8 @@ export async function POST(request: Request): Promise<Response> {
     }
 
     // ── 7. Write history (degraded on failure — PNG still returned) ─
+    // resultUrl may be null when R2 is not configured; schema allows null.
+    // We always write history so users can see their generation activity.
     try {
       await db.insert(generationHistory).values({
         id: randomUUID(),
