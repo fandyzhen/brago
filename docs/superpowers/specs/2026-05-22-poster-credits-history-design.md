@@ -81,7 +81,7 @@ export async function uploadPosterToR2(
 ): Promise<string | null>
 ```
 
-- 文件名格式：`posters/{userId}/{timestamp}-{nanoid(8)}.png`
+- 文件名格式：`posters/{userId}/{timestamp}-{crypto.randomUUID().slice(0,8)}.png`
 - 使用现有 `lib/r2-storage.ts` 的 S3 兼容客户端
 - `STORAGE_BUCKET_NAME` 未配置时返回 `null`（本地开发降级）
 - 成功返回 `STORAGE_PUBLIC_URL + "/" + key`
