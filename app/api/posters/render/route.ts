@@ -91,6 +91,8 @@ export async function POST(request: Request): Promise<Response> {
       const raw = formData.get(name);
       if (typeof raw !== "string") return undefined;
       const clean = raw.split("\n")[0].trim();
+      // 丢弃看起来像 multipart boundary 的值（以 -- 开头）
+      if (clean.startsWith("--")) return undefined;
       return clean || undefined;
     }
 

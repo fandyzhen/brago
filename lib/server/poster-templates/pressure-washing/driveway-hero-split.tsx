@@ -1,17 +1,40 @@
+/* eslint-disable @next/next/no-img-element */
 import type { RenderFn, RenderInput } from "../shared/types";
 
-function buildTrustLine(input: RenderInput): string {
+const STAR_PATH =
+  "M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z";
+
+function GoldStars() {
+  return (
+    <span style={{ display: "flex", gap: 3 }}>
+      {[0, 1, 2, 3, 4].map((i) => (
+        <svg
+          key={i}
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          style={{ display: "flex" }}
+        >
+          <path d={STAR_PATH} fill="#FFD63A" />
+        </svg>
+      ))}
+    </span>
+  );
+}
+
+function buildTrustText(input: RenderInput): string {
   const parts: string[] = [];
   if (input.serviceArea) parts.push(input.serviceArea);
   if (input.isLicensed && input.isInsured) parts.push("Licensed · Insured");
   else if (input.isLicensed) parts.push("Licensed");
   else if (input.isInsured) parts.push("Insured");
-  if (input.googleReviewCount) parts.push(`${input.googleReviewCount} Google reviews`);
   return parts.join(" · ");
 }
 
 export const driveWayHeroSplit: RenderFn = (input: RenderInput) => {
-  const trustLine = buildTrustLine(input);
+  const trustText = buildTrustText(input);
+  const hasReviews = !!input.googleReviewCount;
+  const hasTrust = trustText.length > 0 || hasReviews;
 
   return (
     <div
@@ -27,7 +50,6 @@ export const driveWayHeroSplit: RenderFn = (input: RenderInput) => {
       {/* ── Main photo area ── */}
       <div style={{ flex: 1, display: "flex", position: "relative" }}>
         {/* After photo — full bleed */}
-        {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={input.afterImageDataUrl}
           alt="after"
@@ -84,9 +106,7 @@ export const driveWayHeroSplit: RenderFn = (input: RenderInput) => {
             border: "3px solid rgba(255,255,255,0.9)",
           }}
         >
-          {/* Inner wrapper: position:relative so the BEFORE label can be absolute */}
           <div style={{ flex: 1, display: "flex", position: "relative" }}>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={input.beforeImageDataUrl}
               alt="before"
@@ -154,17 +174,37 @@ export const driveWayHeroSplit: RenderFn = (input: RenderInput) => {
           {input.headline}
         </div>
 
-        {/* Trust line */}
-        {trustLine.length > 0 && (
+        {/* Trust row: service area · licensed · insured  +  ★★★★★ N reviews */}
+        {hasTrust && (
           <div
             style={{
               fontSize: 20,
               color: "rgba(255,255,255,0.55)",
               marginTop: 10,
               display: "flex",
+              alignItems: "center",
+              gap: 10,
+              flexWrap: "wrap",
             }}
           >
-            {trustLine}
+            {trustText.length > 0 && (
+              <span style={{ display: "flex" }}>{trustText}</span>
+            )}
+
+            {trustText.length > 0 && hasReviews && (
+              <span style={{ display: "flex" }}>·</span>
+            )}
+
+            {hasReviews && (
+              <span
+                style={{ display: "flex", alignItems: "center", gap: 6 }}
+              >
+                <GoldStars />
+                <span style={{ display: "flex" }}>
+                  {input.googleReviewCount} Google reviews
+                </span>
+              </span>
+            )}
           </div>
         )}
 
