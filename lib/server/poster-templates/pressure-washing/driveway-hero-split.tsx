@@ -6,7 +6,7 @@ function buildTrustLine(input: RenderInput): string {
   if (input.isLicensed && input.isInsured) parts.push("Licensed · Insured");
   else if (input.isLicensed) parts.push("Licensed");
   else if (input.isInsured) parts.push("Insured");
-  if (input.googleReviewCount) parts.push(`★★★★★ ${input.googleReviewCount} Google reviews`);
+  if (input.googleReviewCount) parts.push(`${input.googleReviewCount} Google reviews`);
   return parts.join(" · ");
 }
 

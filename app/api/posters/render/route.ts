@@ -86,20 +86,31 @@ export async function POST(request: Request): Promise<Response> {
       fileToDataUrl(afterImage),
     ]);
 
+    // 从 FormData 安全读取文本字段，取第一行并 trim，防止 multipart boundary 污染
+    function getTextField(name: string): string | undefined {
+      const raw = formData.get(name);
+      if (typeof raw !== "string") return undefined;
+      const clean = raw.split("\n")[0].trim();
+      return clean || undefined;
+    }
+
     // 构建渲染输入
     const renderInput: RenderInput = {
       beforeImageDataUrl,
       afterImageDataUrl,
       templateId,
-      headline: headline.slice(0, 36),
-      businessName: (formData.get("businessName") as string) || undefined,
-      phone: (formData.get("phone") as string) || undefined,
-      serviceArea: (formData.get("serviceArea") as string) || undefined,
+      headline: (getTextField("headline") ?? headline).slice(0, 36),
+      businessName: getTextField("businessName"),
+      phone: getTextField("phone"),
+      serviceArea: getTextField("serviceArea"),
       isLicensed: formData.get("isLicensed") === "true",
       isInsured: formData.get("isInsured") === "true",
-      googleReviewCount: formData.get("googleReviewCount")
-        ? parseInt(formData.get("googleReviewCount") as string, 10)
-        : undefined,
+      googleReviewCount: (() => {
+        const raw = getTextField("googleReviewCount");
+        if (!raw) return undefined;
+        const n = parseInt(raw, 10);
+        return Number.isFinite(n) ? n : undefined;
+      })(),
     };
 
     // JSX → SVG（satori）
