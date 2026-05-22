@@ -13,6 +13,7 @@ import {
   IconShield,
   IconCoins,
   IconSettings,
+  IconPhoto,
 } from "@tabler/icons-react";
 
 export function UserMenu() {
@@ -121,6 +122,15 @@ export function UserMenu() {
             >
               <IconLayoutDashboard className="w-4 h-4" />
               {t('navigation.main.dashboard')}
+            </Link>
+
+            <Link
+              href={`/${locale}/create`}
+              onClick={() => setIsOpen(false)}
+              className="flex items-center gap-3 px-4 py-2 text-sm text-muted-foreground hover:bg-hover transition-colors"
+            >
+              <IconPhoto className="w-4 h-4" />
+              Create Post
             </Link>
 
             <Link
