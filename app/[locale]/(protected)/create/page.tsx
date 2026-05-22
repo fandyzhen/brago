@@ -2,6 +2,7 @@
 
 /* eslint-disable @next/next/no-img-element */
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { Background } from "@/components/background";
@@ -160,10 +161,13 @@ function TemplateCard({
 export default function CreatePage() {
   const [beforeFile, setBeforeFile] = useState<File | null>(null);
   const [afterFile, setAfterFile] = useState<File | null>(null);
-  const [selectedTemplate, setSelectedTemplate] = useState<string>(
-    POSTER_TEMPLATES[0]?.id ?? ""
-  );
-  const [headline, setHeadline] = useState("");
+  const searchParams = useSearchParams();
+  const initTemplate =
+    searchParams.get("templateId") ?? POSTER_TEMPLATES[0]?.id ?? "";
+  const initHeadline = decodeURIComponent(searchParams.get("headline") ?? "");
+
+  const [selectedTemplate, setSelectedTemplate] = useState<string>(initTemplate);
+  const [headline, setHeadline] = useState(initHeadline);
   const [brand, setBrand] = useState<BrandProfile>({});
   const [generateState, setGenerateState] = useState<GenerateState>({ status: "idle" });
 
@@ -204,7 +208,11 @@ export default function CreatePage() {
 
       if (!res.ok) {
         const err = await res.json().catch(() => ({ error: "Unknown error" }));
-        setGenerateState({ status: "error", message: err.error ?? "Render failed" });
+        const msg =
+          res.status === 402
+            ? `Insufficient credits — need ${(err as { required?: number }).required ?? 10} credits`
+            : (err.error ?? "Render failed");
+        setGenerateState({ status: "error", message: msg });
         return;
       }
 
