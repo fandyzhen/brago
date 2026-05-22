@@ -44,15 +44,9 @@ export async function GET(req: NextRequest) {
         // ignore JSON parse errors; fall back to prompt field
       }
       const template = meta.templateId ? getTemplateById(meta.templateId) : undefined;
-      let createdAtStr: string;
-      try {
-        createdAtStr = row.createdAt.toISOString();
-      } catch {
-        createdAtStr = String(row.createdAt);
-      }
       return {
         id: row.id,
-        createdAt: createdAtStr,
+        createdAt: row.createdAt.toISOString(),
         headline: meta.headline ?? row.prompt,
         templateId: meta.templateId ?? null,
         templateName: template?.name ?? null,
@@ -61,14 +55,10 @@ export async function GET(req: NextRequest) {
       };
     });
 
-    let nextCursor: string | null = null;
-    if (hasMore && items.length > 0) {
-      try {
-        nextCursor = items[items.length - 1]!.createdAt.toISOString();
-      } catch {
-        nextCursor = String(items[items.length - 1]!.createdAt);
-      }
-    }
+    const nextCursor =
+      hasMore && mapped.length > 0
+        ? mapped[mapped.length - 1]!.createdAt
+        : null;
 
     return NextResponse.json({ items: mapped, nextCursor, hasMore });
   } catch (err) {

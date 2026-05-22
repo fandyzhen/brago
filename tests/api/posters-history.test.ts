@@ -89,7 +89,7 @@ describe("GET /api/posters/history", () => {
     // Return 21 rows (limit defaults to 20, we fetch limit+1)
     const rows = Array.from({ length: 21 }, (_, i) => ({
       id: `hist-${i}`,
-      createdAt: new Date(`2026-05-22T${String(10 + i).padStart(2, "0")}:00:00Z`),
+      createdAt: new Date(`2026-05-22T10:${String(i).padStart(2, "0")}:00Z`),
       prompt: `headline ${i}`,
       resultUrl: null,
       creditsUsed: 10,
