@@ -14,10 +14,10 @@ let _fonts: { name: string; data: Buffer; weight: 400; style: "normal" }[] | nul
 function getFonts() {
   if (!_fonts) {
     const inter = readFileSync(
-      path.join(process.cwd(), "public/fonts/inter-regular.ttf")
+      path.join(process.cwd(), "public/fonts/inter-regular.woff")
     );
     const mono = readFileSync(
-      path.join(process.cwd(), "public/fonts/jetbrains-mono-regular.ttf")
+      path.join(process.cwd(), "public/fonts/jetbrains-mono-regular.woff")
     );
     _fonts = [
       { name: "Inter", data: inter, weight: 400, style: "normal" },
