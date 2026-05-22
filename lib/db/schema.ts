@@ -198,3 +198,24 @@ export const newsletterSubscription = pgTable("newsletter_subscription", {
   unsubscribedAt: timestamp("unsubscribed_at"),
   updatedAt: timestamp("updated_at").defaultNow().$onUpdate(() => new Date()).notNull(),
 });
+
+// Brand profiles — one per user, stores their business identity for poster generation
+export const brandProfile = pgTable("brand_profile", {
+  id: text("id").primaryKey(),
+  userId: text("user_id")
+    .notNull()
+    .unique()
+    .references(() => user.id, { onDelete: "cascade" }),
+  businessName: text("business_name"),
+  phone: text("phone"),
+  serviceArea: text("service_area"),
+  isLicensed: boolean("is_licensed").default(false).notNull(),
+  isInsured: boolean("is_insured").default(false).notNull(),
+  logoUrl: text("logo_url"),
+  googleReviewCount: integer("google_review_count"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at")
+    .defaultNow()
+    .$onUpdate(() => new Date())
+    .notNull(),
+});
