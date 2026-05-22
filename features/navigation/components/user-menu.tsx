@@ -14,6 +14,7 @@ import {
   IconCoins,
   IconSettings,
   IconPhoto,
+  IconHistory,
 } from "@tabler/icons-react";
 
 export function UserMenu() {
@@ -131,6 +132,15 @@ export function UserMenu() {
             >
               <IconPhoto className="w-4 h-4" />
               Create Post
+            </Link>
+
+            <Link
+              href={`/${locale}/history`}
+              onClick={() => setIsOpen(false)}
+              className="flex items-center gap-3 px-4 py-2 text-sm text-muted-foreground hover:bg-hover transition-colors"
+            >
+              <IconHistory className="w-4 h-4" />
+              History
             </Link>
 
             <Link
