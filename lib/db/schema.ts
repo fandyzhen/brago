@@ -165,7 +165,7 @@ export const chatMessage = pgTable("chat_message", {
 export const generationHistory = pgTable("generation_history", {
   id: text("id").primaryKey(),
   userId: text("user_id").notNull().references(() => user.id, { onDelete: "cascade" }),
-  type: varchar("type", { length: 16 }).notNull(), // 'image' | 'video'
+  type: varchar("type", { length: 16 }).notNull(), // 'image' | 'video' | 'poster'
   prompt: text("prompt").notNull(),
   imageUrl: text("image_url"), // For image-to-video generation
   resultUrl: text("result_url"), // Final result URL

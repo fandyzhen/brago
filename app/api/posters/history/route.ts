@@ -19,6 +19,10 @@ export async function GET(req: NextRequest) {
   const limit = Math.min(isNaN(limitRaw) ? DEFAULT_LIMIT : limitRaw, MAX_LIMIT);
   const cursor = searchParams.get("cursor"); // ISO timestamp
 
+  if (cursor && isNaN(new Date(cursor).getTime())) {
+    return NextResponse.json({ error: "Invalid cursor" }, { status: 400 });
+  }
+
   try {
     const where = and(
       eq(generationHistory.userId, access.user.id),
