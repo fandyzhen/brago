@@ -1,12 +1,19 @@
 import { readFileSync } from "fs";
 import path from "path";
+import { randomUUID } from "crypto";
 import satori from "satori";
 import sharp from "sharp";
 import { getRenderer } from "@/lib/server/poster-templates/registry";
 import { fileToDataUrl } from "@/lib/server/poster-templates/shared/image-utils";
 import type { RenderInput } from "@/lib/server/poster-templates/shared/types";
+import { getActiveSessionUser } from "@/lib/auth/session";
+import { canUserAfford, getUserCredits, deductCredits } from "@/lib/credits";
+import { uploadPosterToR2 } from "@/lib/server/r2-poster";
+import { db } from "@/lib/db";
+import { generationHistory } from "@/lib/db/schema";
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
+const POSTER_CREDIT_COST = 10;
 
 // 字体在模块级别缓存，避免每次请求重复读文件
 let _fonts: { name: string; data: Buffer; weight: 400; style: "normal" }[] | null = null;
@@ -28,6 +35,14 @@ function getFonts() {
 }
 
 export async function POST(request: Request): Promise<Response> {
+  // ── 1. Auth ────────────────────────────────────────────────────
+  const access = await getActiveSessionUser(request.headers);
+  if (!access.ok) {
+    return Response.json({ error: access.error }, { status: access.status });
+  }
+  const userId = access.user.id;
+
+  // ── 2. Parse form data ─────────────────────────────────────────
   let formData: FormData;
   try {
     formData = await request.formData();
@@ -40,7 +55,6 @@ export async function POST(request: Request): Promise<Response> {
   const templateId = formData.get("templateId") as string | null;
   const headline = formData.get("headline") as string | null;
 
-  // 必填字段验证
   if (!beforeImage || !afterImage || !templateId || !headline) {
     return Response.json(
       { error: "Missing required fields: beforeImage, afterImage, templateId, headline" },
@@ -48,7 +62,6 @@ export async function POST(request: Request): Promise<Response> {
     );
   }
 
-  // 运行时类型守卫
   if (!(beforeImage instanceof File) || !(afterImage instanceof File)) {
     return Response.json(
       { error: "Missing required fields: beforeImage and afterImage must be files" },
@@ -62,7 +75,6 @@ export async function POST(request: Request): Promise<Response> {
     );
   }
 
-  // 模板存在性验证
   const renderer = getRenderer(templateId);
   if (!renderer) {
     return Response.json(
@@ -71,7 +83,6 @@ export async function POST(request: Request): Promise<Response> {
     );
   }
 
-  // 文件大小验证
   if (beforeImage.size > MAX_FILE_SIZE || afterImage.size > MAX_FILE_SIZE) {
     return Response.json(
       { error: "Image files must be under 10MB each" },
@@ -79,29 +90,38 @@ export async function POST(request: Request): Promise<Response> {
     );
   }
 
+  // ── 3. Credits check ───────────────────────────────────────────
+  const affordable = await canUserAfford(userId, POSTER_CREDIT_COST);
+  if (!affordable) {
+    const available = await getUserCredits(userId);
+    return Response.json(
+      { error: "Insufficient credits", required: POSTER_CREDIT_COST, available },
+      { status: 402 }
+    );
+  }
+
+  // ── 4. Render PNG ──────────────────────────────────────────────
   try {
-    // 图片转 base64 data URL
     const [beforeImageDataUrl, afterImageDataUrl] = await Promise.all([
       fileToDataUrl(beforeImage),
       fileToDataUrl(afterImage),
     ]);
 
-    // 从 FormData 安全读取文本字段，取第一行并 trim，防止 multipart boundary 污染
     function getTextField(name: string): string | undefined {
       const raw = formData.get(name);
       if (typeof raw !== "string") return undefined;
       const clean = raw.split("\n")[0].trim();
-      // 丢弃看起来像 multipart boundary 的值（以 -- 开头）
       if (clean.startsWith("--")) return undefined;
       return clean || undefined;
     }
 
-    // 构建渲染输入
+    const cleanedHeadline = (getTextField("headline") ?? headline).slice(0, 36);
+
     const renderInput: RenderInput = {
       beforeImageDataUrl,
       afterImageDataUrl,
       templateId,
-      headline: (getTextField("headline") ?? headline).slice(0, 36),
+      headline: cleanedHeadline,
       businessName: getTextField("businessName"),
       phone: getTextField("phone"),
       serviceArea: getTextField("serviceArea"),
@@ -115,19 +135,42 @@ export async function POST(request: Request): Promise<Response> {
       })(),
     };
 
-    // JSX → SVG（satori）
     const element = renderer(renderInput);
     const svg = await satori(element, {
       width: 1080,
       height: 1080,
       fonts: getFonts(),
     });
-
-    // SVG → PNG（sharp）
     const pngBuffer = await sharp(Buffer.from(svg))
       .png({ compressionLevel: 6 })
       .toBuffer();
 
+    // ── 5. Upload to R2 (throws on failure → caught below) ───────
+    const resultUrl = await uploadPosterToR2(pngBuffer, userId);
+
+    // ── 6. Deduct credits ─────────────────────────────────────────
+    const deductResult = await deductCredits(userId, POSTER_CREDIT_COST, "poster_generation");
+    if (!deductResult.success) {
+      return Response.json({ error: "Failed to deduct credits" }, { status: 500 });
+    }
+
+    // ── 7. Write history (degraded on failure — PNG still returned) ─
+    try {
+      await db.insert(generationHistory).values({
+        id: randomUUID(),
+        userId,
+        type: "poster",
+        prompt: cleanedHeadline,
+        resultUrl,
+        status: "completed",
+        creditsUsed: POSTER_CREDIT_COST,
+        metadata: JSON.stringify({ templateId, headline: cleanedHeadline }),
+      });
+    } catch (histErr) {
+      console.error("[posters/render] Failed to write history:", histErr);
+    }
+
+    // ── 8. Return PNG ─────────────────────────────────────────────
     return new Response(new Uint8Array(pngBuffer), {
       status: 200,
       headers: {
