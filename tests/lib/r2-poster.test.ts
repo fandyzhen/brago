@@ -43,6 +43,18 @@ describe("uploadPosterToR2", () => {
     expect(result).toBeNull();
   });
 
+  it("returns null when env vars are set to empty strings", async () => {
+    setEnv({
+      STORAGE_BUCKET_NAME: "",
+      STORAGE_ACCESS_KEY_ID: "",
+      STORAGE_SECRET_ACCESS_KEY: "",
+      STORAGE_ENDPOINT: "",
+      STORAGE_PUBLIC_URL: "",
+    });
+    const result = await uploadPosterToR2(Buffer.from("fake-png"), "user-123");
+    expect(result).toBeNull();
+  });
+
   it("uploads to R2 and returns public URL when fully configured", async () => {
     setEnv({
       STORAGE_BUCKET_NAME: "my-bucket",
