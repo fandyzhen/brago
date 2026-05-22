@@ -1,0 +1,47 @@
+{
+  "home": {
+    "title": "Brago - Before/After Marketing Posts for Local Services",
+    "description": "Turn finished job photos into before/after marketing posts for Google Business Profile, Facebook, Nextdoor, and Instagram.",
+    "ogImage": "/og-image.png"
+  },
+  "pricing": {
+    "title": "Pricing | Brago",
+    "description": "Simple pricing for local service crews. Start free, upgrade when you need more posts.",
+    "ogImage": "/og-image.png"
+  },
+  "contact": {
+    "title": "Contact | Brago",
+    "description": "Get in touch with the Brago team. We'd love to hear from you.",
+    "ogImage": "/og-image.png"
+  },
+  "login": {
+    "title": "Log In | Brago",
+    "description": "Sign in to your Brago account to create before/after marketing posts from your job photos.",
+    "ogImage": "/og-image.png"
+  },
+  "signup": {
+    "title": "Sign Up | Brago",
+    "description": "Create your Brago account and turn your first finished job into a marketing post today.",
+    "ogImage": "/og-image.png"
+  },
+  "terms": {
+    "title": "Terms of Service | Brago",
+    "description": "Read our terms of service to understand the rules and guidelines for using Brago.",
+    "ogImage": "/og-image.png"
+  },
+  "privacy": {
+    "title": "Privacy Policy | Brago",
+    "description": "Learn how Brago collects, uses, and protects your personal information and data.",
+    "ogImage": "/og-image.png"
+  },
+  "cookies": {
+    "title": "Cookie Policy | Brago",
+    "description": "Understand how Brago uses cookies and similar tracking technologies.",
+    "ogImage": "/og-image.png"
+  },
+  "refund": {
+    "title": "Refund Policy | Brago",
+    "description": "Review our refund policy to understand the conditions and process for requesting refunds.",
+    "ogImage": "/og-image.png"
+  }
+}

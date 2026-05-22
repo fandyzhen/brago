@@ -1,0 +1,92 @@
+<h2>第一个模板：Driveway Proof Split 布局方案</h2>
+<p class="subtitle">选择 before/after 分割方式。所有方案均输出 1080×1080 PNG，用于 Google Business Profile。</p>
+
+<div class="cards">
+
+  <!-- Option A -->
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div style="width:100%;aspect-ratio:1;background:#f5f5f5;border-radius:8px;overflow:hidden;display:flex;flex-direction:column;font-family:sans-serif;font-size:11px;">
+        <!-- Top: split photos -->
+        <div style="flex:1;display:flex;gap:2px;">
+          <div style="flex:1;background:#d4c4b0;display:flex;align-items:flex-start;justify-content:flex-start;padding:8px;position:relative;">
+            <span style="background:rgba(0,0,0,0.7);color:#fff;padding:2px 7px;border-radius:20px;font-size:9px;letter-spacing:1px;text-transform:uppercase;font-weight:600;">BEFORE</span>
+            <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#a09080;font-size:9px;">photo</div>
+          </div>
+          <div style="flex:1;background:#b8c8d4;display:flex;align-items:flex-start;justify-content:flex-start;padding:8px;position:relative;">
+            <span style="background:rgba(0,0,0,0.7);color:#fff;padding:2px 7px;border-radius:20px;font-size:9px;letter-spacing:1px;text-transform:uppercase;font-weight:600;">AFTER</span>
+            <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#8090a0;font-size:9px;">photo</div>
+          </div>
+        </div>
+        <!-- Bottom info bar -->
+        <div style="background:#111;color:#fff;padding:10px 12px;">
+          <div style="font-size:11px;font-weight:700;letter-spacing:0.3px;">Concrete restored, not replaced.</div>
+          <div style="font-size:8px;color:#999;margin-top:3px;">Serving Austin, TX · Licensed · Insured · ★★★★★ 247</div>
+          <div style="font-size:8px;color:#888;margin-top:2px;">(512) 555-0184</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A — 左右分割 + 底部信息条</h3>
+      <p>经典 before/after 对比。信息条黑底白字，干净专业。最适合 Google Business Profile。</p>
+    </div>
+  </div>
+
+  <!-- Option B -->
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div style="width:100%;aspect-ratio:1;background:#f5f5f5;border-radius:8px;overflow:hidden;display:flex;flex-direction:column;font-family:sans-serif;font-size:11px;">
+        <!-- Headline top -->
+        <div style="background:#fff;padding:10px 12px;border-bottom:1px solid #eee;">
+          <div style="font-size:12px;font-weight:800;color:#111;">Concrete restored, not replaced.</div>
+          <div style="font-size:8px;color:#888;margin-top:2px;">Serving Austin, TX · Licensed · Insured</div>
+        </div>
+        <!-- Photos below headline -->
+        <div style="flex:1;display:flex;gap:2px;">
+          <div style="flex:1;background:#d4c4b0;display:flex;align-items:flex-end;justify-content:flex-start;padding:6px;position:relative;">
+            <span style="background:rgba(0,0,0,0.7);color:#fff;padding:2px 6px;border-radius:20px;font-size:8px;letter-spacing:1px;text-transform:uppercase;">BEFORE</span>
+            <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#a09080;font-size:9px;">photo</div>
+          </div>
+          <div style="flex:1;background:#b8c8d4;display:flex;align-items:flex-end;justify-content:flex-start;padding:6px;position:relative;">
+            <span style="background:rgba(0,0,0,0.7);color:#fff;padding:2px 6px;border-radius:20px;font-size:8px;letter-spacing:1px;text-transform:uppercase;">AFTER</span>
+            <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#8090a0;font-size:9px;">photo</div>
+          </div>
+        </div>
+        <!-- Phone bottom -->
+        <div style="background:#1E5EFF;color:#fff;padding:7px 12px;text-align:center;font-size:8px;font-weight:600;">(512) 555-0184 · bragoapp.com</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B — 顶部标题 + 照片 + 蓝色 CTA 条</h3>
+      <p>标题最突出，accent 色用在底部 CTA 条。广告感更强，适合 Facebook/Nextdoor。</p>
+    </div>
+  </div>
+
+  <!-- Option C -->
+  <div class="card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div style="width:100%;aspect-ratio:1;background:#f5f5f5;border-radius:8px;overflow:hidden;display:flex;flex-direction:column;font-family:sans-serif;font-size:11px;position:relative;">
+        <!-- Full bleed after photo -->
+        <div style="flex:1;background:#b8c8d4;position:relative;display:flex;align-items:center;justify-content:center;color:#8090a0;font-size:9px;">
+          AFTER photo (full width)
+          <!-- Before thumbnail overlay -->
+          <div style="position:absolute;bottom:12px;left:12px;width:35%;aspect-ratio:1;background:#d4c4b0;border:2px solid #fff;border-radius:4px;display:flex;align-items:center;justify-content:center;color:#a09080;font-size:8px;">BEFORE</div>
+          <!-- AFTER label -->
+          <span style="position:absolute;top:10px;left:10px;background:rgba(0,0,0,0.7);color:#fff;padding:2px 6px;border-radius:20px;font-size:8px;letter-spacing:1px;text-transform:uppercase;">AFTER</span>
+        </div>
+        <!-- Bottom bar -->
+        <div style="background:#111;color:#fff;padding:10px 12px;">
+          <div style="font-size:10px;font-weight:700;">Concrete restored, not replaced.</div>
+          <div style="font-size:8px;color:#888;margin-top:2px;">Austin, TX · Licensed · Insured · (512) 555-0184</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>C — After 大图 + Before 缩略图叠加</h3>
+      <p>After 结果占主导，Before 作为小图角落展示。更有视觉冲击力，但对比感弱于左右分割。</p>
+    </div>
+  </div>
+
+</div>
+
+<p class="subtitle" style="margin-top:16px;">💡 MVP 首批模板以 Google Business Profile（1080×1080）为主。点击选择后在终端告诉我。</p>
