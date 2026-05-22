@@ -3,6 +3,7 @@
 /* eslint-disable @next/next/no-img-element */
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
+import { useLocale } from "next-intl";
 import { motion } from "framer-motion";
 import { Background } from "@/components/background";
 import { Container } from "@/components/container";
@@ -40,8 +41,8 @@ function timeAgo(isoString: string): string {
 
 // ── PosterCard ─────────────────────────────────────────────────────────────
 
-function PosterCard({ item }: { item: HistoryItem }) {
-  const regenHref = `/create?templateId=${encodeURIComponent(item.templateId ?? "")}&headline=${encodeURIComponent(item.headline)}`;
+function PosterCard({ item, locale }: { item: HistoryItem; locale: string }) {
+  const regenHref = `/${locale}/create?templateId=${encodeURIComponent(item.templateId ?? "")}&headline=${encodeURIComponent(item.headline)}`;
 
   return (
     <div className="rounded-xl border border-neutral-200 dark:border-neutral-700 overflow-hidden bg-white dark:bg-neutral-900 flex flex-col">
@@ -84,11 +85,11 @@ function PosterCard({ item }: { item: HistoryItem }) {
             rel="noopener noreferrer"
             className="flex-1 text-center text-xs py-1.5 rounded-lg border border-neutral-200 dark:border-neutral-700 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
           >
-            Download
+            Open
           </a>
         ) : (
           <span className="flex-1 text-center text-xs py-1.5 rounded-lg border border-neutral-200 dark:border-neutral-700 opacity-40 cursor-not-allowed select-none">
-            Download
+            Open
           </span>
         )}
         <Link
@@ -110,6 +111,8 @@ export default function HistoryPage() {
   const [hasMore, setHasMore] = useState(false);
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const locale = useLocale();
 
   const fetchHistory = useCallback(async (nextCursor: string | null = null) => {
     const params = new URLSearchParams({ limit: "20" });
@@ -129,9 +132,11 @@ export default function HistoryPage() {
           setItems(data.items);
           setCursor(data.nextCursor);
           setHasMore(data.hasMore);
+        } else {
+          setError("Failed to load history. Please refresh the page.");
         }
       })
-      .catch(console.error)
+      .catch(() => setError("Failed to load history. Please refresh the page."))
       .finally(() => setLoading(false));
   }, [fetchHistory]);
 
@@ -147,6 +152,7 @@ export default function HistoryPage() {
       }
     } catch (err) {
       console.error(err);
+      setError("Failed to load more posts. Please try again.");
     } finally {
       setLoadingMore(false);
     }
@@ -168,7 +174,7 @@ export default function HistoryPage() {
                 Your previously generated social posts.
               </p>
             </div>
-            <Link href="/create">
+            <Link href={`/${locale}/create`}>
               <Button>Create new</Button>
             </Link>
           </div>
@@ -188,12 +194,17 @@ export default function HistoryPage() {
                 </div>
               ))}
             </div>
+          ) : error ? (
+            <div className="flex flex-col items-center justify-center py-24 text-center">
+              <p className="text-neutral-400 text-sm mb-4">{error}</p>
+              <Button onClick={() => window.location.reload()}>Refresh</Button>
+            </div>
           ) : items.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-24 text-center">
               <p className="text-neutral-400 text-sm mb-4">
                 No posts yet. Generate your first social post!
               </p>
-              <Link href="/create">
+              <Link href={`/${locale}/create`}>
                 <Button>Create your first post</Button>
               </Link>
             </div>
@@ -201,7 +212,7 @@ export default function HistoryPage() {
             <>
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
                 {items.map((item) => (
-                  <PosterCard key={item.id} item={item} />
+                  <PosterCard key={item.id} item={item} locale={locale} />
                 ))}
               </div>
 
