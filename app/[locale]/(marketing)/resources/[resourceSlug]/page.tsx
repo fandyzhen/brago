@@ -4,6 +4,10 @@ import Link from "next/link";
 import { Container } from "@/components/container";
 import { getResourcePageMeta, RESOURCE_PAGES } from "@/lib/seo/resource-pages";
 import { HowToGetPressureWashingCustomers } from "./content/how-to-get-pressure-washing-customers";
+import { HowToMarketAPressureWashingBusiness } from "./content/how-to-market-a-pressure-washing-business";
+import { PressureWashingAdvertisingIdeas } from "./content/pressure-washing-advertising-ideas";
+import { PressureWashingMarketingIdeas } from "./content/pressure-washing-marketing-ideas";
+import { AutoDetailingMarketingPosts } from "./content/auto-detailing-marketing-posts";
 
 export async function generateStaticParams() {
   return RESOURCE_PAGES.map((p) => ({ resourceSlug: p.slug }));
@@ -35,6 +39,22 @@ export default async function ResourcePage({
   // Render specific content component based on slug
   if (resourceSlug === "how-to-get-pressure-washing-customers") {
     return <HowToGetPressureWashingCustomers />;
+  }
+
+  if (resourceSlug === "how-to-market-a-pressure-washing-business") {
+    return <HowToMarketAPressureWashingBusiness />;
+  }
+
+  if (resourceSlug === "pressure-washing-advertising-ideas") {
+    return <PressureWashingAdvertisingIdeas />;
+  }
+
+  if (resourceSlug === "pressure-washing-marketing-ideas") {
+    return <PressureWashingMarketingIdeas />;
+  }
+
+  if (resourceSlug === "auto-detailing-marketing-posts") {
+    return <AutoDetailingMarketingPosts />;
   }
 
   // Placeholder for other resource pages (not yet written)
