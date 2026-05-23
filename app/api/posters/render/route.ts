@@ -7,7 +7,8 @@ import { getRenderer } from "@/lib/server/poster-templates/registry";
 import { fileToDataUrl } from "@/lib/server/poster-templates/shared/image-utils";
 import type { RenderInput } from "@/lib/server/poster-templates/shared/types";
 import { getActiveSessionUser } from "@/lib/auth/session";
-import { canUserAfford, getUserCredits, deductCredits } from "@/lib/credits";
+import { canUserAfford, getUserCredits, deductCredits, getUserPlanKey } from "@/lib/credits";
+import { applyWatermark } from "@/lib/server/watermark";
 import { uploadPosterToR2 } from "@/lib/server/r2-poster";
 import { db } from "@/lib/db";
 import { generationHistory } from "@/lib/db/schema";
@@ -145,8 +146,13 @@ export async function POST(request: Request): Promise<Response> {
       .png({ compressionLevel: 6 })
       .toBuffer();
 
+    // ── 4b. Apply watermark for free users ────────────────────────
+    const userPlanKey = await getUserPlanKey(userId);
+    const isFreePlan = !userPlanKey || userPlanKey === "free";
+    const finalBuffer = isFreePlan ? await applyWatermark(pngBuffer) : pngBuffer;
+
     // ── 5. Upload to R2 (throws on failure → caught below) ───────
-    const resultUrl = await uploadPosterToR2(pngBuffer, userId);
+    const resultUrl = await uploadPosterToR2(finalBuffer, userId);
 
     // ── 6. Deduct credits ─────────────────────────────────────────
     const deductResult = await deductCredits(userId, POSTER_CREDIT_COST, "poster_generation");
@@ -173,7 +179,7 @@ export async function POST(request: Request): Promise<Response> {
     }
 
     // ── 8. Return PNG ─────────────────────────────────────────────
-    return new Response(new Uint8Array(pngBuffer), {
+    return new Response(new Uint8Array(finalBuffer), {
       status: 200,
       headers: {
         "Content-Type": "image/png",

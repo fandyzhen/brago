@@ -91,8 +91,8 @@ export async function refundCredits(
       // Add credits back
       await tx
         .update(userTable)
-        .set({ 
-          credits: sql`${userTable.credits} + ${amount}` 
+        .set({
+          credits: sql`${userTable.credits} + ${amount}`
         })
         .where(eq(userTable.id, userId));
 
@@ -111,9 +111,18 @@ export async function refundCredits(
     return { success: true, remainingCredits: newCredits };
   } catch (error) {
     console.error("Error refunding credits:", error);
-    return { 
-      success: false, 
-      remainingCredits: await getUserCredits(userId) 
+    return {
+      success: false,
+      remainingCredits: await getUserCredits(userId)
     };
   }
+}
+
+export async function getUserPlanKey(userId: string): Promise<string | null> {
+  const users = await db
+    .select({ planKey: userTable.planKey })
+    .from(userTable)
+    .where(eq(userTable.id, userId))
+    .limit(1);
+  return users[0]?.planKey ?? null;
 }

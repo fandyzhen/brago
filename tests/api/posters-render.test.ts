@@ -34,6 +34,11 @@ vi.mock("@/lib/credits", () => ({
   canUserAfford: vi.fn(),
   getUserCredits: vi.fn(),
   deductCredits: vi.fn(),
+  getUserPlanKey: vi.fn(),
+}));
+
+vi.mock("@/lib/server/watermark", () => ({
+  applyWatermark: vi.fn((buf: Buffer) => Promise.resolve(buf)),
 }));
 
 vi.mock("@/lib/server/r2-poster", () => ({
@@ -45,7 +50,7 @@ vi.mock("@/lib/db", () => ({
 }));
 
 import { getActiveSessionUser } from "@/lib/auth/session";
-import { canUserAfford, getUserCredits, deductCredits } from "@/lib/credits";
+import { canUserAfford, getUserCredits, deductCredits, getUserPlanKey } from "@/lib/credits";
 import { uploadPosterToR2 } from "@/lib/server/r2-poster";
 import { db } from "@/lib/db";
 
@@ -65,6 +70,7 @@ beforeEach(() => {
   vi.mocked(canUserAfford).mockResolvedValue(true);
   vi.mocked(getUserCredits).mockResolvedValue(100);
   vi.mocked(deductCredits).mockResolvedValue({ success: true, remainingCredits: 90 });
+  vi.mocked(getUserPlanKey).mockResolvedValue("starter_monthly"); // paid user by default
   vi.mocked(uploadPosterToR2).mockResolvedValue(null); // R2 not configured
   const insertChain = { values: vi.fn().mockResolvedValue([]) };
   vi.mocked(db.insert).mockReturnValue(insertChain as unknown as ReturnType<typeof db.insert>);
