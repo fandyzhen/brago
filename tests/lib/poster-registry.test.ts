@@ -25,4 +25,14 @@ describe("poster template registry", () => {
     expect(renderer).not.toBeNull();
     expect(typeof renderer).toBe("function");
   });
+
+  it("contains the local share pressure washing template", () => {
+    expect(getRegisteredTemplateIds()).toContain("pressure_driveway_local_share");
+  });
+
+  it("returns a render function for pressure_driveway_local_share", () => {
+    const renderer = getRenderer("pressure_driveway_local_share");
+    expect(renderer).not.toBeNull();
+    expect(typeof renderer).toBe("function");
+  });
 });

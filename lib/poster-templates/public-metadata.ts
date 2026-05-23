@@ -22,6 +22,15 @@ export const POSTER_TEMPLATES: BragoTemplateMeta[] = [
     photoPairCount: 1,
     previewImage: "/template-previews/pressure_driveway_stacked.webp",
   },
+  {
+    id: "pressure_driveway_local_share",
+    name: "Local Job Share",
+    industry: "pressure_washing",
+    channel: "facebook_nextdoor",
+    layoutFamily: "split",
+    photoPairCount: 1,
+    previewImage: "/template-previews/pressure_driveway_local_share.webp",
+  },
 ];
 
 export function getTemplateById(id: string): BragoTemplateMeta | undefined {
