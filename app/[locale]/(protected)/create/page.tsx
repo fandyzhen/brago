@@ -172,6 +172,7 @@ export default function CreatePage() {
     searchParams.get("templateId") ?? POSTER_TEMPLATES[0]?.id ?? "";
   const initHeadline = decodeURIComponent(searchParams.get("headline") ?? "");
 
+  const [selectedChannel, setSelectedChannel] = useState<"google_business_profile" | "facebook_nextdoor" | "instagram">("google_business_profile");
   const [selectedTemplate, setSelectedTemplate] = useState<string>(initTemplate);
   const [headline, setHeadline] = useState(initHeadline);
   const [brand, setBrand] = useState<BrandProfile>({});
@@ -188,6 +189,8 @@ export default function CreatePage() {
       })
       .catch(() => {});
   }, []);
+
+  const filteredTemplates = POSTER_TEMPLATES.filter((t) => t.channel === selectedChannel);
 
   const canGenerate =
     beforeFile && afterFile && selectedTemplate && headline.trim().length > 0;
@@ -318,13 +321,48 @@ export default function CreatePage() {
                 </div>
               </section>
 
+              {/* Channel selection */}
+              <section>
+                <h2 className="text-sm font-semibold uppercase tracking-wider text-neutral-500 mb-3">
+                  Where are you posting?
+                </h2>
+                <div className="flex flex-wrap gap-2">
+                  {(
+                    [
+                      { value: "google_business_profile", label: "Google Business Profile" },
+                      { value: "facebook_nextdoor", label: "Facebook / Nextdoor" },
+                      { value: "instagram", label: "Instagram" },
+                    ] as const
+                  ).map(({ value, label }) => (
+                    <button
+                      key={value}
+                      type="button"
+                      onClick={() => {
+                        setSelectedChannel(value);
+                        const newFiltered = POSTER_TEMPLATES.filter((t) => t.channel === value);
+                        if (newFiltered.length > 0 && !newFiltered.find((t) => t.id === selectedTemplate)) {
+                          setSelectedTemplate(newFiltered[0].id);
+                        }
+                      }}
+                      className={`px-4 py-2 rounded-full text-sm font-medium border transition-colors ${
+                        selectedChannel === value
+                          ? "bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 border-neutral-900 dark:border-white"
+                          : "border-neutral-300 dark:border-neutral-700 hover:border-neutral-500 dark:hover:border-neutral-400"
+                      }`}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
+              </section>
+
               {/* Template */}
               <section>
                 <h2 className="text-sm font-semibold uppercase tracking-wider text-neutral-500 mb-3">
                   Template
                 </h2>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                  {POSTER_TEMPLATES.map((t) => (
+                  {filteredTemplates.map((t) => (
                     <TemplateCard
                       key={t.id}
                       template={t}

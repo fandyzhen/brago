@@ -11,6 +11,8 @@ export const POSTER_TEMPLATES: BragoTemplateMeta[] = [
     channel: "google_business_profile",
     layoutFamily: "hero_photo",
     photoPairCount: 1,
+    intent: "trust",
+    phoneDefault: "visible",
     previewImage: "/template-previews/pressure_driveway_hero_split.webp",
   },
   {
@@ -20,6 +22,8 @@ export const POSTER_TEMPLATES: BragoTemplateMeta[] = [
     channel: "instagram",
     layoutFamily: "stacked",
     photoPairCount: 1,
+    intent: "portfolio",
+    phoneDefault: "hidden",
     previewImage: "/template-previews/pressure_driveway_stacked.webp",
   },
   {
@@ -29,6 +33,8 @@ export const POSTER_TEMPLATES: BragoTemplateMeta[] = [
     channel: "facebook_nextdoor",
     layoutFamily: "split",
     photoPairCount: 1,
+    intent: "recent_job",
+    phoneDefault: "subtle",
     previewImage: "/template-previews/pressure_driveway_local_share.webp",
   },
 ];

@@ -20,7 +20,9 @@ export type BragoTemplateMeta = {
   name: string;
   industry: "pressure_washing" | "auto_detailing";
   channel: "google_business_profile" | "facebook_nextdoor" | "instagram";
-  layoutFamily: "split" | "hero_photo" | "stacked" | "collage";
+  layoutFamily: "split" | "hero_photo" | "stacked" | "collage" | "diagonal" | "card_pair";
   photoPairCount: 1 | 2 | 3 | 4;
+  intent: "trust" | "quote" | "portfolio" | "recent_job";
+  phoneDefault: "hidden" | "subtle" | "visible";
   previewImage: string;  // 公开 URL，用于前端展示预览图
 };
