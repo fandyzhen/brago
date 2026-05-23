@@ -15,4 +15,14 @@ describe("poster template registry", () => {
     const renderer = getRenderer("nonexistent_template_id");
     expect(renderer).toBeNull();
   });
+
+  it("contains the stacked pressure washing template", () => {
+    expect(getRegisteredTemplateIds()).toContain("pressure_driveway_stacked");
+  });
+
+  it("returns a render function for pressure_driveway_stacked", () => {
+    const renderer = getRenderer("pressure_driveway_stacked");
+    expect(renderer).not.toBeNull();
+    expect(typeof renderer).toBe("function");
+  });
 });

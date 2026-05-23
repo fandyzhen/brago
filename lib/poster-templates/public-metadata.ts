@@ -13,6 +13,15 @@ export const POSTER_TEMPLATES: BragoTemplateMeta[] = [
     photoPairCount: 1,
     previewImage: "/template-previews/pressure_driveway_hero_split.webp",
   },
+  {
+    id: "pressure_driveway_stacked",
+    name: "Driveway Bold Stacked",
+    industry: "pressure_washing",
+    channel: "instagram",
+    layoutFamily: "stacked",
+    photoPairCount: 1,
+    previewImage: "/template-previews/pressure_driveway_stacked.webp",
+  },
 ];
 
 export function getTemplateById(id: string): BragoTemplateMeta | undefined {
