@@ -28,6 +28,12 @@ type GenerateState =
   | { status: "done"; url: string; filename: string }
   | { status: "error"; message: string };
 
+type CaptionSuggestState =
+  | { status: "idle" }
+  | { status: "loading" }
+  | { status: "done"; headlines: string[]; caption: string }
+  | { status: "error"; message: string };
+
 // ── Photo Drop Zone ────────────────────────────────────────────────────────
 
 function PhotoDropZone({
@@ -170,6 +176,8 @@ export default function CreatePage() {
   const [headline, setHeadline] = useState(initHeadline);
   const [brand, setBrand] = useState<BrandProfile>({});
   const [generateState, setGenerateState] = useState<GenerateState>({ status: "idle" });
+  const [captionState, setCaptionState] = useState<CaptionSuggestState>({ status: "idle" });
+  const [captionCopied, setCaptionCopied] = useState(false);
 
   // Load brand profile for auto-fill
   useEffect(() => {
@@ -222,6 +230,43 @@ export default function CreatePage() {
       setGenerateState({ status: "done", url, filename });
     } catch {
       setGenerateState({ status: "error", message: "Network error, please try again." });
+    }
+  };
+
+  const handleSuggest = async () => {
+    setCaptionState({ status: "loading" });
+    try {
+      // Get industry and channel from selected template meta
+      const templateMeta = POSTER_TEMPLATES.find((t) => t.id === selectedTemplate);
+      const res = await fetch("/api/posters/caption", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          industry: templateMeta?.industry,
+          channel: templateMeta?.channel,
+          businessName: brand.businessName,
+          serviceArea: brand.serviceArea,
+        }),
+      });
+      if (!res.ok) {
+        setCaptionState({ status: "error", message: "Could not generate suggestions." });
+        return;
+      }
+      const data = (await res.json()) as { headlines: string[]; caption: string };
+      setCaptionState({ status: "done", headlines: data.headlines, caption: data.caption });
+    } catch {
+      setCaptionState({ status: "error", message: "Network error." });
+    }
+  };
+
+  const handleCopyCaption = async () => {
+    if (captionState.status !== "done") return;
+    try {
+      await navigator.clipboard.writeText(captionState.caption);
+      setCaptionCopied(true);
+      setTimeout(() => setCaptionCopied(false), 2000);
+    } catch {
+      // ignore
     }
   };
 
@@ -292,9 +337,23 @@ export default function CreatePage() {
 
               {/* Headline */}
               <section>
-                <h2 className="text-sm font-semibold uppercase tracking-wider text-neutral-500 mb-3">
-                  Headline
-                </h2>
+                <div className="flex items-center justify-between mb-3">
+                  <h2 className="text-sm font-semibold uppercase tracking-wider text-neutral-500">
+                    Headline
+                  </h2>
+                  <button
+                    type="button"
+                    onClick={handleSuggest}
+                    disabled={captionState.status === "loading"}
+                    className="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-colors disabled:opacity-50"
+                  >
+                    {captionState.status === "loading" ? (
+                      <><SpinnerIcon size={12} /> Generating&hellip;</>
+                    ) : (
+                      <>✨ AI Suggest</>
+                    )}
+                  </button>
+                </div>
                 <input
                   type="text"
                   maxLength={36}
@@ -303,10 +362,51 @@ export default function CreatePage() {
                   onChange={(e) => setHeadline(e.target.value)}
                   className="w-full rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-neutral-400"
                 />
-                <p className="text-xs text-neutral-400 mt-1">
-                  {headline.length}/36 characters
-                </p>
+                <p className="text-xs text-neutral-400 mt-1">{headline.length}/36 characters</p>
+
+                {/* AI headline suggestions */}
+                {captionState.status === "done" && (
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    {captionState.headlines.map((h, i) => (
+                      <button
+                        key={i}
+                        type="button"
+                        onClick={() => setHeadline(h.slice(0, 36))}
+                        className="px-3 py-1 rounded-full text-xs border border-neutral-300 dark:border-neutral-600 hover:border-neutral-500 dark:hover:border-neutral-400 hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors"
+                      >
+                        {h}
+                      </button>
+                    ))}
+                  </div>
+                )}
+                {captionState.status === "error" && (
+                  <p className="mt-2 text-xs text-red-500">{captionState.message}</p>
+                )}
               </section>
+
+              {/* Platform Caption (shown after AI suggest) */}
+              {captionState.status === "done" && (
+                <section>
+                  <h2 className="text-sm font-semibold uppercase tracking-wider text-neutral-500 mb-3">
+                    Platform Caption
+                  </h2>
+                  <div className="rounded-lg border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-900 p-3">
+                    <p className="text-sm text-neutral-700 dark:text-neutral-300 leading-relaxed">
+                      {captionState.caption}
+                    </p>
+                    <button
+                      type="button"
+                      onClick={handleCopyCaption}
+                      className="mt-2 text-xs text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300 transition-colors"
+                    >
+                      {captionCopied ? "✓ Copied!" : "Copy caption"}
+                    </button>
+                  </div>
+                  <p className="text-xs text-neutral-400 mt-1">
+                    Copy and paste this when you publish your post.
+                  </p>
+                </section>
+              )}
 
               {/* Brand info hint */}
               {(brand.businessName || brand.phone || brand.serviceArea) && (
