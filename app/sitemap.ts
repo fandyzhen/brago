@@ -21,6 +21,12 @@ const PUBLIC_ROUTES: RouteConfig[] = [
   // Template pages
   { path: '/templates',                                 changeFrequency: 'weekly',  priority: 0.8 },
   { path: '/templates/google-business-profile-posts',  changeFrequency: 'weekly',  priority: 0.8 },
+  // Resource pages
+  { path: '/resources/how-to-get-pressure-washing-customers',    changeFrequency: 'monthly', priority: 0.7 },
+  { path: '/resources/how-to-market-a-pressure-washing-business', changeFrequency: 'monthly', priority: 0.7 },
+  { path: '/resources/pressure-washing-advertising-ideas',        changeFrequency: 'monthly', priority: 0.7 },
+  { path: '/resources/pressure-washing-marketing-ideas',          changeFrequency: 'monthly', priority: 0.7 },
+  { path: '/resources/auto-detailing-marketing-posts',            changeFrequency: 'monthly', priority: 0.7 },
   // Marketing / legal
   { path: '/blog',                                      changeFrequency: 'weekly',  priority: 0.7 },
   { path: '/contact',                                   changeFrequency: 'monthly', priority: 0.5 },
