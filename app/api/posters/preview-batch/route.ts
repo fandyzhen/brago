@@ -104,9 +104,9 @@ export async function POST(request: Request): Promise<Response> {
 
   const cleanedHeadline = headlineRaw.trim().slice(0, 36);
   const description = getTextField("description")?.slice(0, 80);
-  const businessName = getTextField("businessName");
-  const phone = getTextField("phone");
-  const serviceArea = getTextField("serviceArea");
+  const businessName = getTextField("businessName")?.slice(0, 120);
+  const phone = getTextField("phone")?.slice(0, 32);
+  const serviceArea = getTextField("serviceArea")?.slice(0, 120);
   const isLicensed = formData.get("isLicensed") === "true";
   const isInsured = formData.get("isInsured") === "true";
   const googleReviewCountRaw = getTextField("googleReviewCount");

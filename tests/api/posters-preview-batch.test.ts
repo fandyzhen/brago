@@ -46,7 +46,7 @@ vi.mock("@/lib/server/watermark", () => ({
   applyWatermark: vi.fn(async (b: Buffer) => b),
 }));
 
-import { setBatch, getBatch, _resetForTests } from "@/lib/server/poster-preview-cache";
+import { getBatch, _resetForTests } from "@/lib/server/poster-preview-cache";
 import { POST } from "@/app/api/posters/preview-batch/route";
 
 function makeFormRequest(): Request {
