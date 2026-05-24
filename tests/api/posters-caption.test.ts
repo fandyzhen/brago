@@ -87,7 +87,7 @@ describe("POST /api/posters/caption", () => {
     expect(data.caption.length).toBeGreaterThan(0);
   });
 
-  it("returns 500 when LLM call fails", async () => {
+  it("falls back to stub (200) when LLM call fails", async () => {
     vi.mocked(chatModule.createChatCompletion).mockRejectedValue(
       new Error("API error")
     );
@@ -95,10 +95,14 @@ describe("POST /api/posters/caption", () => {
     const res = await POST(
       makeCaptionRequest({ industry: "pressure_washing" })
     );
-    expect(res.status).toBe(500);
+    expect(res.status).toBe(200);
+    const data = (await res.json()) as { headlines: string[]; caption: string };
+    expect(data.headlines).toHaveLength(3);
+    for (const h of data.headlines) expect(h.length).toBeLessThanOrEqual(36);
+    expect(data.caption.length).toBeGreaterThan(0);
   });
 
-  it("returns 500 when LLM returns invalid JSON", async () => {
+  it("falls back to stub (200) when LLM returns invalid JSON", async () => {
     vi.mocked(chatModule.createChatCompletion).mockResolvedValue({
       id: "test-id",
       object: "chat.completion",
@@ -120,6 +124,65 @@ describe("POST /api/posters/caption", () => {
     const res = await POST(
       makeCaptionRequest({ industry: "pressure_washing" })
     );
-    expect(res.status).toBe(500);
+    expect(res.status).toBe(200);
+    const data = (await res.json()) as { headlines: string[]; caption: string };
+    expect(data.headlines).toHaveLength(3);
+  });
+
+  it("includes description in the LLM prompt when provided", async () => {
+    vi.mocked(chatModule.createChatCompletion).mockResolvedValue({
+      id: "test-id",
+      object: "chat.completion",
+      created: 1234567890,
+      model: "doubao-1-5-thinking-pro-250415",
+      choices: [
+        {
+          index: 0,
+          message: {
+            role: "assistant",
+            content: JSON.stringify({
+              headlines: ["A", "B", "C"],
+              caption: "hi",
+            }),
+          },
+          finish_reason: "stop",
+        },
+      ],
+      usage: { prompt_tokens: 10, completion_tokens: 10, total_tokens: 20 },
+    });
+
+    const res = await POST(
+      makeCaptionRequest({
+        industry: "pressure_washing",
+        channel: "google_business_profile",
+        businessName: "Smith",
+        serviceArea: "Austin, TX",
+        description: "Cleaned a stubborn driveway in 3 hours",
+      })
+    );
+    expect(res.status).toBe(200);
+
+    const call = vi.mocked(chatModule.createChatCompletion).mock.calls[0];
+    const messages = call[0] as Array<{ role: string; content: string }>;
+    const prompt = messages[0].content;
+    expect(prompt).toContain("Cleaned a stubborn driveway in 3 hours");
+  });
+
+  it("stub fallback honors description in caption when LLM fails", async () => {
+    vi.mocked(chatModule.createChatCompletion).mockRejectedValue(
+      new Error("network down")
+    );
+
+    const res = await POST(
+      makeCaptionRequest({
+        industry: "pressure_washing",
+        businessName: "Smith Pressure Pros",
+        serviceArea: "Austin, TX",
+        description: "Cleaned a driveway in 3 hours",
+      })
+    );
+    expect(res.status).toBe(200);
+    const data = (await res.json()) as { headlines: string[]; caption: string };
+    expect(data.caption).toContain("Cleaned a driveway in 3 hours");
   });
 });

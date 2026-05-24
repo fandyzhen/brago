@@ -7,6 +7,7 @@ type CaptionRequest = {
   serviceType?: string;    // e.g. "driveway", "patio", "exterior"
   businessName?: string;
   serviceArea?: string;
+  description?: string;    // what the user did on this job (free-text)
 };
 
 type CaptionResponse = {
@@ -26,6 +27,7 @@ function buildPrompt(input: CaptionRequest): string {
       : "Google Business Profile";
 
   const contextLines: string[] = [];
+  if (input.description) contextLines.push(`What we did: ${input.description}`);
   if (input.serviceType) contextLines.push(`Service: ${input.serviceType}`);
   if (input.businessName) contextLines.push(`Business: ${input.businessName}`);
   if (input.serviceArea) contextLines.push(`Area: ${input.serviceArea}`);
@@ -53,6 +55,32 @@ ${input.channel === "instagram" ? "- Include 3-5 relevant local service hashtags
 
 Return ONLY valid JSON, no markdown, no explanation:
 {"headlines":["<headline 1>","<headline 2>","<headline 3>"],"caption":"<caption text>"}`;
+}
+
+function stubResponse(input: CaptionRequest): CaptionResponse {
+  const verbsByIndustry: Record<string, [string, string, string]> = {
+    pressure_washing: ["Spotless", "Brought Back to New", "Gone in Hours"],
+    auto_detailing: ["Mirror Finish", "Showroom Clean", "Like-New Inside"],
+  };
+  const industryKey =
+    input.industry === "auto_detailing" ? "auto_detailing" : "pressure_washing";
+  const v = verbsByIndustry[industryKey];
+
+  // Pull a short noun from the description if available
+  const noun = (() => {
+    if (!input.description) return "Job";
+    const m = input.description.match(/\b([A-Z][a-z]+|[a-z]{4,})\b/);
+    return m?.[1] ?? "Job";
+  })();
+  const headlines = [
+    `${noun} ${v[0]}`.slice(0, 36),
+    `${input.businessName ?? "We"} ${v[1]}`.slice(0, 36),
+    `Fresh Results in ${input.serviceArea ?? "Your Area"}`.slice(0, 36),
+  ];
+  const captionBase = input.description
+    ? `${input.description} — call us for a free quote!`
+    : `${input.businessName ?? "Our crew"} just wrapped up another local job — call for a free quote!`;
+  return { headlines, caption: captionBase.slice(0, 220) };
 }
 
 function parseResult(content: string): CaptionResponse {
@@ -94,7 +122,8 @@ export async function POST(request: Request): Promise<Response> {
     // Body is optional — use empty defaults
   }
 
-  // Call LLM
+  // Call LLM — on any failure (network, bad JSON, schema mismatch) fall back to
+  // a deterministic stub so the UI always has 3 candidate headlines + a caption.
   try {
     const completion = await createChatCompletion(
       [{ role: "user", content: buildPrompt(body) }],
@@ -106,7 +135,7 @@ export async function POST(request: Request): Promise<Response> {
 
     return Response.json(result, { status: 200 });
   } catch (err) {
-    console.error("[posters/caption] LLM error:", err);
-    return Response.json({ error: "Failed to generate suggestions" }, { status: 500 });
+    console.warn("[posters/caption] LLM call failed, returning stub:", err);
+    return Response.json(stubResponse(body), { status: 200 });
   }
 }
