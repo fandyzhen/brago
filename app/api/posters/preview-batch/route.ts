@@ -124,7 +124,7 @@ export async function POST(request: Request): Promise<Response> {
     id: string;
     render: ReturnType<typeof getRenderer>;
     name: string;
-  }): Promise<{ thumb: Thumb | null }> => {
+  }): Promise<{ thumb: Thumb | null; error: string | null }> => {
     try {
       const renderInput: RenderInput = {
         beforeImageDataUrl: beforeDataUrl,
@@ -151,17 +151,23 @@ export async function POST(request: Request): Promise<Response> {
           name: entry.name,
           thumbnailDataUrl: `data:image/png;base64,${finalBuffer.toString("base64")}`,
         },
+        error: null,
       };
     } catch (err) {
+      const msg = err instanceof Error ? `${err.name}: ${err.message}` : String(err);
       console.error(`[preview-batch] render failed for ${entry.id}:`, err);
-      return { thumb: null };
+      return { thumb: null, error: `${entry.id} → ${msg}` };
     }
   };
 
   const results = await Promise.all(renderers.map(renderOne));
   const thumbnails: Thumb[] = results.map((r) => r.thumb).filter((t): t is Thumb => t !== null);
   if (thumbnails.length === 0) {
-    return Response.json({ error: "All template renders failed" }, { status: 500 });
+    const firstError = results.find((r) => r.error)?.error ?? "Unknown render error";
+    return Response.json(
+      { error: `All template renders failed — ${firstError}` },
+      { status: 500 }
+    );
   }
 
   const batchId = randomUUID();

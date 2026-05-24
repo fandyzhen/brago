@@ -51,6 +51,26 @@ type CaptionSuggestState =
   | { status: "done"; headlines: string[]; caption: string }
   | { status: "error"; message: string };
 
+type PostingChannel = "google_business_profile" | "facebook_nextdoor" | "instagram";
+
+const CHANNEL_OPTIONS: Array<{ value: PostingChannel; label: string; hint: string }> = [
+  {
+    value: "google_business_profile",
+    label: "Google Business Profile",
+    hint: "Professional, trust-building",
+  },
+  {
+    value: "facebook_nextdoor",
+    label: "Facebook / Nextdoor",
+    hint: "Neighborly, conversational",
+  },
+  {
+    value: "instagram",
+    label: "Instagram Feed",
+    hint: "Visual, emoji + hashtags",
+  },
+];
+
 type BrandGateState =
   | { status: "loading" }
   | { status: "needs_brand" } // 已 router.replace 出去，渲染占位即可
@@ -188,6 +208,7 @@ export default function CreatePage() {
   const [pickedTemplates, setPickedTemplates] = useState<BragoTemplateMeta[]>([]);
   const [description, setDescription] = useState("");
   const [headline, setHeadline] = useState(initHeadline);
+  const [channel, setChannel] = useState<PostingChannel>("google_business_profile");
   const [generateState, setGenerateState] = useState<GenerateState>({ status: "idle" });
   const [captionState, setCaptionState] = useState<CaptionSuggestState>({ status: "idle" });
   const [captionCopied, setCaptionCopied] = useState(false);
@@ -286,12 +307,15 @@ export default function CreatePage() {
         return;
       }
       setGenerateState({ status: "done", batch: data, selectedIndex: 0 });
+      // After previews succeed, auto-fetch a channel-styled caption for the user.
+      // (Stub will fire if LLM is unconfigured — see caption route's stubResponse.)
+      void fetchCaption();
     } catch {
       setGenerateState({ status: "error", message: "Network error, please try again." });
     }
   };
 
-  const handleSuggest = async () => {
+  const fetchCaption = async () => {
     setCaptionState({ status: "loading" });
     try {
       const first = pickedTemplates[0];
@@ -300,7 +324,7 @@ export default function CreatePage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           industry: first?.industry,
-          channel: first?.channel,
+          channel,
           description: description.trim() || undefined,
           businessName: brandGate.status === "ready" ? brandGate.brand.businessName : undefined,
           serviceArea: brandGate.status === "ready" ? brandGate.brand.serviceArea : undefined,
@@ -437,6 +461,38 @@ export default function CreatePage() {
           <div className="grid grid-cols-1 lg:grid-cols-[1fr_420px] gap-10">
             {/* ── Left column: inputs ── */}
             <div className="space-y-8">
+              {/* Channel selector — drives both poster styling hints and AI caption tone */}
+              <section>
+                <h2 className="text-sm font-semibold uppercase tracking-wider text-neutral-500 mb-3">
+                  Where will you post this?
+                </h2>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                  {CHANNEL_OPTIONS.map((opt) => {
+                    const active = channel === opt.value;
+                    return (
+                      <button
+                        key={opt.value}
+                        type="button"
+                        onClick={() => setChannel(opt.value)}
+                        className={`rounded-lg border px-3 py-2 text-left transition-colors ${
+                          active
+                            ? "border-neutral-900 dark:border-white bg-neutral-100 dark:bg-neutral-800"
+                            : "border-neutral-300 dark:border-neutral-700 hover:border-neutral-400 dark:hover:border-neutral-500"
+                        }`}
+                      >
+                        <span className="block text-sm font-medium">{opt.label}</span>
+                        <span className="block text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">
+                          {opt.hint}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+                <p className="mt-2 text-xs text-neutral-400">
+                  We&apos;ll style the AI-written caption to match this channel.
+                </p>
+              </section>
+
               {/* Photos */}
               <section>
                 <h2 className="text-sm font-semibold uppercase tracking-wider text-neutral-500 mb-3">
@@ -485,7 +541,7 @@ export default function CreatePage() {
                   </h2>
                   <button
                     type="button"
-                    onClick={handleSuggest}
+                    onClick={fetchCaption}
                     disabled={captionState.status === "loading" || pickedTemplates.length === 0}
                     className="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-colors disabled:opacity-50"
                   >
@@ -526,30 +582,6 @@ export default function CreatePage() {
                   <p className="mt-2 text-xs text-red-500">{captionState.message}</p>
                 )}
               </section>
-
-              {/* Platform Caption */}
-              {captionState.status === "done" && (
-                <section>
-                  <h2 className="text-sm font-semibold uppercase tracking-wider text-neutral-500 mb-3">
-                    Platform Caption
-                  </h2>
-                  <div className="rounded-lg border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-900 p-3">
-                    <p className="text-sm text-neutral-700 dark:text-neutral-300 leading-relaxed">
-                      {captionState.caption}
-                    </p>
-                    <button
-                      type="button"
-                      onClick={handleCopyCaption}
-                      className="mt-2 text-xs text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300 transition-colors"
-                    >
-                      {captionCopied ? "✓ Copied!" : "Copy caption"}
-                    </button>
-                  </div>
-                  <p className="text-xs text-neutral-400 mt-1">
-                    Copy and paste this when you publish your post.
-                  </p>
-                </section>
-              )}
 
               {/* Generate button */}
               <div className="flex gap-3 items-center">
@@ -644,6 +676,49 @@ export default function CreatePage() {
                     {downloadError && (
                       <p className="text-xs text-red-500 text-center">{downloadError}</p>
                     )}
+
+                    {/* Platform Caption — channel-styled, auto-generated after previews succeed */}
+                    <div className="mt-4">
+                      <div className="flex items-center justify-between mb-2">
+                        <h3 className="text-xs font-semibold uppercase tracking-wider text-neutral-500">
+                          Platform Caption
+                        </h3>
+                        <span className="text-[10px] text-neutral-400">
+                          for {CHANNEL_OPTIONS.find((o) => o.value === channel)?.label}
+                        </span>
+                      </div>
+                      {captionState.status === "loading" && (
+                        <div className="rounded-lg border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-900 p-3 flex items-center gap-2 text-xs text-neutral-400">
+                          <SpinnerIcon size={12} /> Writing caption…
+                        </div>
+                      )}
+                      {captionState.status === "done" && (
+                        <div className="rounded-lg border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-900 p-3">
+                          <p className="text-sm text-neutral-700 dark:text-neutral-300 leading-relaxed whitespace-pre-line">
+                            {captionState.caption}
+                          </p>
+                          <div className="flex items-center justify-between mt-2">
+                            <button
+                              type="button"
+                              onClick={handleCopyCaption}
+                              className="text-xs text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300 transition-colors"
+                            >
+                              {captionCopied ? "✓ Copied!" : "Copy caption"}
+                            </button>
+                            <button
+                              type="button"
+                              onClick={fetchCaption}
+                              className="text-xs text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300 transition-colors"
+                            >
+                              ↻ Rewrite
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                      {captionState.status === "error" && (
+                        <p className="text-xs text-red-500">{captionState.message}</p>
+                      )}
+                    </div>
                   </motion.div>
                 ) : generateState.status === "generating" ? (
                   <motion.div

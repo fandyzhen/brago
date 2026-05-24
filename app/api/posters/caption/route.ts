@@ -77,10 +77,39 @@ function stubResponse(input: CaptionRequest): CaptionResponse {
     `${input.businessName ?? "We"} ${v[1]}`.slice(0, 36),
     `Fresh Results in ${input.serviceArea ?? "Your Area"}`.slice(0, 36),
   ];
-  const captionBase = input.description
-    ? `${input.description} — call us for a free quote!`
-    : `${input.businessName ?? "Our crew"} just wrapped up another local job — call for a free quote!`;
-  return { headlines, caption: captionBase.slice(0, 220) };
+
+  // Channel-specific caption flavor — stub mimics what a real person would post
+  // on each platform until the LLM is wired up.
+  const business = input.businessName ?? "Our crew";
+  const area = input.serviceArea ?? "the neighborhood";
+  const work = input.description ?? "another local job";
+  const industryNoun =
+    industryKey === "auto_detailing" ? "detail" : "pressure washing";
+
+  let caption: string;
+  switch (input.channel) {
+    case "instagram":
+      caption =
+        `✨ ${work}. ${business} brought the shine back. ` +
+        `Swipe to see the transformation 👀 ` +
+        `#${industryKey === "auto_detailing" ? "AutoDetailing" : "PressureWashing"} ` +
+        `#BeforeAndAfter #${area.replace(/[^A-Za-z0-9]/g, "")}`;
+      break;
+    case "facebook_nextdoor":
+      caption =
+        `Just wrapped up ${work.toLowerCase()} over here in ${area}. ` +
+        `Wild what a couple hours of ${industryNoun} can do — figured the neighbors might want a peek. ` +
+        `If yours needs the same treatment, you know where to find us 👋`;
+      break;
+    case "google_business_profile":
+    default:
+      caption =
+        `${business} recently completed ${work} in ${area}. ` +
+        `Professional ${industryNoun} done right the first time. ` +
+        `Call us today for a free quote.`;
+      break;
+  }
+  return { headlines, caption: caption.slice(0, 280) };
 }
 
 function parseResult(content: string): CaptionResponse {
