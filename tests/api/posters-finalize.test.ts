@@ -35,7 +35,6 @@ vi.mock("satori", () => ({ default: vi.fn(async () => "<svg/>") }));
 vi.mock("sharp", () => ({
   default: () => ({
     png: () => ({ toBuffer: async () => Buffer.from("FULLHIRES") }),
-    resize: () => ({ png: () => ({ toBuffer: async () => Buffer.from("FULLHIRES") }) }),
   }),
 }));
 vi.mock("@/lib/server/watermark", () => ({ applyWatermark: vi.fn(async (b: Buffer) => b) }));
@@ -185,5 +184,43 @@ describe("/api/posters/finalize", () => {
     expect(entry?.usedIndices.has(0)).toBe(true);
     expect(entry?.usedIndices.has(2)).toBe(true);
     expect(entry?.usedIndices.has(1)).toBe(false);
+  });
+
+  it("returns 403 when batch belongs to a different user", async () => {
+    // Seed a batch then mutate its userId so the requester (user_1) is not the owner.
+    setBatch("b_other", {
+      userId: "user_2",
+      beforeDataUrl: "data:image/png;base64,A",
+      afterDataUrl: "data:image/png;base64,B",
+      headline: "x",
+      brandFields: { isLicensed: false, isInsured: false },
+      items: [{ templateId: "t1", name: "T1", thumbnailDataUrl: "data:image/png;base64,T" }],
+    });
+    const res = await POST(req({ batchId: "b_other", index: 0 }));
+    expect(res.status).toBe(403);
+    expect(deductCreditsMock).not.toHaveBeenCalled();
+    expect(postInsertMock).not.toHaveBeenCalled();
+  });
+
+  it("flag=true: returns 500 when deductCredits unexpectedly fails", async () => {
+    process.env.ENABLE_AI_FINALIZE = "true";
+    deductCreditsMock.mockResolvedValue({ success: false, remainingCredits: 100 });
+    seedBatch();
+    const res = await POST(req({ batchId: "b1", index: 0 }));
+    expect(res.status).toBe(500);
+    expect(postInsertMock).not.toHaveBeenCalled();
+    expect(refundCreditsMock).not.toHaveBeenCalled();
+  });
+
+  it("flag=true: refunds credits when render throws after charging", async () => {
+    process.env.ENABLE_AI_FINALIZE = "true";
+    const satori = (await import("satori")).default as unknown as ReturnType<typeof vi.fn>;
+    (satori as ReturnType<typeof vi.fn>).mockRejectedValueOnce(new Error("satori boom"));
+    seedBatch();
+    const res = await POST(req({ batchId: "b1", index: 0 }));
+    expect(res.status).toBe(500);
+    expect(deductCreditsMock).toHaveBeenCalledWith("user_1", 10, "poster_ai_finalize");
+    expect(refundCreditsMock).toHaveBeenCalledWith("user_1", 10, "poster_ai_finalize_refund");
+    expect(postInsertMock).not.toHaveBeenCalled();
   });
 });
