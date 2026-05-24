@@ -27,13 +27,13 @@ export default function RefundPage() {
         <h1 className="text-4xl font-bold mb-8">Refund Policy</h1>
         
         <p className="text-muted-foreground mb-8">
-          Effective Date: [Date]
+          Effective Date: May 25, 2026
         </p>
 
         <section className="mb-8">
           <h2 className="text-2xl font-semibold mb-4">1. Overview</h2>
           <p>
-            At [Your Company Name], we strive to ensure customer satisfaction with our products and services. This Refund Policy outlines the conditions under which you may request a refund and the process for doing so.
+            At Brago, we strive to ensure customer satisfaction with our products and services. This Refund Policy outlines the conditions under which you may request a refund and the process for doing so.
           </p>
           <p>
             We believe in the quality of our service and want you to be completely satisfied with your purchase. If you're not satisfied, we're here to help.
@@ -101,7 +101,7 @@ export default function RefundPage() {
           
           <h3 className="text-xl font-semibold mb-3">Step 1: Contact Support</h3>
           <p>
-            Send an email to [Support Email] with the following information:
+            Send an email to support@brago.ai with the following information:
           </p>
           <ul className="list-disc pl-6 space-y-2">
             <li>Your account email address</li>
@@ -272,11 +272,11 @@ export default function RefundPage() {
             For refund requests and questions about this policy:
           </p>
           <ul className="list-none space-y-2 mt-4">
-            <li><strong>Support Email:</strong> [Support Email]</li>
-            <li><strong>Billing Disputes:</strong> [Billing Email]</li>
+            <li><strong>Support Email:</strong> support@brago.ai</li>
+            <li><strong>Billing Disputes:</strong> billing@brago.ai</li>
             <li><strong>Response Time:</strong> 1-2 business days</li>
-            <li><strong>Business Hours:</strong> [Your Business Hours]</li>
-            <li><strong>Website:</strong> [Your Website]</li>
+            <li><strong>Business Hours:</strong> Monday–Friday, 9:00–18:00 (UTC)</li>
+            <li><strong>Website:</strong> https://brago.ai</li>
           </ul>
           
           <p className="mt-6 p-4 bg-primary/10 rounded-lg">

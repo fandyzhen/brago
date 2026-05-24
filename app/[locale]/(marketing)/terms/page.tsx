@@ -27,13 +27,13 @@ export default function TermsPage() {
         <h1 className="text-4xl font-bold mb-8">Terms of Service</h1>
         
         <p className="text-muted-foreground mb-8">
-          Effective Date: [Date]
+          Effective Date: May 25, 2026
         </p>
 
         <section className="mb-8">
           <h2 className="text-2xl font-semibold mb-4">1. Introduction</h2>
           <p>
-            Welcome to [Your Company Name] ("[Company]", "we", "our", or "us"). These Terms of Service ("Terms") govern your use of our website and services (collectively, the "Service") located at [Your Domain].
+            Welcome to Brago ("Brago", "we", "our", or "us"). These Terms of Service ("Terms") govern your use of our website and services (collectively, the "Service") located at brago.ai.
           </p>
           <p>
             By accessing or using our Service, you agree to be bound by these Terms. If you disagree with any part of these terms, then you may not access the Service.
@@ -43,13 +43,13 @@ export default function TermsPage() {
         <section className="mb-8">
           <h2 className="text-2xl font-semibold mb-4">2. Service Description</h2>
           <p>
-            [Your Company Name] provides [describe your service/product]. Our Service allows you to:
+            Brago provides an AI-assisted poster generator for local home-services businesses (pressure washing, auto detailing, etc.) that turns before/after photos into ready-to-post marketing images. Our Service allows you to:
           </p>
           <ul className="list-disc pl-6 space-y-2">
-            <li>[Feature/capability 1]</li>
-            <li>[Feature/capability 2]</li>
-            <li>[Feature/capability 3]</li>
-            <li>[Additional features as needed]</li>
+            <li>Generate professional before/after marketing posters from your photos</li>
+            <li>AI-styled captions and headlines for Google Business Profile, Facebook/Nextdoor and Instagram</li>
+            <li>Save brand details (business name, service area, phone) for reuse across posts</li>
+            <li>Track and revisit your past posts</li>
           </ul>
         </section>
 
@@ -90,7 +90,7 @@ export default function TermsPage() {
         <section className="mb-8">
           <h2 className="text-2xl font-semibold mb-4">5. Intellectual Property Rights</h2>
           <p>
-            The Service and its original content, features, and functionality are and will remain the exclusive property of [Your Company Name] and its licensors. The Service is protected by copyright, trademark, and other laws. Our trademarks and trade dress may not be used in connection with any product or service without our prior written consent.
+            The Service and its original content, features, and functionality are and will remain the exclusive property of Brago and its licensors. The Service is protected by copyright, trademark, and other laws. Our trademarks and trade dress may not be used in connection with any product or service without our prior written consent.
           </p>
           <p className="mt-4">
             You retain ownership of any content you submit to the Service. By submitting content, you grant us a worldwide, non-exclusive, royalty-free license to use, reproduce, modify, and distribute your content in connection with operating and providing the Service.
@@ -116,14 +116,14 @@ export default function TermsPage() {
             THE SERVICE IS PROVIDED ON AN "AS IS" AND "AS AVAILABLE" BASIS. WE DISCLAIM ALL WARRANTIES, WHETHER EXPRESS OR IMPLIED, INCLUDING THE IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NON-INFRINGEMENT.
           </p>
           <p className="mt-4">
-            IN NO EVENT SHALL [YOUR COMPANY NAME], ITS DIRECTORS, EMPLOYEES, PARTNERS, AGENTS, OR AFFILIATES BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES, INCLUDING WITHOUT LIMITATION, LOSS OF PROFITS, DATA, USE, GOODWILL, OR OTHER INTANGIBLE LOSSES.
+            IN NO EVENT SHALL BRAGO, ITS DIRECTORS, EMPLOYEES, PARTNERS, AGENTS, OR AFFILIATES BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES, INCLUDING WITHOUT LIMITATION, LOSS OF PROFITS, DATA, USE, GOODWILL, OR OTHER INTANGIBLE LOSSES.
           </p>
         </section>
 
         <section className="mb-8">
           <h2 className="text-2xl font-semibold mb-4">8. Indemnification</h2>
           <p>
-            You agree to defend, indemnify, and hold harmless [Your Company Name] and its affiliates from and against any claims, liabilities, damages, judgments, awards, losses, costs, expenses, or fees arising out of or relating to your violation of these Terms or your use of the Service.
+            You agree to defend, indemnify, and hold harmless Brago and its affiliates from and against any claims, liabilities, damages, judgments, awards, losses, costs, expenses, or fees arising out of or relating to your violation of these Terms or your use of the Service.
           </p>
         </section>
 
@@ -154,7 +154,7 @@ export default function TermsPage() {
         <section className="mb-8">
           <h2 className="text-2xl font-semibold mb-4">12. Governing Law</h2>
           <p>
-            These Terms shall be governed and construed in accordance with the laws of [Your Jurisdiction], without regard to its conflict of law provisions. Any legal action or proceeding arising under these Terms will be brought exclusively in courts located in [Your Jurisdiction].
+            These Terms shall be governed and construed in accordance with the laws of the State of Delaware, United States, without regard to its conflict of law provisions. Any legal action or proceeding arising under these Terms will be brought exclusively in courts located in the State of Delaware, United States.
           </p>
         </section>
 
@@ -164,9 +164,9 @@ export default function TermsPage() {
             If you have any questions about these Terms, please contact us at:
           </p>
           <ul className="list-none space-y-2 mt-4">
-            <li>Email: [Your Email]</li>
-            <li>Website: [Your Website]</li>
-            <li>Address: [Your Address]</li>
+            <li>Email: contact@brago.ai</li>
+            <li>Website: https://brago.ai</li>
+            <li>Address: Available on request via support@brago.ai</li>
           </ul>
         </section>
       </div>

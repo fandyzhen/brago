@@ -27,13 +27,13 @@ export default function PrivacyPage() {
         <h1 className="text-4xl font-bold mb-8">Privacy Policy</h1>
         
         <p className="text-muted-foreground mb-8">
-          Effective Date: [Date]
+          Effective Date: May 25, 2026
         </p>
 
         <section className="mb-8">
           <h2 className="text-2xl font-semibold mb-4">1. Introduction</h2>
           <p>
-            [Your Company Name] ("[Company]", "we", "our", or "us") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our website and use our services.
+            Brago ("Brago", "we", "our", or "us") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our website and use our services.
           </p>
           <p>
             Please read this privacy policy carefully. If you do not agree with the terms of this privacy policy, please do not access the site.
@@ -241,13 +241,13 @@ export default function PrivacyPage() {
             If you have any questions or concerns about this Privacy Policy or our data practices, please contact us at:
           </p>
           <ul className="list-none space-y-2 mt-4">
-            <li>Email: [Privacy Email]</li>
-            <li>Support: [Support Email]</li>
-            <li>Website: [Your Website]</li>
-            <li>Address: [Your Address]</li>
+            <li>Email: privacy@brago.ai</li>
+            <li>Support: support@brago.ai</li>
+            <li>Website: https://brago.ai</li>
+            <li>Address: Available on request via support@brago.ai</li>
           </ul>
           <p className="mt-4">
-            For data protection inquiries, you may also contact our Data Protection Officer at: [DPO Email]
+            For data protection inquiries, you may also contact our Data Protection Officer at: dpo@brago.ai
           </p>
         </section>
       </div>

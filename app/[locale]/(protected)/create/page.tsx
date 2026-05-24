@@ -3,6 +3,7 @@
 /* eslint-disable @next/next/no-img-element */
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useLocale } from "next-intl";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { Background } from "@/components/background";
@@ -199,6 +200,7 @@ async function readImageOrientation(file: File): Promise<ImageOrientation> {
 export default function CreatePage() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const locale = useLocale();
   const initHeadline = decodeURIComponent(searchParams.get("headline") ?? "");
 
   const [brandGate, setBrandGate] = useState<BrandGateState>({ status: "loading" });
@@ -690,7 +692,20 @@ export default function CreatePage() {
                       </button>
                     </div>
                     {downloadError && (
-                      <p className="text-xs text-red-500 text-center">{downloadError}</p>
+                      <p className="text-xs text-red-500 text-center">
+                        {downloadError}
+                        {downloadError.toLowerCase().includes("credit") && (
+                          <>
+                            {" "}
+                            <Link
+                              href={`/${locale}/pricing`}
+                              className="underline font-medium hover:text-red-700 dark:hover:text-red-300"
+                            >
+                              Top up →
+                            </Link>
+                          </>
+                        )}
+                      </p>
                     )}
 
                     {/* Platform Caption — channel-styled, auto-generated after previews succeed */}
