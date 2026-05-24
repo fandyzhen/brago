@@ -26,14 +26,23 @@ type BrandProfile = {
   googleReviewCount?: number | null;
 };
 
-type PreviewItem =
-  | { templateId: string; ok: true; dataUrl: string; name: string }
-  | { templateId: string; ok: false; error: string };
+type Thumbnail = {
+  templateId: string;
+  name: string;
+  thumbnailDataUrl: string;
+};
+
+type PreviewBatch = {
+  batchId: string;
+  thumbnails: Thumbnail[];
+  aiFinalizeEnabled: boolean;
+  expiresAt: number;
+};
 
 type GenerateState =
   | { status: "idle" }
   | { status: "generating" }
-  | { status: "done"; previews: PreviewItem[]; selectedIndex: number }
+  | { status: "done"; batch: PreviewBatch; selectedIndex: number }
   | { status: "error"; message: string };
 
 type CaptionSuggestState =
@@ -60,7 +69,6 @@ function PhotoDropZone({
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [dragging, setDragging] = useState(false);
-  // 派生 URL（每次 file 变化用 useMemo 重算），useEffect 只负责 revoke 旧 URL
   const previewUrl = useMemo(() => (file ? URL.createObjectURL(file) : null), [file]);
   useEffect(() => {
     if (!previewUrl) return;
@@ -178,12 +186,16 @@ export default function CreatePage() {
   const [afterFile, setAfterFile] = useState<File | null>(null);
   const [orientation, setOrientation] = useState<ImageOrientation | null>(null);
   const [pickedTemplates, setPickedTemplates] = useState<BragoTemplateMeta[]>([]);
+  const [description, setDescription] = useState("");
   const [headline, setHeadline] = useState(initHeadline);
   const [generateState, setGenerateState] = useState<GenerateState>({ status: "idle" });
   const [captionState, setCaptionState] = useState<CaptionSuggestState>({ status: "idle" });
   const [captionCopied, setCaptionCopied] = useState(false);
+  const [downloadedIndices, setDownloadedIndices] = useState<Set<number>>(new Set());
+  const [downloading, setDownloading] = useState(false);
+  const [downloadError, setDownloadError] = useState<string | null>(null);
 
-  // ── Brand 门槛：首次进入若 brand profile 没填 businessName，强制跳填表 ─────
+  // ── Brand 门槛 ────────────────────────────────────────────────────────────
   useEffect(() => {
     let cancelled = false;
     fetch("/api/brand-profile")
@@ -200,7 +212,6 @@ export default function CreatePage() {
         setBrandGate({ status: "ready", brand: bp! });
       })
       .catch(() => {
-        // 网络失败 → 进入但不带 brand info，让用户至少能用
         if (!cancelled) setBrandGate({ status: "ready", brand: {} });
       });
     return () => {
@@ -209,7 +220,6 @@ export default function CreatePage() {
   }, [router]);
 
   // ── 图片就位后：测宽高比 + 选 3 个模板 ────────────────────────────────────
-  // 初始 state 都是 null/[]，这里不需要在 effect 里再显式清零；新值会覆盖旧值。
   useEffect(() => {
     if (!beforeFile || !afterFile) return;
     let cancelled = false;
@@ -238,17 +248,22 @@ export default function CreatePage() {
     if (!orientation) return;
     setPickedTemplates(pickPreviewTemplates(orientation, 3));
     setGenerateState({ status: "idle" });
+    setDownloadedIndices(new Set());
+    setDownloadError(null);
   };
 
   const handleGenerate = async () => {
     if (!beforeFile || !afterFile || pickedTemplates.length === 0) return;
     setGenerateState({ status: "generating" });
+    setDownloadedIndices(new Set());
+    setDownloadError(null);
     const brand = brandGate.status === "ready" ? brandGate.brand : {};
     try {
       const fd = new FormData();
       fd.append("beforeImage", beforeFile);
       fd.append("afterImage", afterFile);
       fd.append("headline", headline.trim().slice(0, 36));
+      if (description.trim()) fd.append("description", description.trim().slice(0, 80));
       fd.append("templateIds", JSON.stringify(pickedTemplates.map((t) => t.id)));
       if (brand.businessName) fd.append("businessName", brand.businessName);
       if (brand.phone) fd.append("phone", brand.phone);
@@ -262,26 +277,15 @@ export default function CreatePage() {
       const res = await fetch("/api/posters/preview-batch", { method: "POST", body: fd });
       if (!res.ok) {
         const err = await res.json().catch(() => ({ error: "Unknown error" }));
-        const msg =
-          res.status === 402
-            ? `Insufficient credits — need ${(err as { required?: number }).required ?? 10} credits`
-            : (err.error ?? "Render failed");
-        setGenerateState({ status: "error", message: msg });
+        setGenerateState({ status: "error", message: err.error ?? "Render failed" });
         return;
       }
-      const data = (await res.json()) as { previews: PreviewItem[] };
-      const okCount = data.previews.filter((p) => p.ok).length;
-      if (okCount === 0) {
+      const data = (await res.json()) as PreviewBatch;
+      if (!data.thumbnails || data.thumbnails.length === 0) {
         setGenerateState({ status: "error", message: "Render failed for all templates" });
         return;
       }
-      // 默认选第一张成功的
-      const firstOk = data.previews.findIndex((p) => p.ok);
-      setGenerateState({
-        status: "done",
-        previews: data.previews,
-        selectedIndex: firstOk >= 0 ? firstOk : 0,
-      });
+      setGenerateState({ status: "done", batch: data, selectedIndex: 0 });
     } catch {
       setGenerateState({ status: "error", message: "Network error, please try again." });
     }
@@ -290,7 +294,6 @@ export default function CreatePage() {
   const handleSuggest = async () => {
     setCaptionState({ status: "loading" });
     try {
-      // 用第一个推荐模板的 industry/channel 当 caption 风格依据
       const first = pickedTemplates[0];
       const res = await fetch("/api/posters/caption", {
         method: "POST",
@@ -298,6 +301,7 @@ export default function CreatePage() {
         body: JSON.stringify({
           industry: first?.industry,
           channel: first?.channel,
+          description: description.trim() || undefined,
           businessName: brandGate.status === "ready" ? brandGate.brand.businessName : undefined,
           serviceArea: brandGate.status === "ready" ? brandGate.brand.serviceArea : undefined,
         }),
@@ -324,18 +328,60 @@ export default function CreatePage() {
     }
   };
 
-  const handleDownload = () => {
-    if (generateState.status !== "done") return;
-    const item = generateState.previews[generateState.selectedIndex];
-    if (!item || !item.ok) return;
-    const a = document.createElement("a");
-    a.href = item.dataUrl;
-    a.download = `brago-post-${Date.now()}.png`;
-    a.click();
+  const handleDownload = async () => {
+    if (generateState.status !== "done" || downloading) return;
+    const { batch, selectedIndex } = generateState;
+    const isNewIndex = !downloadedIndices.has(selectedIndex);
+    if (batch.aiFinalizeEnabled && isNewIndex) {
+      if (!window.confirm("Each new layout costs 10 credits (AI runs again). Continue?")) {
+        return;
+      }
+    }
+    setDownloading(true);
+    setDownloadError(null);
+    try {
+      const res = await fetch("/api/posters/finalize", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ batchId: batch.batchId, index: selectedIndex }),
+      });
+      if (res.status === 410) {
+        setDownloadError("Preview expired, please regenerate.");
+        setGenerateState({ status: "idle" });
+        return;
+      }
+      if (res.status === 402) {
+        setDownloadError("Insufficient credits — top up to download.");
+        return;
+      }
+      if (!res.ok) {
+        const d = await res.json().catch(() => ({}));
+        setDownloadError(d.error ?? "Download failed");
+        return;
+      }
+      const data = (await res.json()) as { url: string; charged: number };
+      const a = document.createElement("a");
+      a.href = data.url;
+      a.download = `${batch.thumbnails[selectedIndex].templateId}-${Date.now()}.png`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setDownloadedIndices((prev) => {
+        const next = new Set(prev);
+        next.add(selectedIndex);
+        return next;
+      });
+    } catch {
+      setDownloadError("Network error, please try again.");
+    } finally {
+      setDownloading(false);
+    }
   };
 
   const handleReset = () => {
     setGenerateState({ status: "idle" });
+    setDownloadedIndices(new Set());
+    setDownloadError(null);
   };
 
   // ── Brand gate loading / redirect placeholder ────────────────────────────
@@ -353,8 +399,12 @@ export default function CreatePage() {
   }
 
   const brand = brandGate.brand;
-  const selectedPreview =
-    generateState.status === "done" ? generateState.previews[generateState.selectedIndex] : null;
+  const downloadLabel = (() => {
+    if (generateState.status !== "done") return "Download";
+    const { batch, selectedIndex } = generateState;
+    if (downloadedIndices.has(selectedIndex)) return "Download again";
+    return batch.aiFinalizeEnabled ? "Download · 10 credits" : "Download";
+  })();
 
   return (
     <div className="relative min-h-screen">
@@ -363,7 +413,7 @@ export default function CreatePage() {
         <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
           <h1 className="text-2xl font-bold mb-1">Create Post</h1>
           <p className="text-sm text-neutral-500 dark:text-neutral-400 mb-2">
-            Upload your before &amp; after photos, write one line, and we&apos;ll generate 3 templates for you to choose.
+            Upload before &amp; after photos, describe the job, and we&apos;ll generate 3 layouts for you.
           </p>
 
           {/* Brand info bar */}
@@ -411,11 +461,27 @@ export default function CreatePage() {
                 )}
               </section>
 
+              {/* Describe the work */}
+              <section>
+                <label className="block text-sm font-semibold uppercase tracking-wider text-neutral-500 mb-3">
+                  Describe the work <span className="text-neutral-400 normal-case font-normal">(≤80 char, helps AI suggest a headline)</span>
+                </label>
+                <textarea
+                  maxLength={80}
+                  rows={2}
+                  placeholder="e.g. Cleaned a stubborn driveway in 3 hours, all stains gone"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  className="w-full rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-neutral-400 resize-none"
+                />
+                <p className="text-xs text-neutral-400 mt-1">{description.length}/80 characters</p>
+              </section>
+
               {/* Headline */}
               <section>
                 <div className="flex items-center justify-between mb-3">
                   <h2 className="text-sm font-semibold uppercase tracking-wider text-neutral-500">
-                    Headline (one line)
+                    Headline on poster
                   </h2>
                   <button
                     type="button"
@@ -493,7 +559,7 @@ export default function CreatePage() {
                       <SpinnerIcon /> Generating 3 previews…
                     </span>
                   ) : (
-                    "Generate 3 previews · 10 credits"
+                    "Generate 3 previews"
                   )}
                 </Button>
                 {generateState.status === "error" && (
@@ -509,7 +575,7 @@ export default function CreatePage() {
               </h2>
 
               <AnimatePresence mode="wait">
-                {generateState.status === "done" && selectedPreview?.ok ? (
+                {generateState.status === "done" ? (
                   <motion.div
                     key="preview"
                     initial={{ opacity: 0, scale: 0.97 }}
@@ -518,51 +584,55 @@ export default function CreatePage() {
                     transition={{ duration: 0.25 }}
                     className="space-y-3"
                   >
-                    {/* 主预览图 */}
+                    {/* 主预览图（缩略图等比放大显示） */}
                     <img
-                      src={selectedPreview.dataUrl}
+                      src={generateState.batch.thumbnails[generateState.selectedIndex].thumbnailDataUrl}
                       alt={`Preview ${generateState.selectedIndex + 1}`}
                       className="w-full rounded-xl border border-neutral-200 dark:border-neutral-800 shadow-lg"
                     />
 
                     {/* 3 张缩略图 */}
                     <div className="grid grid-cols-3 gap-2">
-                      {generateState.previews.map((p, i) => (
+                      {generateState.batch.thumbnails.map((t, i) => (
                         <button
-                          key={i}
+                          key={t.templateId}
                           type="button"
                           onClick={() =>
-                            p.ok &&
                             setGenerateState((prev) =>
                               prev.status === "done" ? { ...prev, selectedIndex: i } : prev
                             )
                           }
-                          disabled={!p.ok}
                           className={`relative rounded-lg overflow-hidden border-2 transition-all ${
                             i === generateState.selectedIndex
                               ? "border-neutral-900 dark:border-white"
                               : "border-transparent hover:border-neutral-400"
-                          } ${!p.ok ? "opacity-40 cursor-not-allowed" : ""}`}
-                          title={p.ok ? p.name : p.error}
+                          }`}
+                          title={t.name}
                         >
-                          {p.ok ? (
-                            <img src={p.dataUrl} alt={p.name} className="w-full aspect-square object-cover" />
-                          ) : (
-                            <div className="w-full aspect-square bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center text-[10px] text-neutral-500 p-1 text-center">
-                              {p.error}
-                            </div>
+                          <img src={t.thumbnailDataUrl} alt={t.name} className="w-full aspect-square object-cover" />
+                          {downloadedIndices.has(i) && (
+                            <span className="absolute top-1 right-1 text-[10px] bg-green-500 text-white px-1 rounded">
+                              ✓
+                            </span>
                           )}
                         </button>
                       ))}
                     </div>
 
                     <p className="text-xs text-neutral-400 text-center">
-                      Click a thumbnail to switch · template: <strong>{selectedPreview.name}</strong>
+                      Click a thumbnail to switch · template:{" "}
+                      <strong>{generateState.batch.thumbnails[generateState.selectedIndex].name}</strong>
                     </p>
 
                     <div className="flex gap-2">
-                      <Button onClick={handleDownload} className="flex-1">
-                        Download this PNG
+                      <Button onClick={handleDownload} disabled={downloading} className="flex-1">
+                        {downloading ? (
+                          <span className="flex items-center gap-2">
+                            <SpinnerIcon /> Preparing…
+                          </span>
+                        ) : (
+                          downloadLabel
+                        )}
                       </Button>
                       <button
                         onClick={handleReset}
@@ -571,6 +641,9 @@ export default function CreatePage() {
                         New
                       </button>
                     </div>
+                    {downloadError && (
+                      <p className="text-xs text-red-500 text-center">{downloadError}</p>
+                    )}
                   </motion.div>
                 ) : generateState.status === "generating" ? (
                   <motion.div
@@ -584,36 +657,6 @@ export default function CreatePage() {
                     <SpinnerIcon size={32} />
                     <p className="text-sm text-neutral-400 mt-3">Rendering 3 templates…</p>
                   </motion.div>
-                ) : pickedTemplates.length > 0 ? (
-                  <motion.div
-                    key="picked"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    className="space-y-3"
-                  >
-                    <p className="text-xs text-neutral-500">
-                      These templates will be rendered when you click Generate:
-                    </p>
-                    <div className="grid grid-cols-3 gap-2">
-                      {pickedTemplates.map((t) => (
-                        <div
-                          key={t.id}
-                          className="rounded-lg overflow-hidden border border-neutral-200 dark:border-neutral-700"
-                        >
-                          <img
-                            src={t.previewImage}
-                            alt={t.name}
-                            className="w-full aspect-square object-cover"
-                            loading="lazy"
-                          />
-                          <p className="text-[10px] text-neutral-500 text-center py-1 truncate px-1">
-                            {t.name}
-                          </p>
-                        </div>
-                      ))}
-                    </div>
-                  </motion.div>
                 ) : (
                   <motion.div
                     key="empty"
@@ -623,8 +666,10 @@ export default function CreatePage() {
                     className="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-neutral-200 dark:border-neutral-700 text-neutral-400 text-sm p-6 text-center"
                     style={{ aspectRatio: "1/1" }}
                   >
-                    <p>Upload before &amp; after photos</p>
-                    <p className="mt-1">to see template previews.</p>
+                    <p>Previews will appear here</p>
+                    <p className="mt-1 text-xs">
+                      Upload photos, write a headline, and click Generate.
+                    </p>
                   </motion.div>
                 )}
               </AnimatePresence>
