@@ -129,6 +129,8 @@
 - ✅ Create 流重构 v1（single-pair + 自动选 3 模板 + brand 强制跳转）
 - ✅ /settings/brand 支持 `?returnTo=/create`
 - ✅ 147/147 测试全过，lint 干净
+- ✅ Create 流二轮重构（task #38）：双输入 description+headline / 缩略图选 1 / finalize 端点 / `ENABLE_AI_FINALIZE` flag / cache 命中不重复扣 / 全程零积分直到 flag 翻
+- ✅ 178/178 测试全过，lint 干净（v2 重构后）
 
 ---
 
