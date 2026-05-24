@@ -297,11 +297,24 @@ export default function CreatePage() {
 
       const res = await fetch("/api/posters/preview-batch", { method: "POST", body: fd });
       if (!res.ok) {
-        const err = await res.json().catch(() => ({ error: "Unknown error" }));
-        // Surface the full error to the browser console so it's easy to copy/paste
-        // when debugging dev-mode render failures.
-        console.error("[create] preview-batch failed:", err);
-        setGenerateState({ status: "error", message: err.error ?? "Render failed" });
+        const err = (await res.json().catch(() => ({}))) as {
+          error?: string;
+          stack?: string;
+          allErrors?: string[];
+        };
+        // Expand the fields so DevTools shows the actual message instead of `{}`
+        // (Next.js dev overlay collapses generic objects).
+        console.error(
+          "[create] preview-batch failed —",
+          "status:", res.status,
+          "error:", err.error ?? "(no error field)",
+          "allErrors:", err.allErrors ?? [],
+          "stack:", err.stack ?? "(no stack)"
+        );
+        setGenerateState({
+          status: "error",
+          message: err.error ?? `Render failed (status ${res.status})`,
+        });
         return;
       }
       const data = (await res.json()) as PreviewBatch;

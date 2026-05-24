@@ -7,8 +7,6 @@ import { getRenderer } from "@/lib/server/poster-templates/registry";
 import { fileToDataUrl } from "@/lib/server/poster-templates/shared/image-utils";
 import type { RenderInput } from "@/lib/server/poster-templates/shared/types";
 import { getActiveSessionUser } from "@/lib/auth/session";
-import { getUserPlanKey } from "@/lib/credits";
-import { applyWatermark } from "@/lib/server/watermark";
 import { getTemplateById } from "@/lib/poster-templates/public-metadata";
 import { setBatch, type BatchItem } from "@/lib/server/poster-preview-cache";
 
@@ -116,9 +114,9 @@ export async function POST(request: Request): Promise<Response> {
       : undefined
     : undefined;
 
-  const userPlanKey = await getUserPlanKey(userId);
-  const isFreePlan = !userPlanKey || userPlanKey === "free";
-
+  // Thumbnails are intentionally un-watermarked: at 360px they are too small
+  // to be usable as final assets, and the watermark lives on the high-res
+  // download in /api/posters/finalize for free-plan users.
   const fonts = getFonts();
   const renderOne = async (entry: {
     id: string;
@@ -144,12 +142,11 @@ export async function POST(request: Request): Promise<Response> {
         .resize(THUMB_SIZE, THUMB_SIZE)
         .png({ compressionLevel: 6 })
         .toBuffer();
-      const finalBuffer = isFreePlan ? await applyWatermark(thumbBuffer) : thumbBuffer;
       return {
         thumb: {
           templateId: entry.id,
           name: entry.name,
-          thumbnailDataUrl: `data:image/png;base64,${finalBuffer.toString("base64")}`,
+          thumbnailDataUrl: `data:image/png;base64,${thumbBuffer.toString("base64")}`,
         },
         error: null,
         stack: undefined,
