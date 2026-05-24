@@ -1,10 +1,19 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 import { Background } from "@/components/background";
 import { Button } from "@/components/button";
 import { Container } from "@/components/container";
+
+// 仅允许跳回站内相对路径，避免开放重定向漏洞
+function safeReturnTo(raw: string | null): string | null {
+  if (!raw) return null;
+  if (!raw.startsWith("/")) return null;
+  if (raw.startsWith("//")) return null;
+  return raw;
+}
 
 type BrandProfile = {
   id?: string;
@@ -20,6 +29,10 @@ type BrandProfile = {
 type SaveState = { type: "success" | "error"; message: string } | null;
 
 export default function BrandSettingsPage() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const returnTo = safeReturnTo(searchParams.get("returnTo"));
+
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [saveState, setSaveState] = useState<SaveState>(null);
@@ -80,6 +93,11 @@ export default function BrandSettingsPage() {
 
       if (res.ok) {
         setSaveState({ type: "success", message: "Brand profile saved!" });
+        // 如果用户是从别处带 returnTo 跳来的，保存成功后自动跳回
+        if (returnTo) {
+          // 给用户 600ms 看到 "saved" toast 再跳
+          setTimeout(() => router.push(returnTo), 600);
+        }
       } else {
         const data = await res.json();
         setSaveState({ type: "error", message: data.error ?? "Save failed" });
@@ -94,7 +112,7 @@ export default function BrandSettingsPage() {
   return (
     <div className="relative min-h-screen">
       <Background />
-      <Container className="py-16">
+      <Container className="relative z-10 py-16">
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
@@ -103,7 +121,9 @@ export default function BrandSettingsPage() {
         >
           <h1 className="text-2xl font-bold mb-1">Brand Profile</h1>
           <p className="text-sm text-neutral-500 dark:text-neutral-400 mb-8">
-            This info appears on your generated social posts.
+            {returnTo
+              ? "Fill in your business name to continue. Phone and service area are optional but help your posts."
+              : "This info appears on your generated social posts."}
           </p>
 
           {loading ? (

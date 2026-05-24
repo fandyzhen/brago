@@ -430,3 +430,12 @@ starter_monthly: {
 - [Drizzle ORM 文档](https://orm.drizzle.team/)
 - [Next.js 文档](https://nextjs.org/docs)
 - [火山引擎 API 文档](https://www.volcengine.com/docs/82379)
+
+## 上线前检查清单（重要）
+
+**触发条件**：当用户说"准备上线"/"上线前检查"/"现在能上吗"/"check launch"/类似意图时，**必须**立刻读取 `docs/launch-checklist.md` 并逐项核对，告诉用户：
+1. 还有哪些代码 / 配置 / 集成没完成
+2. 哪些需要用户提供 API key 或第三方账号才能继续
+3. 哪些测试还没跑通
+
+发现新的"上线前 must-do"事项时，追加到 `docs/launch-checklist.md` 而不是只在对话里提一句。

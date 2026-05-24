@@ -3170,3 +3170,70 @@ EOF
 **Placeholder 扫描：** 已检查，全部代码块完整，无 "TBD / implement later"。
 
 **类型一致性：** `RenderInput.photoPairs` 在 types.ts、registry, render API、create 页、smoke test 中均使用相同类型 `PhotoPair[]`，字段名 `beforeImageDataUrl`/`afterImageDataUrl`/`areaLabel` 一致。`post` / `postImagePair` 表字段在 schema、render API、posts 页一致。
+
+---
+
+## 🚀 上线前 must-fix Checklist
+
+阶段 2 代码本身完整，但 `.env.local` / 部署环境必须做以下事情才能正常对外提供服务，否则会出现「用户注册了但永远收不到验证邮件」「webhook 不触发」等真实生产事故。
+
+### Email（**P0 — 不修注册系统瘫痪**）
+
+`.env.local` 当前是模板占位值（在本次 QA 中已用 SQL `UPDATE "user" SET email_verified=true` 临时绕过）：
+
+```bash
+# 必须改成真实值 —— 否则 sendVerificationEmail() 直接 401，注册流程卡在 /check-email
+RESEND_API_KEY=re_<在 https://resend.com/api-keys 创建>
+RESEND_FROM_EMAIL="Brago <noreply@<已在 Resend 验证的域名>>"
+
+# 推荐设置（lib/email.ts 在生产模式下要求 RESEND_VERIFIED_DOMAIN）
+RESEND_VERIFIED_DOMAIN=<你的已验证域名>
+RESEND_FROM_NAME=Brago
+```
+
+验证步骤：
+1. https://resend.com 注册账号 → Domains 加你的域名 → 按提示加 SPF / DKIM TXT
+2. 域名 Verified 后 → API Keys → Create
+3. 改 `.env.local` 三个值
+4. 重启 dev server，注册新邮箱 → 收件箱 30 秒内应收到验证邮件
+
+### Better Auth（**P0**）
+
+```bash
+# 生产环境必须改成真实域名（带 https://），否则 cookie/redirect 全错
+BETTER_AUTH_URL=https://你的生产域名
+NEXT_PUBLIC_APP_URL=https://你的生产域名
+```
+
+### Creem 支付（**P1 — 不修付费功能不可用，但免费流程能跑**）
+
+- Creem Dashboard → Webhooks 加 `https://你的生产域名/api/payments/creem/webhook`
+- 监听事件：`checkout.completed`、`subscription.paid`、`subscription.active`
+- `.env` 配 `CREEM_API_KEY` + `CREEM_WEBHOOK_SECRET`
+
+### Cron（**P1 — 不修年付订阅积分不会自动发放**）
+
+Vercel 部署的话用 `vercel.json` cron，或外部定时器每小时调：
+
+```bash
+curl -H "Authorization: Bearer $CRON_SECRET" \
+  https://你的生产域名/api/cron/subscription-grants
+```
+
+### 其它
+
+- `NEXT_PUBLIC_SHOW_SISTINE_DEMOS` 保持**不设**或 `false` —— `/demo/*` 会 404，符合 SPEC 0.1 #5
+- 生产环境可选：`NEXT_PUBLIC_POSTHOG_KEY`、`NEXT_PUBLIC_GOOGLE_ANALYTICS_ID`、`NEXT_PUBLIC_CLARITY_PROJECT_ID`
+- R2 存储原图（阶段 3 才用到）—— 阶段 2 可空着，`postImagePair.beforeImageUrl/afterImageUrl` 留 null 是预期
+
+### Checklist 勾选
+
+- [ ] Resend API key 真实、域名已 verified、`from` 用 verified 域名
+- [ ] 注册一个新邮箱 → 30 秒内收到验证邮件 → 点链接 → 自动登录
+- [ ] `BETTER_AUTH_URL` + `NEXT_PUBLIC_APP_URL` 改成生产 https 域名
+- [ ] Creem webhook URL 已在 Dashboard 注册
+- [ ] `CRON_SECRET` 配好 + Vercel/外部定时器已注册 `/api/cron/subscription-grants`
+- [ ] `NEXT_PUBLIC_SHOW_SISTINE_DEMOS` 未设
+- [ ] 数据库迁移已执行（`pnpm db:push` 或 `pnpm db:migrate`，含 0009_dashing_lester.sql）
+- [ ] 至少一个 admin 账号已建（`pnpm admin:setup` 或手动改 `user.role='admin'`）
+
