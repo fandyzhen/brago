@@ -143,9 +143,14 @@ function TemplateCard({
           : "border-neutral-200 dark:border-neutral-700 hover:border-neutral-400 dark:hover:border-neutral-500"
         }`}
     >
-      {/* Preview image placeholder */}
-      <div className="w-full bg-neutral-200 dark:bg-neutral-800 aspect-square flex items-center justify-center">
-        <span className="text-xs text-neutral-400">1080 × 1080</span>
+      {/* Preview image */}
+      <div className="w-full bg-neutral-200 dark:bg-neutral-800 aspect-square flex items-center justify-center overflow-hidden">
+        <img
+          src={template.previewImage}
+          alt={template.name}
+          className="w-full h-full object-cover"
+          loading="lazy"
+        />
       </div>
       <div className="px-3 py-2">
         <p className="text-xs font-medium truncate">{template.name}</p>
@@ -164,9 +169,10 @@ function TemplateCard({
 
 // ── Main Page ──────────────────────────────────────────────────────────────
 
+type PairFile = { before: File | null; after: File | null; label?: string };
+
 export default function CreatePage() {
-  const [beforeFile, setBeforeFile] = useState<File | null>(null);
-  const [afterFile, setAfterFile] = useState<File | null>(null);
+  const [pairs, setPairs] = useState<PairFile[]>([{ before: null, after: null }]);
   const searchParams = useSearchParams();
   const initTemplate =
     searchParams.get("templateId") ?? POSTER_TEMPLATES[0]?.id ?? "";
@@ -192,20 +198,43 @@ export default function CreatePage() {
 
   const filteredTemplates = POSTER_TEMPLATES.filter((t) => t.channel === selectedChannel);
 
+  const selectedMeta = POSTER_TEMPLATES.find((t) => t.id === selectedTemplate);
+  const isMultiArea = (selectedMeta?.layoutFamily ?? "split") === "collage";
+  const maxPairs = isMultiArea ? 4 : 1;
+
+  // Derive the effective pairs without mutating state in an effect —
+  // when the user picks a non-collage template after adding extra areas,
+  // we just ignore the trailing entries until they add another area.
+  const effectivePairs = pairs.slice(0, maxPairs);
+
   const canGenerate =
-    beforeFile && afterFile && selectedTemplate && headline.trim().length > 0;
+    effectivePairs.length > 0 &&
+    effectivePairs.every((p) => p.before && p.after) &&
+    selectedTemplate &&
+    headline.trim().length > 0;
 
   const handleGenerate = async () => {
-    if (!beforeFile || !afterFile || !selectedTemplate) return;
+    if (!selectedTemplate) return;
+    if (effectivePairs.some((p) => !p.before || !p.after)) return;
 
     setGenerateState({ status: "generating" });
 
     try {
       const fd = new FormData();
-      fd.append("beforeImage", beforeFile);
-      fd.append("afterImage", afterFile);
       fd.append("templateId", selectedTemplate);
       fd.append("headline", headline.trim().slice(0, 36));
+
+      if (isMultiArea) {
+        effectivePairs.forEach((p, i) => {
+          if (p.before) fd.append(`area${i + 1}_before`, p.before);
+          if (p.after) fd.append(`area${i + 1}_after`, p.after);
+          if (p.label) fd.append(`area${i + 1}_label`, p.label);
+        });
+      } else {
+        if (effectivePairs[0]?.before) fd.append("beforeImage", effectivePairs[0].before);
+        if (effectivePairs[0]?.after) fd.append("afterImage", effectivePairs[0].after);
+      }
+
       if (brand.businessName) fd.append("businessName", brand.businessName);
       if (brand.phone) fd.append("phone", brand.phone);
       if (brand.serviceArea) fd.append("serviceArea", brand.serviceArea);
@@ -229,6 +258,7 @@ export default function CreatePage() {
 
       const blob = await res.blob();
       const url = URL.createObjectURL(blob);
+      // eslint-disable-next-line react-hooks/purity -- Date.now is called inside an async event handler, not during render
       const filename = `brago-post-${Date.now()}.png`;
       setGenerateState({ status: "done", url, filename });
     } catch {
@@ -307,17 +337,83 @@ export default function CreatePage() {
                 <h2 className="text-sm font-semibold uppercase tracking-wider text-neutral-500 mb-3">
                   Photos
                 </h2>
-                <div className="grid grid-cols-2 gap-4">
-                  <PhotoDropZone
-                    label="Before"
-                    file={beforeFile}
-                    onFile={setBeforeFile}
-                  />
-                  <PhotoDropZone
-                    label="After"
-                    file={afterFile}
-                    onFile={setAfterFile}
-                  />
+
+                <div className="space-y-4">
+                  {effectivePairs.map((p, idx) => (
+                    <div key={idx} className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <p className="text-xs uppercase tracking-widest font-mono text-neutral-500">
+                          Area {idx + 1}
+                          {isMultiArea && p.label ? ` — ${p.label}` : ""}
+                        </p>
+                        {isMultiArea && pairs.length > 1 && (
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setPairs((prev) => prev.filter((_, i) => i !== idx))
+                            }
+                            className="text-xs text-neutral-400 hover:text-red-500"
+                          >
+                            Remove
+                          </button>
+                        )}
+                      </div>
+                      <div className="grid grid-cols-2 gap-4">
+                        <PhotoDropZone
+                          label="Before"
+                          file={p.before}
+                          onFile={(f) =>
+                            setPairs((prev) =>
+                              prev.map((x, i) => (i === idx ? { ...x, before: f } : x))
+                            )
+                          }
+                        />
+                        <PhotoDropZone
+                          label="After"
+                          file={p.after}
+                          onFile={(f) =>
+                            setPairs((prev) =>
+                              prev.map((x, i) => (i === idx ? { ...x, after: f } : x))
+                            )
+                          }
+                        />
+                      </div>
+                      {isMultiArea && (
+                        <input
+                          type="text"
+                          placeholder={`Area label (e.g. ${idx === 0 ? "Driveway" : idx === 1 ? "Patio" : "Siding"})`}
+                          value={p.label ?? ""}
+                          onChange={(e) =>
+                            setPairs((prev) =>
+                              prev.map((x, i) =>
+                                i === idx ? { ...x, label: e.target.value } : x
+                              )
+                            )
+                          }
+                          className="mt-1 w-full rounded border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 px-2 py-1 text-xs"
+                          maxLength={24}
+                        />
+                      )}
+                    </div>
+                  ))}
+
+                  {isMultiArea && pairs.length < 4 && (
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setPairs((prev) => [...prev, { before: null, after: null }])
+                      }
+                      className="w-full rounded-xl border-2 border-dashed border-neutral-200 dark:border-neutral-800 py-3 text-sm text-neutral-500 hover:border-neutral-400 hover:text-neutral-700 transition-colors"
+                    >
+                      + Add another area
+                    </button>
+                  )}
+
+                  {isMultiArea && pairs.length >= 4 && (
+                    <p className="text-xs text-neutral-400 text-center">
+                      Max 4 areas per collage. Need more? Create a carousel instead.
+                    </p>
+                  )}
                 </div>
               </section>
 

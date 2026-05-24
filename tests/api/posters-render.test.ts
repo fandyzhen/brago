@@ -170,14 +170,15 @@ describe("POST /api/posters/render — auth & credits", () => {
 
 // ── 新增：成功路径测试 ────────────────────────────────────────────
 describe("POST /api/posters/render — success path", () => {
-  it("returns 200 PNG, calls deductCredits and db.insert on success", async () => {
+  it("returns 200 PNG, calls deductCredits and writes post/pair/history rows on success", async () => {
     vi.mocked(uploadPosterToR2).mockResolvedValue("https://cdn.example.com/posters/user-123/abc.png");
 
     const res = await POST(makeRequest(makeFormData()));
     expect(res.status).toBe(200);
     expect(res.headers.get("Content-Type")).toBe("image/png");
     expect(deductCredits).toHaveBeenCalledWith("user-123", 10, "poster_generation");
-    expect(db.insert).toHaveBeenCalledOnce();
+    // Phase 2: route writes 3 tables — post, postImagePair, generationHistory
+    expect(db.insert).toHaveBeenCalledTimes(3);
   });
 
   it("still returns 200 PNG even when db.insert fails (degraded mode)", async () => {
@@ -189,12 +190,12 @@ describe("POST /api/posters/render — success path", () => {
     expect(res.headers.get("Content-Type")).toBe("image/png");
   });
 
-  it("calls deductCredits and db.insert even when R2 returns null (not configured)", async () => {
+  it("calls deductCredits and writes post/pair/history rows even when R2 returns null (not configured)", async () => {
     // uploadPosterToR2 returns null by default (from beforeEach) — R2 not configured
     const res = await POST(makeRequest(makeFormData()));
     expect(res.status).toBe(200);
     expect(deductCredits).toHaveBeenCalledWith("user-123", 10, "poster_generation");
-    expect(db.insert).toHaveBeenCalledOnce();
+    expect(db.insert).toHaveBeenCalledTimes(3);
   });
 
   it("returns 500 when satori throws", async () => {

@@ -1,4 +1,5 @@
 import type React from "react";
+import type { PhotoPair } from "./multi-area-types";
 
 export type RenderInput = {
   beforeImageDataUrl: string;  // "data:image/jpeg;base64,..."
@@ -12,6 +13,7 @@ export type RenderInput = {
   isInsured?: boolean;
   googleReviewCount?: number;
   projectNumber?: number;      // 用于 Project No. 系列模板
+  photoPairs?: PhotoPair[];
 };
 
 export type RenderFn = (input: RenderInput) => React.ReactElement;

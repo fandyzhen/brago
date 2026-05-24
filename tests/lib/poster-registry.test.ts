@@ -86,9 +86,19 @@ describe("poster template registry", () => {
     expect(typeof renderer).toBe("function");
   });
 
-  it("has 8 registered pressure washing templates in total", () => {
+  it("has 9 registered pressure washing templates in total (8 single-pair + 1 multi-area)", () => {
     const ids = getRegisteredTemplateIds();
     const pwTemplates = ids.filter((id) => id.startsWith("pressure_"));
-    expect(pwTemplates).toHaveLength(8);
+    expect(pwTemplates).toHaveLength(9);
+  });
+
+  it("contains the multi-area pressure washing template", () => {
+    expect(getRegisteredTemplateIds()).toContain("pressure_exterior_multi_area_proof");
+  });
+
+  it("has 8 registered auto detailing templates in total (7 single-pair + 1 multi-area)", () => {
+    const ids = getRegisteredTemplateIds();
+    const detailTemplates = ids.filter((id) => id.startsWith("detail_"));
+    expect(detailTemplates).toHaveLength(8);
   });
 });

@@ -29,6 +29,20 @@ const nextConfig = {
   turbopack: {
     root: rootDir,
   },
+  async redirects() {
+    return [
+      {
+        source: "/industries/pressure-washing-before-after-posts",
+        destination: "/industries/pressure-washing-marketing",
+        permanent: true,
+      },
+      {
+        source: "/industries/auto-detailing-before-after-posts",
+        destination: "/industries/auto-detailing-marketing",
+        permanent: true,
+      },
+    ];
+  },
 };
 
 export default withNextIntl(withMDX(nextConfig));

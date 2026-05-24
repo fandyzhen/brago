@@ -135,6 +135,15 @@ export function UserMenu() {
             </Link>
 
             <Link
+              href={`/${locale}/posts`}
+              onClick={() => setIsOpen(false)}
+              className="flex items-center gap-3 px-4 py-2 text-sm text-muted-foreground hover:bg-hover transition-colors"
+            >
+              <IconPhoto className="w-4 h-4" />
+              Posts
+            </Link>
+
+            <Link
               href={`/${locale}/history`}
               onClick={() => setIsOpen(false)}
               className="flex items-center gap-3 px-4 py-2 text-sm text-muted-foreground hover:bg-hover transition-colors"

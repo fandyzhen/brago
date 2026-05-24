@@ -219,3 +219,41 @@ export const brandProfile = pgTable("brand_profile", {
     .$onUpdate(() => new Date())
     .notNull(),
 });
+
+
+// Brago posts — finished poster records (per generation)
+export const post = pgTable("post", {
+  id: text("id").primaryKey(),
+  userId: text("user_id")
+    .notNull()
+    .references(() => user.id, { onDelete: "cascade" }),
+  industry: varchar("industry", { length: 32 }).notNull(),
+  channel: varchar("channel", { length: 32 }).notNull(),
+  layoutMode: varchar("layout_mode", { length: 16 }).notNull(),
+  templateId: text("template_id").notNull(),
+  headline: text("headline").notNull(),
+  caption: text("caption"),
+  phoneDisplay: varchar("phone_display", { length: 12 }),
+  status: varchar("status", { length: 16 }).notNull().default("completed"),
+  outputUrl: text("output_url"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+// Brago post image pairs — 1-4 before/after pairs per post
+export const postImagePair = pgTable(
+  "post_image_pair",
+  {
+    id: text("id").primaryKey(),
+    postId: text("post_id")
+      .notNull()
+      .references(() => post.id, { onDelete: "cascade" }),
+    areaIndex: integer("area_index").notNull(),
+    areaLabel: text("area_label"),
+    beforeImageUrl: text("before_image_url"),
+    afterImageUrl: text("after_image_url"),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+  (t) => ({
+    postIdx: index("post_image_pair_post_idx").on(t.postId),
+  })
+);

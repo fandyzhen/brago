@@ -6,12 +6,14 @@ import sharp from "sharp";
 import { getRenderer } from "@/lib/server/poster-templates/registry";
 import { fileToDataUrl } from "@/lib/server/poster-templates/shared/image-utils";
 import type { RenderInput } from "@/lib/server/poster-templates/shared/types";
+import type { PhotoPair } from "@/lib/server/poster-templates/shared/multi-area-types";
 import { getActiveSessionUser } from "@/lib/auth/session";
 import { canUserAfford, getUserCredits, deductCredits, getUserPlanKey } from "@/lib/credits";
 import { applyWatermark } from "@/lib/server/watermark";
 import { uploadPosterToR2 } from "@/lib/server/r2-poster";
 import { db } from "@/lib/db";
-import { generationHistory } from "@/lib/db/schema";
+import { generationHistory, post, postImagePair } from "@/lib/db/schema";
+import { getTemplateById } from "@/lib/poster-templates/public-metadata";
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
 const POSTER_CREDIT_COST = 10;
@@ -51,44 +53,64 @@ export async function POST(request: Request): Promise<Response> {
     return Response.json({ error: "Invalid form data" }, { status: 400 });
   }
 
-  const beforeImage = formData.get("beforeImage") as File | null;
-  const afterImage = formData.get("afterImage") as File | null;
   const templateId = formData.get("templateId") as string | null;
   const headline = formData.get("headline") as string | null;
 
-  if (!beforeImage || !afterImage || !templateId || !headline) {
+  if (!templateId || !headline || typeof templateId !== "string" || typeof headline !== "string") {
     return Response.json(
-      { error: "Missing required fields: beforeImage, afterImage, templateId, headline" },
-      { status: 400 }
-    );
-  }
-
-  if (!(beforeImage instanceof File) || !(afterImage instanceof File)) {
-    return Response.json(
-      { error: "Missing required fields: beforeImage and afterImage must be files" },
-      { status: 400 }
-    );
-  }
-  if (typeof templateId !== "string" || typeof headline !== "string") {
-    return Response.json(
-      { error: "Missing required fields: templateId and headline must be strings" },
+      { error: "Missing required fields: templateId, headline" },
       { status: 400 }
     );
   }
 
   const renderer = getRenderer(templateId);
   if (!renderer) {
+    return Response.json({ error: `Unknown templateId: ${templateId}` }, { status: 400 });
+  }
+
+  const meta = getTemplateById(templateId);
+  const isMultiArea = meta?.layoutFamily === "collage";
+
+  // Collect before/after pairs — either single (legacy) or multi-area (areaN_before/after)
+  type RawPair = { before: File; after: File; areaLabel?: string };
+  const rawPairs: RawPair[] = [];
+
+  if (isMultiArea) {
+    for (let i = 1; i <= 4; i += 1) {
+      const b = formData.get(`area${i}_before`);
+      const a = formData.get(`area${i}_after`);
+      if (b instanceof File && a instanceof File) {
+        const label = formData.get(`area${i}_label`);
+        rawPairs.push({
+          before: b,
+          after: a,
+          areaLabel: typeof label === "string" && label.trim() ? label.trim() : undefined,
+        });
+      }
+    }
+    if (rawPairs.length === 0) {
+      // Fall back to legacy single-pair fields
+      const b = formData.get("beforeImage");
+      const a = formData.get("afterImage");
+      if (b instanceof File && a instanceof File) rawPairs.push({ before: b, after: a });
+    }
+  } else {
+    const b = formData.get("beforeImage");
+    const a = formData.get("afterImage");
+    if (b instanceof File && a instanceof File) rawPairs.push({ before: b, after: a });
+  }
+
+  if (rawPairs.length === 0) {
     return Response.json(
-      { error: `Unknown templateId: ${templateId}` },
+      { error: "Missing required image fields (beforeImage/afterImage or areaN_before/areaN_after)" },
       { status: 400 }
     );
   }
 
-  if (beforeImage.size > MAX_FILE_SIZE || afterImage.size > MAX_FILE_SIZE) {
-    return Response.json(
-      { error: "Image files must be under 10MB each" },
-      { status: 400 }
-    );
+  for (const p of rawPairs) {
+    if (p.before.size > MAX_FILE_SIZE || p.after.size > MAX_FILE_SIZE) {
+      return Response.json({ error: "Image files must be under 10MB each" }, { status: 400 });
+    }
   }
 
   // ── 3. Credits check ───────────────────────────────────────────
@@ -103,10 +125,14 @@ export async function POST(request: Request): Promise<Response> {
 
   // ── 4. Render PNG ──────────────────────────────────────────────
   try {
-    const [beforeImageDataUrl, afterImageDataUrl] = await Promise.all([
-      fileToDataUrl(beforeImage),
-      fileToDataUrl(afterImage),
-    ]);
+    const dataUrls = await Promise.all(
+      rawPairs.flatMap((p) => [fileToDataUrl(p.before), fileToDataUrl(p.after)])
+    );
+    const pairs: PhotoPair[] = rawPairs.map((p, i) => ({
+      beforeImageDataUrl: dataUrls[i * 2],
+      afterImageDataUrl: dataUrls[i * 2 + 1],
+      areaLabel: p.areaLabel,
+    }));
 
     function getTextField(name: string): string | undefined {
       const raw = formData.get(name);
@@ -119,8 +145,8 @@ export async function POST(request: Request): Promise<Response> {
     const cleanedHeadline = (getTextField("headline") ?? headline).slice(0, 36);
 
     const renderInput: RenderInput = {
-      beforeImageDataUrl,
-      afterImageDataUrl,
+      beforeImageDataUrl: pairs[0].beforeImageDataUrl,
+      afterImageDataUrl: pairs[0].afterImageDataUrl,
       templateId,
       headline: cleanedHeadline,
       businessName: getTextField("businessName"),
@@ -134,6 +160,7 @@ export async function POST(request: Request): Promise<Response> {
         const n = parseInt(raw, 10);
         return Number.isFinite(n) ? n : undefined;
       })(),
+      photoPairs: isMultiArea ? pairs : undefined,
     };
 
     const element = renderer(renderInput);
@@ -160,10 +187,35 @@ export async function POST(request: Request): Promise<Response> {
       return Response.json({ error: "Failed to deduct credits" }, { status: 500 });
     }
 
-    // ── 7. Write history (degraded on failure — PNG still returned) ─
-    // resultUrl may be null when R2 is not configured; schema allows null.
-    // We always write history so users can see their generation activity.
+    // ── 7. Write Brago post + image pairs + legacy history ─────────
     try {
+      const postId = randomUUID();
+      await db.insert(post).values({
+        id: postId,
+        userId,
+        industry: meta?.industry ?? "pressure_washing",
+        channel: meta?.channel ?? "google_business_profile",
+        layoutMode: isMultiArea ? "multi_area" : "single_pair",
+        templateId,
+        headline: cleanedHeadline,
+        caption: getTextField("caption") ?? null,
+        phoneDisplay: meta?.phoneDefault ?? null,
+        status: "completed",
+        outputUrl: resultUrl,
+      });
+      await db.insert(postImagePair).values(
+        pairs.map((_, i) => ({
+          id: randomUUID(),
+          postId,
+          areaIndex: i,
+          areaLabel: pairs[i].areaLabel ?? null,
+          // The original uploaded files aren't stored individually (only the rendered poster is uploaded).
+          // Future improvement: upload originals to R2 and persist their URLs here.
+          beforeImageUrl: null,
+          afterImageUrl: null,
+        }))
+      );
+
       await db.insert(generationHistory).values({
         id: randomUUID(),
         userId,
@@ -172,10 +224,10 @@ export async function POST(request: Request): Promise<Response> {
         resultUrl,
         status: "completed",
         creditsUsed: POSTER_CREDIT_COST,
-        metadata: JSON.stringify({ templateId, headline: cleanedHeadline }),
+        metadata: JSON.stringify({ templateId, headline: cleanedHeadline, postId }),
       });
     } catch (histErr) {
-      console.error("[posters/render] Failed to write history:", histErr);
+      console.error("[posters/render] Failed to write post history:", histErr);
     }
 
     // ── 8. Return PNG ─────────────────────────────────────────────
