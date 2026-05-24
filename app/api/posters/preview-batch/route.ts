@@ -124,7 +124,7 @@ export async function POST(request: Request): Promise<Response> {
     id: string;
     render: ReturnType<typeof getRenderer>;
     name: string;
-  }): Promise<{ thumb: Thumb | null; error: string | null }> => {
+  }): Promise<{ thumb: Thumb | null; error: string | null; stack?: string }> => {
     try {
       const renderInput: RenderInput = {
         beforeImageDataUrl: beforeDataUrl,
@@ -152,20 +152,33 @@ export async function POST(request: Request): Promise<Response> {
           thumbnailDataUrl: `data:image/png;base64,${finalBuffer.toString("base64")}`,
         },
         error: null,
+        stack: undefined,
       };
     } catch (err) {
-      const msg = err instanceof Error ? `${err.name}: ${err.message}` : String(err);
+      const isError = err instanceof Error;
+      const msg = isError ? `${err.name}: ${err.message}` : String(err);
+      const stack = isError ? err.stack : undefined;
       console.error(`[preview-batch] render failed for ${entry.id}:`, err);
-      return { thumb: null, error: `${entry.id} → ${msg}` };
+      return {
+        thumb: null,
+        error: `${entry.id} → ${msg}`,
+        stack: process.env.NODE_ENV !== "production" ? stack : undefined,
+      };
     }
   };
 
   const results = await Promise.all(renderers.map(renderOne));
   const thumbnails: Thumb[] = results.map((r) => r.thumb).filter((t): t is Thumb => t !== null);
   if (thumbnails.length === 0) {
-    const firstError = results.find((r) => r.error)?.error ?? "Unknown render error";
+    const failed = results.find((r) => r.error);
+    const firstError = failed?.error ?? "Unknown render error";
+    const firstStack = failed?.stack;
     return Response.json(
-      { error: `All template renders failed — ${firstError}` },
+      {
+        error: `All template renders failed — ${firstError}`,
+        stack: firstStack,
+        allErrors: results.map((r) => r.error).filter(Boolean),
+      },
       { status: 500 }
     );
   }

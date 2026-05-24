@@ -298,6 +298,9 @@ export default function CreatePage() {
       const res = await fetch("/api/posters/preview-batch", { method: "POST", body: fd });
       if (!res.ok) {
         const err = await res.json().catch(() => ({ error: "Unknown error" }));
+        // Surface the full error to the browser console so it's easy to copy/paste
+        // when debugging dev-mode render failures.
+        console.error("[create] preview-batch failed:", err);
         setGenerateState({ status: "error", message: err.error ?? "Render failed" });
         return;
       }
