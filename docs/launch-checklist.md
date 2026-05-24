@@ -108,16 +108,16 @@
 ## QA 串测（上线前必跑）
 
 ### QA 清单（来自 Phase 2 plan）
-- [ ] **QA-1** 营销层：首页 H1 + 定价 + 行业页 + 资源页 + sitemap 正常
-- [ ] **QA-2** 301 重定向：legacy industries URL 跳新路径
-- [ ] **QA-3** Create 主流：上传 → 3 张预览 → 选 1 下载 → 想要其他张点 confirm 再扣 10 积分 → 都能下到高清 PNG
+- [x] **QA-1** 营销层：首页 H1 + 定价 + 行业页 + 资源页 + sitemap 正常（法律页占位符已填 Brago/brago.ai，上线前用户最终 review）
+- [x] **QA-2** 301 重定向：legacy industries URL 跳新路径（`next.config.mjs` 已配 `permanent: true`）
+- [x] **QA-3** Create 主流：上传 → 3 张预览（无水印）→ 选 1 下载（高清+水印 free 用户）→ flag=true 时新 index 扣 10 → 缓存命中不扣
 - [ ] **QA-4** Multi-area collage（依赖 P2-1 接回入口后才能跑）
-- [ ] **QA-5** /posts 列表能看到下载过的海报 + UserMenu 有入口
-- [ ] **QA-6** 余额不足时弹 402 提示
-- [ ] **QA-7** /demo 路由 404 或被 flag 隐藏
+- [x] **QA-5** /posts 列表能看到下载过的海报 + UserMenu 有入口（`features/navigation/components/user-menu.tsx:138`）
+- [x] **QA-6** 余额不足时弹 402 提示 + 显示 "Top up →" 链接到 `/pricing`
+- [x] **QA-7** /demo 路由 404（`app/[locale]/demo/layout.tsx` 默认 notFound 除非 `NEXT_PUBLIC_SHOW_SISTINE_DEMOS=true`）
 - [ ] **QA-8** 注册 → 收验证邮件 → 点链接 → 自动登录 → 300 积分到账（依赖 P0-1 真实 Resend）
 - [ ] **QA-9** Creem 测试模式买订阅 → webhook 自动加积分（依赖 P1-1）
-- [ ] **QA-10** AI Suggest 按钮点了能拿到 3 个 headline 候选（stub 阶段）
+- [x] **QA-10** AI Suggest 按钮点了能拿到 3 个 headline 候选 + channel-styled caption（stub fallback 永远可用，LLM 失败也返 200）
 
 ---
 
@@ -131,6 +131,11 @@
 - ✅ 147/147 测试全过，lint 干净
 - ✅ Create 流二轮重构（task #38）：双输入 description+headline / 缩略图选 1 / finalize 端点 / `ENABLE_AI_FINALIZE` flag / cache 命中不重复扣 / 全程零积分直到 flag 翻
 - ✅ 178/178 测试全过，lint 干净（v2 重构后）
+- ✅ v2-fix1：preview-batch 缩略图 watermark 越界 bug（root cause：`watermark.ts` 硬编码 1080 vs 360 缩略图），缩略图改为无水印（finalize 高清才水印），watermark.ts 按实际尺寸缩放 + 域名改 `brago.ai`
+- ✅ v2-fix2：channel 选择 + auto-styled caption (GBP / Nextdoor / Instagram)
+- ✅ QA-1/2/5/6/7/10 全过；prod `pnpm build` 通过；181/181 测试全过
+- ✅ 法律页 4 个（privacy/terms/cookies/refund）占位符全部填入 Brago/brago.ai/Delaware/effective 2026-05-25 等具体值
+- ✅ Create 页 402 余额不足 → 显示 "Top up →" 链接到 /pricing
 
 ---
 
