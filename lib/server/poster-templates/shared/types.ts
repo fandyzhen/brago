@@ -11,6 +11,7 @@ export type RenderInput = {
   isLicensed?: boolean;
   isInsured?: boolean;
   googleReviewCount?: number;
+  projectNumber?: number;      // 用于 Project No. 系列模板
 };
 
 export type RenderFn = (input: RenderInput) => React.ReactElement;
