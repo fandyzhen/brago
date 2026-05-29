@@ -655,13 +655,13 @@
     }
   },
   "dashboard": {
-    "title": "仪表盘",
-    "welcome": "欢迎回来",
+    "title": "今天有完工的活吗？",
+    "welcome": "你好",
     "welcomeBonus": {
-      "title": "🎉 欢迎加入 Sistine!",
-      "message": "恭喜您成功注册！我们已为您的账户赠送 300 积分新人礼包。",
-      "description": "这些积分可用于体验我们的 AI 对话、图像生成、视频生成等功能。",
-      "ctaButton": "立即体验",
+      "title": "欢迎使用 Brago",
+      "message": "我们已经送你一些试用额度，可以先发几条 Google 贴文体验一下。",
+      "description": "上传完工照片，Brago 帮你生成 Google 现成贴文。",
+      "ctaButton": "上传照片",
       "dismissButton": "知道了"
     },
     "cards": {

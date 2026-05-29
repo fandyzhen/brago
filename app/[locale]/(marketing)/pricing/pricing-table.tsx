@@ -2,112 +2,66 @@
 
 import React from "react";
 import { useTranslations } from "next-intl";
-import {
-  getDefaultOneTimePack,
-  getSubscriptionPlanDisplays,
-} from "@/lib/billing-display";
+import { BRAGO_LOCAL_DISPLAY } from "@/constants/billing";
 
-type ComparisonCell = string;
+function formatUsd(cents: number): string {
+  const dollars = cents / 100;
+  return Number.isInteger(dollars) ? `$${dollars}` : `$${dollars.toFixed(2)}`;
+}
 
 export function PricingTable() {
   const t = useTranslations("pricing");
-  const subscriptionPlans = getSubscriptionPlanDisplays();
-  const defaultPack = getDefaultOneTimePack();
-  const [starterPlan, proPlan] = subscriptionPlans;
-
-  if (!starterPlan || !proPlan) {
-    return null;
-  }
+  const promoPrice = formatUsd(BRAGO_LOCAL_DISPLAY.promoPriceCents);
+  const annualPrice = formatUsd(BRAGO_LOCAL_DISPLAY.annual.priceCents);
 
   const tiers = [
-    ...[starterPlan, proPlan].map((plan) => ({
-      id: plan.id,
-      name: t(`tiers.${plan.id}.name`),
-    })),
-    {
-      id: defaultPack.key,
-      name: t(`tiers.${defaultPack.key}.name`),
-    },
+    { id: "free", name: t("free.name") },
+    { id: "local", name: t("local.name") },
   ];
 
-  const tableRows: Array<{
-    title: string;
-    values: Record<string, ComparisonCell>;
-  }> = [
+  const rows: Array<{ title: string; values: Record<string, string> }> = [
     {
-      title: t("comparison.rows.purchaseType"),
+      title: "Price",
       values: {
-        [starterPlan.id]: t("comparison.values.subscription"),
-        [proPlan.id]: t("comparison.values.subscription"),
-        [defaultPack.key]: t("comparison.values.oneTime"),
+        free: "$0",
+        local: `${promoPrice}/mo or ${annualPrice}/yr`,
       },
     },
     {
-      title: t("comparison.rows.monthlyPrice"),
+      title: "Google posts per month",
       values: {
-        [starterPlan.id]: starterPlan.displayMonthlyPrice,
-        [proPlan.id]: proPlan.displayMonthlyPrice,
-        [defaultPack.key]: defaultPack.displayPrice,
+        free: "3 total",
+        local: "30 per month",
       },
     },
     {
-      title: t("comparison.rows.yearlyPrice"),
-      values: {
-        [starterPlan.id]: starterPlan.displayYearlyPrice,
-        [proPlan.id]: proPlan.displayYearlyPrice,
-        [defaultPack.key]: t("comparison.values.notApplicable"),
-      },
+      title: "Best after shot",
+      values: { free: "Yes", local: "Yes" },
     },
     {
-      title: t("comparison.rows.monthlyCredits"),
-      values: {
-        [starterPlan.id]: t("comparison.values.creditsPerMonth", {
-          credits: starterPlan.displayMonthlyCredits,
-        }),
-        [proPlan.id]: t("comparison.values.creditsPerMonth", {
-          credits: proPlan.displayMonthlyCredits,
-        }),
-        [defaultPack.key]: t("comparison.values.oneTimeCredits", {
-          credits: defaultPack.displayCredits,
-        }),
-      },
+      title: "Google-safe captions",
+      values: { free: "Yes", local: "Yes" },
     },
     {
-      title: t("comparison.rows.yearlyCredits"),
-      values: {
-        [starterPlan.id]: t("comparison.values.creditsPerYear", {
-          credits: starterPlan.displayYearlyCredits,
-        }),
-        [proPlan.id]: t("comparison.values.creditsPerYear", {
-          credits: proPlan.displayYearlyCredits,
-        }),
-        [defaultPack.key]: t("comparison.values.notApplicable"),
-      },
+      title: "English / Spanish output",
+      values: { free: "Yes", local: "Yes" },
     },
     {
-      title: t("comparison.rows.delivery"),
-      values: {
-        [starterPlan.id]: t("comparison.values.yearlyInstallments", {
-          credits: starterPlan.displayYearlyCreditsPerGrant,
-        }),
-        [proPlan.id]: t("comparison.values.yearlyInstallments", {
-          credits: proPlan.displayYearlyCreditsPerGrant,
-        }),
-        [defaultPack.key]: t("comparison.values.instantAfterPayment"),
-      },
+      title: "History-aware wording",
+      values: { free: "—", local: "Yes" },
     },
     {
-      title: t("comparison.rows.bestFor"),
-      values: {
-        [starterPlan.id]: t("comparison.values.bestForStarter"),
-        [proPlan.id]: t("comparison.values.bestForPro"),
-        [defaultPack.key]: t("comparison.values.bestForCredits"),
-      },
+      title: "Weekly Google reminders",
+      values: { free: "—", local: "Yes" },
+    },
+    {
+      title: "Brago watermark on exports",
+      values: { free: "—", local: "Removed" },
     },
   ];
 
   return (
-    <div className="relative z-20 mx-auto w-full px-4 py-40">
+    <div className="relative z-20 mx-auto w-full px-4 py-24">
       <div className="mt-8 flow-root">
         <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
           <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
@@ -127,7 +81,7 @@ export function PricingTable() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
-                {tableRows.map((row) => (
+                {rows.map((row) => (
                   <tr key={row.title}>
                     <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-foreground sm:pl-0">
                       {row.title}

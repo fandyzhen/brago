@@ -1,3 +1,4 @@
+import React from "react";
 import { render, screen } from "@testing-library/react";
 import pricingMessages from "@/messages/en.json";
 import { Pricing } from "@/components/pricing";
@@ -60,45 +61,67 @@ vi.mock("@/lib/auth-client", () => ({
 }));
 
 vi.mock("framer-motion", () => ({
-  motion: {
-    span: ({
-      children,
-      layoutId,
-      ...props
-    }: React.PropsWithChildren<
-      React.HTMLAttributes<HTMLSpanElement> & { layoutId?: string }
-    >) => {
-      void layoutId;
-      return <span {...props}>{children}</span>;
+  motion: new Proxy(
+    {},
+    {
+      get: (_target, tag) => {
+        return ({
+          children,
+          initial,
+          animate,
+          exit,
+          transition,
+          layoutId,
+          ...props
+        }: React.PropsWithChildren<
+          React.HTMLAttributes<HTMLElement> & {
+            initial?: unknown;
+            animate?: unknown;
+            exit?: unknown;
+            transition?: unknown;
+            layoutId?: string;
+          }
+        >) => {
+          void initial;
+          void animate;
+          void exit;
+          void transition;
+          void layoutId;
+          return React.createElement(
+            typeof tag === "string" ? tag : "div",
+            props,
+            children,
+          );
+        };
+      },
     },
-  },
+  ),
 }));
 
 describe("marketing pricing", () => {
-  it("renders only the configured plans on the pricing cards", () => {
+  it("renders Free and Brago Local as the only two tiers", () => {
     render(<Pricing />);
 
-    expect(screen.getByRole("heading", { name: "Pro" })).toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: "Crew" })).toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: "Post Pack" })).toBeInTheDocument();
-    expect(screen.getByText("$9.90")).toBeInTheDocument();
-    expect(screen.getByText("$19")).toBeInTheDocument();
-    expect(screen.getByText("$5")).toBeInTheDocument();
-    expect(screen.queryByText("Free")).not.toBeInTheDocument();
-    expect(screen.queryByText("Enterprise")).not.toBeInTheDocument();
-    expect(screen.queryByText("Starter")).not.toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Free" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Brago Local" })).toBeInTheDocument();
+    // Free price + Brago Local promo price (more than one $19 string is fine — promo card + checkout button)
+    expect(screen.getByText("$0")).toBeInTheDocument();
+    expect(screen.getAllByText(/\$19/).length).toBeGreaterThanOrEqual(1);
+    // Old tiers must NOT come back
+    expect(screen.queryByRole("heading", { name: "Pro" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: "Crew" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: "Post Pack" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: "Enterprise" })).not.toBeInTheDocument();
   });
 
-  it("keeps the comparison table aligned with the real billing catalog", () => {
+  it("comparison table compares Free vs Brago Local", () => {
     render(<PricingTable />);
 
-    expect(screen.getByRole("columnheader", { name: "Pro" })).toBeInTheDocument();
-    expect(screen.getByRole("columnheader", { name: "Crew" })).toBeInTheDocument();
-    expect(screen.getByRole("columnheader", { name: "Post Pack" })).toBeInTheDocument();
-    expect(screen.getByText("100 / month")).toBeInTheDocument();
-    expect(screen.getByText("300 / month")).toBeInTheDocument();
-    expect(screen.getByText("200 once")).toBeInTheDocument();
-    expect(screen.queryByRole("columnheader", { name: "Free" })).not.toBeInTheDocument();
-    expect(screen.queryByRole("columnheader", { name: "Enterprise" })).not.toBeInTheDocument();
+    expect(screen.getByRole("columnheader", { name: "Free" })).toBeInTheDocument();
+    expect(screen.getByRole("columnheader", { name: "Brago Local" })).toBeInTheDocument();
+    expect(screen.getByText("3 total")).toBeInTheDocument();
+    expect(screen.getByText("30 per month")).toBeInTheDocument();
+    expect(screen.queryByRole("columnheader", { name: "Pro" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("columnheader", { name: "Crew" })).not.toBeInTheDocument();
   });
 });

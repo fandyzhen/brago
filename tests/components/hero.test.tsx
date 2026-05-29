@@ -91,31 +91,34 @@ describe("Hero", () => {
     vi.clearAllMocks();
   });
 
-  it("renders Brago hero badge, heading, and channel chips", () => {
+  it("renders the Google-ready badge, heading, and three-step strip", () => {
     render(<Hero />);
 
-    expect(
-      screen.getByText("⚡ Before/after posts in 60 seconds")
-    ).toBeInTheDocument();
+    expect(screen.getByText("Google-ready posts")).toBeInTheDocument();
 
     expect(
       screen.getByRole("heading", { level: 1, name: "Let your work brag." })
     ).toBeInTheDocument();
 
-    expect(screen.getByText("Google Business Profile")).toBeInTheDocument();
-    expect(screen.getByText("Facebook")).toBeInTheDocument();
-    expect(screen.getByText("Nextdoor")).toBeInTheDocument();
-    expect(screen.getByText("Instagram")).toBeInTheDocument();
+    // Three-step strip replaces the multi-channel chips
+    expect(screen.getByText("Upload job photos")).toBeInTheDocument();
+    expect(screen.getByText("Pick the best after shot")).toBeInTheDocument();
+    expect(screen.getByText("Copy to Google")).toBeInTheDocument();
+
+    // Old multi-channel chips must NOT come back
+    expect(screen.queryByText("Facebook")).not.toBeInTheDocument();
+    expect(screen.queryByText("Nextdoor")).not.toBeInTheDocument();
+    expect(screen.queryByText("Instagram")).not.toBeInTheDocument();
   });
 
-  it("primary CTA links to /en/dashboard and secondary CTA links to /en/industries", () => {
+  it("primary CTA points to the free Google generator and secondary CTA opens an industry example", () => {
     render(<Hero />);
 
-    const primaryCta = screen.getByRole("link", { name: "Create Your First Post" });
-    expect(primaryCta).toHaveAttribute("href", "/en/dashboard");
+    const primaryCta = screen.getByRole("link", { name: "Create a free Google post" });
+    expect(primaryCta).toHaveAttribute("href", "/en/free-google-post-generator");
 
-    const secondaryCta = screen.getByRole("link", { name: /See examples/i });
-    expect(secondaryCta).toHaveAttribute("href", "/en/industries");
+    const secondaryCta = screen.getByRole("link", { name: /See example/i });
+    expect(secondaryCta).toHaveAttribute("href", "/en/industries/pressure-washing-marketing");
   });
 
   it("does not render a course-community modal or Get Code button", () => {

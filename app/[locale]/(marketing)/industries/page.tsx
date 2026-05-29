@@ -6,7 +6,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: "Industries | Brago",
     description:
-      "Before/after marketing posts for pressure washing, auto detailing, carpet cleaning, and other local service businesses.",
+      "Google-ready posts for pressure washing, auto detailing, cleaning, and other local service businesses.",
   };
 }
 
@@ -14,9 +14,9 @@ const INDUSTRIES = [
   {
     slug: "pressure-washing-marketing",
     name: "Pressure Washing",
-    tagline: "Pressure washing marketing posts",
+    tagline: "Pressure washing Google posts",
     description:
-      "Turn driveway, patio, siding, and deck pressure washing jobs into proof posts for Google Business Profile, Facebook, Nextdoor, and Instagram.",
+      "Turn driveway, patio, siding, and walkway pressure washing jobs into Google-ready posts you can paste into your Google Business Profile.",
     accent: "#1E5EFF",
     scenes: ["Driveways", "Patios", "Siding", "Decks", "Walkways"],
     available: true,
@@ -24,11 +24,21 @@ const INDUSTRIES = [
   {
     slug: "auto-detailing-marketing",
     name: "Auto Detailing",
-    tagline: "Auto detailing marketing posts",
+    tagline: "Auto detailing Google posts",
     description:
-      "Create before/after posts from interior, pet hair removal, exterior shine, and mobile detailing jobs that build real trust.",
+      "Interior, pet hair removal, exterior shine, and mobile detailing jobs → Google-safe captions and best-photo selection.",
     accent: "#FFD63A",
     scenes: ["Interior Detail", "Pet Hair Removal", "Exterior Shine", "Wheels", "Mobile Detail"],
+    available: true,
+  },
+  {
+    slug: "cleaning-marketing",
+    name: "Cleaning",
+    tagline: "Cleaning Google posts",
+    description:
+      "Carpet cleaning, move-out, window cleaning, and commercial cleaning jobs into Google Business Profile posts.",
+    accent: "#22C55E",
+    scenes: ["Carpet", "Move-out", "Window", "Commercial", "Tile & Grout"],
     available: true,
   },
   {
@@ -72,11 +82,11 @@ export default async function IndustriesPage() {
           Industries
         </p>
         <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-foreground">
-          Before/after posts for local service crews
+          Google-ready posts for local service crews
         </h1>
         <p className="mt-4 text-lg text-muted-foreground">
-          Brago turns your finished job photos into marketing posts built for your specific trade.
-          Pick your industry to see templates, examples, and how to post.
+          Brago turns finished job photos into Google Business Profile posts built for your specific trade.
+          Pick your industry to see examples and how the workflow looks.
         </p>
       </div>
 
@@ -103,16 +113,16 @@ export default async function IndustriesPage() {
       {/* Bottom CTA */}
       <div className="mt-20 rounded-2xl border border-border bg-secondary/50 p-8 md:p-12 text-center">
         <h2 className="text-2xl md:text-3xl font-bold text-foreground">
-          Ready to turn your next job into a marketing post?
+          Turn today&apos;s job into a Google post
         </h2>
         <p className="mt-3 text-muted-foreground max-w-xl mx-auto">
-          Upload before/after photos, pick where you&apos;re posting, and get a polished post in under 60 seconds.
+          Upload job photos, Brago picks the best after shot and writes a Google-safe caption you can paste right into your Business Profile.
         </p>
         <Link
-          href="/dashboard"
+          href="/free-google-post-generator"
           className="mt-6 inline-flex items-center px-6 py-3 rounded-full bg-foreground text-background text-sm font-semibold hover:bg-foreground/90 transition-colors"
         >
-          Create your first post
+          Create a free Google post
         </Link>
       </div>
     </Container>

@@ -2,234 +2,142 @@
 
 import { IconCircleCheckFilled } from "@tabler/icons-react";
 import { motion } from "framer-motion";
-import { useCallback, useState } from "react";
+import { useCallback } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { Button } from "./button";
 import { cn } from "@/lib/utils";
 import { useSession } from "@/lib/auth-client";
 import {
-  getDefaultOneTimePack,
-  getSubscriptionPlanDisplays,
-} from "@/lib/billing-display";
+  BRAGO_LOCAL_DISPLAY,
+  PRIMARY_ANNUAL_KEY,
+  PRIMARY_SUBSCRIPTION_KEY,
+} from "@/constants/billing";
 
-type BillingTab = "monthly" | "yearly";
+function formatUsd(cents: number): string {
+  const dollars = cents / 100;
+  return Number.isInteger(dollars) ? `$${dollars}` : `$${dollars.toFixed(2)}`;
+}
 
 export function Pricing() {
-  const [active, setActive] = useState<BillingTab>("monthly");
   const session = useSession();
   const router = useRouter();
   const t = useTranslations("pricing");
   const locale = useLocale();
   const userId = session.data?.user?.id;
 
-  const subscriptionPlans = getSubscriptionPlanDisplays();
-  const defaultPack = getDefaultOneTimePack();
-
-  const tabs = [
-    { name: t("billing.monthly"), value: "monthly" },
-    { name: t("billing.yearly"), value: "yearly" },
-  ] satisfies Array<{ name: string; value: BillingTab }>;
-
   const startCheckout = useCallback(
-    async (key: string, kind: "subscription" | "one_time") => {
+    async (key: string) => {
       if (!userId) {
         router.push(`/${locale}/signup`);
         return;
       }
-
       const res = await fetch("/api/payments/creem/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ key, kind }),
+        body: JSON.stringify({ key, kind: "subscription" }),
       });
-
-      if (!res.ok) {
-        return;
-      }
-
+      if (!res.ok) return;
       const { url } = (await res.json()) as { url: string };
       window.location.href = url;
     },
-    [locale, router, userId]
+    [locale, router, userId],
   );
 
+  const startFree = useCallback(() => {
+    if (userId) router.push(`/${locale}/dashboard`);
+    else router.push(`/${locale}/signup`);
+  }, [locale, router, userId]);
+
+  const promoPrice = formatUsd(BRAGO_LOCAL_DISPLAY.promoPriceCents);
+  const normalPrice = formatUsd(BRAGO_LOCAL_DISPLAY.normalPriceCents);
+  const annualPrice = formatUsd(BRAGO_LOCAL_DISPLAY.annual.priceCents);
+
   return (
-    <div className="relative">
-      <div className="mx-auto mb-12 flex w-fit items-center justify-center overflow-hidden rounded-md bg-muted">
-        {tabs.map((tab) => (
-          <button
-            key={tab.value}
-            className={cn(
-              "relative rounded-md p-4 text-sm font-medium text-muted-foreground",
-              active === tab.value ? "text-primary-foreground" : ""
-            )}
-            onClick={() => setActive(tab.value)}
-          >
-            {active === tab.value && (
-              <motion.span
-                layoutId="pricing-billing-tab"
-                transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
-                className="absolute inset-0 bg-primary"
-              />
-            )}
-            <span className="relative z-10">{tab.name}</span>
-          </button>
-        ))}
-      </div>
-
-      <div className="relative z-20 mx-auto mt-4 grid grid-cols-1 items-stretch gap-4 md:mt-20 md:grid-cols-2 xl:grid-cols-3">
-        {subscriptionPlans.map((plan) => {
-          const currentPlan = active === "monthly" ? plan.monthlyPlan : plan.yearlyPlan;
-          const currentPrice =
-            active === "monthly" ? plan.displayMonthlyPrice : plan.displayYearlyPrice;
-          const currentCredits =
-            active === "monthly" ? plan.displayMonthlyCredits : plan.displayYearlyCredits;
-          const creditSummary =
-            active === "monthly"
-              ? t("details.monthlyCredits", { credits: currentCredits })
-              : t("details.yearlyCredits", { credits: currentCredits });
-          const deliverySummary =
-            active === "monthly"
-              ? t("details.subscriptionDelivery")
-              : t("details.yearlyInstallments", {
-                  credits: plan.displayYearlyCreditsPerGrant,
-                });
-
-          return (
-            <div
-              key={plan.id}
-              className={cn(
-                plan.featured ? "relative bg-primary shadow-2xl" : "bg-card",
-                "flex h-full flex-col justify-between rounded-lg px-6 py-8 sm:mx-8 lg:mx-0"
-              )}
-            >
-              <div>
-                <h3
-                  className={cn(
-                    plan.featured ? "text-primary-foreground" : "text-muted-foreground",
-                    "text-base font-semibold leading-7"
-                  )}
-                >
-                  {t(`tiers.${plan.id}.name`)}
-                </h3>
-                <p className="mt-4">
-                  <motion.span
-                    initial={{ x: -20, opacity: 0 }}
-                    animate={{ x: 0, opacity: 1 }}
-                    transition={{ duration: 0.2, ease: "easeOut" }}
-                    key={`${plan.id}-${active}`}
-                    className={cn(
-                      "inline-block text-4xl font-bold tracking-tight",
-                      plan.featured ? "text-primary-foreground" : "text-foreground"
-                    )}
-                  >
-                    {currentPrice}
-                  </motion.span>
-                </p>
-                <p
-                  className={cn(
-                    plan.featured ? "text-primary-foreground/80" : "text-muted-foreground",
-                    "mt-3 text-sm font-medium"
-                  )}
-                >
-                  {creditSummary}
-                </p>
-                <p
-                  className={cn(
-                    plan.featured ? "text-primary-foreground/80" : "text-muted-foreground",
-                    "mt-2 text-sm"
-                  )}
-                >
-                  {deliverySummary}
-                </p>
-                <p
-                  className={cn(
-                    plan.featured ? "text-primary-foreground/80" : "text-muted-foreground",
-                    "mt-6 min-h-12 text-sm leading-7"
-                  )}
-                >
-                  {t(`tiers.${plan.id}.description`)}
-                </p>
-                <ul
-                  role="list"
-                  className={cn(
-                    plan.featured ? "text-primary-foreground/80" : "text-muted-foreground",
-                    "mt-8 space-y-3 text-sm leading-6 sm:mt-10"
-                  )}
-                >
-                  {(t.raw(`tiers.${plan.id}.features`) as string[]).map((feature) => (
-                    <li key={feature} className="flex gap-x-3">
-                      <IconCircleCheckFilled
-                        className={cn(
-                          plan.featured ? "text-primary-foreground" : "text-muted-foreground",
-                          "h-6 w-5 flex-none"
-                        )}
-                        aria-hidden="true"
-                      />
-                      {feature}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              <Button
-                onClick={() => startCheckout(currentPlan.key, "subscription")}
-                className={cn(
-                  plan.featured
-                    ? "bg-background text-foreground shadow-sm hover:bg-background/90 focus-visible:outline-background"
-                    : "",
-                  "mt-8 block w-full rounded-full px-3.5 py-2.5 text-center text-sm font-semibold focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 sm:mt-10"
-                )}
-              >
-                {t(`tiers.${plan.id}.cta`)}
-              </Button>
-            </div>
-          );
-        })}
-
-        <div className="flex h-full flex-col justify-between rounded-lg bg-card px-6 py-8 sm:mx-8 lg:mx-0">
+    <div className="relative w-full">
+      <div className="relative z-20 mx-auto mt-4 grid grid-cols-1 items-stretch gap-6 md:mt-12 md:grid-cols-2 max-w-3xl">
+        {/* Free tier */}
+        <div className="flex h-full flex-col justify-between rounded-2xl border border-border bg-card px-6 py-8">
           <div>
-            <h3 className="text-base font-semibold leading-7 text-muted-foreground">
-              {t(`tiers.${defaultPack.key}.name`)}
-            </h3>
+            <h3 className="text-base font-semibold leading-7 text-foreground">{t("free.name")}</h3>
             <p className="mt-4">
               <motion.span
-                initial={{ x: -20, opacity: 0 }}
+                initial={{ x: -10, opacity: 0 }}
                 animate={{ x: 0, opacity: 1 }}
                 transition={{ duration: 0.2, ease: "easeOut" }}
-                key={`credits-pack-${defaultPack.key}`}
                 className="inline-block text-4xl font-bold tracking-tight text-foreground"
               >
-                {defaultPack.displayPrice}
+                {t("free.price")}
               </motion.span>
             </p>
-            <p className="mt-3 text-sm font-medium text-muted-foreground">
-              {t("details.oneTimeCredits", { credits: defaultPack.displayCredits })}
-            </p>
-            <p className="mt-2 text-sm text-muted-foreground">
-              {t("details.oneTimeDelivery")}
-            </p>
-            <p className="mt-6 min-h-12 text-sm leading-7 text-muted-foreground">
-              {t(`tiers.${defaultPack.key}.description`)}
-            </p>
-            <ul role="list" className="mt-8 space-y-3 text-sm leading-6 text-muted-foreground sm:mt-10">
-              {(t.raw(`tiers.${defaultPack.key}.features`) as string[]).map((feature) => (
-                <li key={feature} className="flex gap-x-3">
-                  <IconCircleCheckFilled
-                    className="h-6 w-5 flex-none text-muted-foreground"
-                    aria-hidden="true"
-                  />
-                  {feature}
+            <p className="mt-3 text-sm font-medium text-muted-foreground">{t("free.tagline")}</p>
+            <ul role="list" className="mt-6 space-y-3 text-sm leading-6 text-muted-foreground">
+              {["feature_posts", "feature_after_shot", "feature_caption", "feature_languages", "feature_no_card"].map((k) => (
+                <li key={k} className="flex gap-x-3">
+                  <IconCircleCheckFilled className="h-6 w-5 flex-none text-muted-foreground" aria-hidden="true" />
+                  {t(`free.${k}`)}
                 </li>
               ))}
             </ul>
           </div>
           <Button
-            onClick={() => startCheckout(defaultPack.key, "one_time")}
-            className="mt-8 block w-full rounded-full px-3.5 py-2.5 text-center text-sm font-semibold focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 sm:mt-10"
+            onClick={startFree}
+            className="mt-8 block w-full rounded-full px-3.5 py-2.5 text-center text-sm font-semibold"
           >
-            {t(`tiers.${defaultPack.key}.cta`, { credits: defaultPack.displayCredits })}
+            {t("free.cta")}
           </Button>
+        </div>
+
+        {/* Brago Local */}
+        <div className="relative flex h-full flex-col justify-between rounded-2xl bg-primary px-6 py-8 shadow-2xl">
+          <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-amber-300 px-3 py-1 text-[11px] font-semibold text-amber-950">
+            {t("local.badge")}
+          </span>
+          <div>
+            <h3 className="text-base font-semibold leading-7 text-primary-foreground">{t("local.name")}</h3>
+            <p className="mt-4 flex items-baseline gap-2">
+              <motion.span
+                initial={{ x: -10, opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                transition={{ duration: 0.2, ease: "easeOut" }}
+                className="inline-block text-4xl font-bold tracking-tight text-primary-foreground"
+              >
+                {promoPrice}<span className="text-base font-medium">/mo</span>
+              </motion.span>
+              <span className="text-sm text-primary-foreground/70 line-through">{normalPrice}/mo</span>
+            </p>
+            <p className="mt-2 text-xs text-primary-foreground/70">{t("local.annual_label")} ({annualPrice}/yr)</p>
+            <ul role="list" className="mt-6 space-y-3 text-sm leading-6 text-primary-foreground/80">
+              {[
+                "feature_posts",
+                "feature_after_shot",
+                "feature_caption",
+                "feature_languages",
+                "feature_history",
+                "feature_reminder",
+                "feature_no_watermark",
+              ].map((k) => (
+                <li key={k} className="flex gap-x-3">
+                  <IconCircleCheckFilled className="h-6 w-5 flex-none text-primary-foreground" aria-hidden="true" />
+                  {t(`local.${k}`)}
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div className="mt-8 grid gap-2">
+            <Button
+              onClick={() => startCheckout(PRIMARY_SUBSCRIPTION_KEY)}
+              className={cn("block w-full rounded-full bg-background px-3.5 py-2.5 text-center text-sm font-semibold text-foreground shadow-sm hover:bg-background/90")}
+            >
+              {t("local.cta")} — {promoPrice}/mo
+            </Button>
+            <button
+              onClick={() => startCheckout(PRIMARY_ANNUAL_KEY)}
+              className="block w-full text-center text-xs text-primary-foreground/70 underline hover:text-primary-foreground"
+            >
+              Pay yearly ({annualPrice}/yr)
+            </button>
+          </div>
         </div>
       </div>
     </div>

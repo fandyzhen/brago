@@ -37,9 +37,9 @@ export default async function PostsPage() {
       <Container className="py-10">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h1 className="text-2xl font-bold">Your posts</h1>
+            <h1 className="text-2xl font-bold">Your Google posts</h1>
             <p className="text-sm text-muted-foreground mt-1">
-              Every poster you generated, sorted by newest first.
+              Every Google post you drafted, newest first.
             </p>
           </div>
           <Link

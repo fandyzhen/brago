@@ -43,14 +43,17 @@ export default function TermsPage() {
         <section className="mb-8">
           <h2 className="text-2xl font-semibold mb-4">2. Service Description</h2>
           <p>
-            Brago provides an AI-assisted poster generator for local home-services businesses (pressure washing, auto detailing, etc.) that turns before/after photos into ready-to-post marketing images. Our Service allows you to:
+            Brago provides an AI-assisted Google Business Profile post generator for local home-services businesses (pressure washing, auto detailing, cleaning, etc.). The Service helps you turn finished job photos into a Google-ready post you can copy and paste. Brago does not post on your behalf. Specifically the Service lets you:
           </p>
           <ul className="list-disc pl-6 space-y-2">
-            <li>Generate professional before/after marketing posters from your photos</li>
-            <li>AI-styled captions and headlines for Google Business Profile, Facebook/Nextdoor and Instagram</li>
-            <li>Save brand details (business name, service area, phone) for reuse across posts</li>
-            <li>Track and revisit your past posts</li>
+            <li>Upload finished job photos and have Brago pick the strongest after shot</li>
+            <li>Generate Google-safe captions in English or Spanish</li>
+            <li>Save business details (name, service area, posting style) for reuse</li>
+            <li>Revisit your past Google posts and weekly posting freshness</li>
           </ul>
+          <p className="mt-4 text-sm text-muted-foreground">
+            By uploading photos, you confirm that (a) you have permission from the customer (where applicable) to use the images in marketing materials and (b) Brago provides AI-assisted drafts only — you remain responsible for the final review and for posting to Google Business Profile yourself.
+          </p>
         </section>
 
         <section className="mb-8">

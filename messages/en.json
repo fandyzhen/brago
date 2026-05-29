@@ -657,13 +657,13 @@
     }
   },
   "dashboard": {
-    "title": "Dashboard",
-    "welcome": "Welcome back",
+    "title": "Ready to post today's job?",
+    "welcome": "Hi",
     "welcomeBonus": {
-      "title": "🎉 Welcome to Sistine!",
-      "message": "Congratulations on your successful registration! We've added 300 credits welcome bonus to your account.",
-      "description": "Use these credits to try our AI chat, image generation, video generation, and more features.",
-      "ctaButton": "Try Now",
+      "title": "Welcome to Brago",
+      "message": "We added a welcome bonus of credits to your account so you can try a few Google posts.",
+      "description": "Upload finished job photos and let Brago turn them into Google-ready posts.",
+      "ctaButton": "Upload job photos",
       "dismissButton": "Got it"
     },
     "cards": {
