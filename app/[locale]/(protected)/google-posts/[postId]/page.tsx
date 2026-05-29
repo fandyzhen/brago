@@ -98,6 +98,55 @@ export default function GooglePostPage() {
     }
   };
 
+  const callGenerateCaption = async (overrides: {
+    language?: Post["language"];
+    style?: string;
+  } = {}) => {
+    if (!postId) return;
+    setBusy("Writing Google caption…");
+    setError(null);
+    try {
+      const res = await fetch(
+        `/api/brago/google-posts/${postId}/generate-caption`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            language: overrides.language ?? post?.language,
+            customInstruction: overrides.style,
+          }),
+        },
+      );
+      const data = await res.json();
+      if (!res.ok) throw new Error(data?.error ?? "Caption failed");
+      await refetch();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Caption failed");
+    } finally {
+      setBusy(null);
+    }
+  };
+
+  const callRewrite = async (style: string) => {
+    if (!postId) return;
+    setBusy(`Rewriting (${style})…`);
+    setError(null);
+    try {
+      const res = await fetch(`/api/brago/google-posts/${postId}/rewrite`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ style }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data?.error ?? "Rewrite failed");
+      await refetch();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Rewrite failed");
+    } finally {
+      setBusy(null);
+    }
+  };
+
   const callRender = async (input: {
     mode?: Post["imageMode"];
     photoId?: string;
@@ -340,15 +389,74 @@ export default function GooglePostPage() {
           </details>
         )}
 
-        {/* Caption placeholder */}
+        {/* Caption */}
         <section className="mt-6 rounded-2xl border border-border bg-card p-4">
           <h2 className="text-sm font-medium mb-2">Caption</h2>
           {post.caption ? (
-            <p className="whitespace-pre-wrap text-sm leading-relaxed">{post.caption}</p>
+            <>
+              <p className="whitespace-pre-wrap text-sm leading-relaxed">{post.caption}</p>
+              <div className="mt-3 flex flex-wrap gap-2">
+                <button
+                  onClick={() =>
+                    post.caption && navigator.clipboard.writeText(post.caption)
+                  }
+                  className="rounded-full bg-foreground text-background px-3 py-1.5 text-xs"
+                >
+                  Copy Google post
+                </button>
+                <button
+                  disabled={!!busy}
+                  onClick={() => callRewrite("rewrite")}
+                  className="rounded-full border border-border px-3 py-1.5 text-xs disabled:opacity-50"
+                >
+                  Rewrite
+                </button>
+                <button
+                  disabled={!!busy}
+                  onClick={() => callRewrite("shorter")}
+                  className="rounded-full border border-border px-3 py-1.5 text-xs disabled:opacity-50"
+                >
+                  Shorter
+                </button>
+                <button
+                  disabled={!!busy}
+                  onClick={() => callRewrite("more_local")}
+                  className="rounded-full border border-border px-3 py-1.5 text-xs disabled:opacity-50"
+                >
+                  More local
+                </button>
+                <button
+                  disabled={!!busy}
+                  onClick={() => callRewrite("less_salesy")}
+                  className="rounded-full border border-border px-3 py-1.5 text-xs disabled:opacity-50"
+                >
+                  Less salesy
+                </button>
+                <button
+                  disabled={!!busy}
+                  onClick={() =>
+                    callGenerateCaption({
+                      language: post.language === "en" ? "es" : "en",
+                    })
+                  }
+                  className="rounded-full border border-border px-3 py-1.5 text-xs disabled:opacity-50"
+                >
+                  {post.language === "en"
+                    ? "Switch to Spanish"
+                    : "Switch to English"}
+                </button>
+              </div>
+            </>
           ) : (
-            <p className="text-xs text-muted-foreground">
-              Caption generation lands in Phase 5. Once enabled, &ldquo;Write Google caption&rdquo; appears below.
-            </p>
+            <button
+              disabled={!!busy}
+              onClick={() => callGenerateCaption()}
+              className="rounded-full bg-foreground text-background px-4 py-2 text-sm font-medium disabled:opacity-50"
+            >
+              {busy === "Writing Google caption…"
+                ? "Writing…"
+                : "Write Google caption"}
+            </button>
           )}
         </section>
 
@@ -361,16 +469,6 @@ export default function GooglePostPage() {
           >
             {post.status === "posted_manually" ? "Marked as posted" : "Mark as posted"}
           </button>
-          {post.caption && (
-            <button
-              onClick={() =>
-                post.caption && navigator.clipboard.writeText(post.caption)
-              }
-              className="rounded-full bg-foreground text-background px-4 py-2 text-sm"
-            >
-              Copy Google post
-            </button>
-          )}
           <Link
             href="/dashboard"
             className="rounded-full px-4 py-2 text-sm text-muted-foreground underline"
