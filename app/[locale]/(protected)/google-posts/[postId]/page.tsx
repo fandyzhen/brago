@@ -479,6 +479,24 @@ export default function GooglePostPage() {
 
         {busy && <p className="mt-3 text-xs text-muted-foreground">{busy}</p>}
         {error && <p className="mt-3 text-sm text-red-600">{error}</p>}
+
+        <button
+          onClick={async () => {
+            if (
+              !window.confirm(
+                "Delete this Google post and its photos? This cannot be undone.",
+              )
+            )
+              return;
+            await fetch(`/api/brago/google-posts/${postId}/delete`, {
+              method: "POST",
+            });
+            window.location.href = "/dashboard";
+          }}
+          className="mt-8 text-xs text-red-600 underline"
+        >
+          Delete this post
+        </button>
       </Container>
     </div>
   );

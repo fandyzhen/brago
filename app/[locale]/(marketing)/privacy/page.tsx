@@ -69,6 +69,14 @@ export default function PrivacyPage() {
             <li>Authentication tokens</li>
             <li>Any additional information you authorize</li>
           </ul>
+
+          <h3 className="text-xl font-semibold mb-3 mt-6">Customer property photos</h3>
+          <p>
+            Brago lets you upload photos from finished jobs. Each time you start a new Google post, you confirm that you have permission to use these photos for marketing. We process the originals to remove location-identifying EXIF metadata, generate a Google-ready version (square crop, light auto-enhancement), and store both the originals and the processed copies under your account in our object storage. We do not use customer photos to train AI models.
+          </p>
+          <p>
+            You can delete any Google post and its photos at any time from <code>/google-posts</code>; the database rows are removed immediately and the associated storage objects are scheduled for purge.
+          </p>
         </section>
 
         <section className="mb-8">

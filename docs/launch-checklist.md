@@ -9,6 +9,59 @@
 
 ---
 
+## P0 Google-Ready Posts 发布前必做（2026-05-29 重设计后）
+
+### G1 — 外部 AI / 存储 / 邮件 key
+- [ ] `VOLCANO_ENGINE_API_KEY` 填生产 key（缺失时 Brago 走 fallback：手动选 best after + 模板 caption，UI 已提示 "Photo AI not connected"）
+- [ ] `VOLCANO_ENGINE_VISION_MODEL`（或 `BRAGO_VISION_MODEL`）选实际模型名（spec 14.2 要求当天查官方文档）
+- [ ] `VOLCANO_ENGINE_TEXT_MODEL` 同上
+- [ ] 全套 `STORAGE_*` R2 变量配生产 bucket 和公网域名（缺失时 upload 路径自动 fall-back 到 data URL，性能差但能跑通）
+- [ ] `RESEND_API_KEY` 切真 key + verified `RESEND_FROM_EMAIL`
+- [ ] `BRAGO_CAPTION_CREDIT_COST` / `BRAGO_REWRITE_CREDIT_COST` 调成业务目标值（默认 1，AI 调用时扣，fallback 不扣）
+
+### G2 — Creem 产品 ID（新 plan key）
+- [ ] 在 Creem 控制台新建两个订阅产品：`Brago Local Monthly ($19)`、`Brago Local Yearly ($190)`
+- [ ] 拿到 prod_xxx 填回 `constants/billing.ts` 的 `brago_local_monthly.creemPriceId` / `brago_local_yearly.creemPriceId`
+- [ ] webhook URL 注册成 `https://你域名/api/payments/creem/webhook`，监听 `checkout.completed` / `subscription.paid` / `subscription.active`
+- [ ] 测试模式跑一次完整 checkout + cron 自动续费
+
+### G3 — Vercel Cron
+- 已在 `vercel.json` 注册：
+  - [ ] `/api/cron/brago-weekly-reminders`（每小时跑，handler 内部判断 7 天阈值；缺 `RESEND_API_KEY` 时无 op）
+  - [ ] `/api/cron/subscription-grants`（保留）
+- [ ] `CRON_SECRET`（Bearer / x-cron-secret）或 `CRON_JOBS_USERNAME`/`CRON_JOBS_PASSWORD` 配到 Vercel
+
+### G4 — 数据库迁移
+- [ ] 生产数据库执行最新迁移（`drizzle/0010_smart_shinobi_shaw.sql` 新增 google_post / google_post_photo / brand_voice_profile / caption_history / reminder_settings / upload_consent 共 6 张表）
+- [ ] 已有 starter/pro/pack 等历史订阅数据不受影响
+
+### G5 — R2 文件 lifecycle（P1）
+- [ ] P0 删除 post 时清空 db，R2 文件不立即 purge（节省时间）
+- [ ] P1 用 R2 lifecycle 自动清 60 天前未引用文件
+- 当前不阻断上线
+
+### G6 — Privacy / Terms
+- [x] Privacy 增加 `Customer property photos` 段落（Phase 7）
+- [x] Terms `Service Description` 改 Google-ready 表述 + 权限确认句子（Phase 1/7）
+- [ ] 中英文文案最后校对
+
+### G7 — 旧 multi-channel 兼容性
+- [x] 旧 `post` / `post_image_pair` 表保留不动（Phase 2 spec 12.1）
+- [x] 旧 `/api/posters/*` 路由保留兼容（Phase 1/2/3）
+- [x] 公开端无任何 multi-channel 文案残留（Phase 1 grep 通过）
+- [x] 旧 `/create` UI 备份为 `_legacy-multi-area.tsx.bak`，不挂路由
+- [ ] 老用户上线后通知：旧 multi-channel UI 已下线，原 post 仍可查看 `/posts`
+
+### G8 — 关键功能 smoke 测
+- [ ] 用真账号上传一组 driveway 照片 → 跳 `/google-posts/[id]` → `Find the best after shot` 拿到 vision 推荐
+- [ ] 切 `Single after` / `Before & after proof`，确认水印只有 "Before"/"After" 简洁标签
+- [ ] 点 `Write Google caption` → 拿到符合 policy 的英文 caption → `Switch to Spanish` 换语言
+- [ ] `Mark as posted` 后 dashboard `FreshnessBanner` 显示 streak
+- [ ] cron 模拟 7 天后跑一次 `/api/cron/brago-weekly-reminders`，确认收到 Resend 邮件
+- [ ] 邮件里点 `Pause for 4 weeks` 验证 `/reminders/unsubscribe?u=...` 可用
+
+---
+
 ## P0 — 不修就瘫痪的事
 
 ### P0-1 Resend 邮件配置（注册/验证邮件依赖）
