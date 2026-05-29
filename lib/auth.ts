@@ -4,6 +4,7 @@ import { createAuthMiddleware } from "better-auth/api";
 import { db } from "./db";
 import { refundCredits } from "./credits";
 import { getGoogleAuthProvider } from "./auth/google-auth";
+import { upsertReminderSettings } from "./brago/reminder-settings";
 
 const defaultTrustedOrigins = ["http://localhost:3000"];
 
@@ -52,6 +53,11 @@ export const auth = betterAuth({
             console.log(`[Auth] New user registered, granted 300 credits: ${newSession.user.email}`);
           } catch (error) {
             console.error("[Auth] Failed to grant registration bonus:", error);
+          }
+          try {
+            await upsertReminderSettings(newSession.user.id, {});
+          } catch (error) {
+            console.error("[Auth] Failed to seed reminder_settings:", error);
           }
         }
       }

@@ -12,6 +12,7 @@ import { getDefaultOneTimePack } from "@/lib/billing-display";
 import { getSubscriptionPlanTranslationKey } from "@/lib/account-settings";
 import type { ClientUserProfile, UserProfileResponse } from "@/lib/client-api";
 import { RecentGooglePosts } from "@/features/brago/dashboard/recent-google-posts";
+import { FreshnessBanner } from "@/features/brago/dashboard/freshness-banner";
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -121,6 +122,10 @@ export default function DashboardPage() {
           <p className="text-xl text-muted-foreground mb-6">
             {t('welcome')}, {displayUser?.name || displayUser?.email}
           </p>
+
+          <div className="mb-6">
+            <FreshnessBanner />
+          </div>
 
           <div className="flex flex-wrap gap-3 mb-12">
             <Button
