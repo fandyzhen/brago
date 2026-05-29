@@ -1,13 +1,14 @@
 "use client";
 
-/* eslint-disable @next/next/no-img-element */
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useLocale } from "next-intl";
 import Link from "next/link";
 import { Background } from "@/components/background";
 import { Button } from "@/components/button";
 import { Container } from "@/components/container";
+import { PhotoGrid } from "@/features/brago/upload/photo-grid";
+import { usePhotoPrepare } from "@/features/brago/upload/use-photo-prepare";
 
 type Industry = "pressure_washing" | "auto_detailing" | "cleaning";
 
@@ -49,6 +50,7 @@ const SERVICE_TYPES: Record<Industry, string[]> = {
 
 type StepStatus =
   | "idle"
+  | "preparing"
   | "uploading-meta"
   | "uploading-photos"
   | "done"
@@ -67,11 +69,7 @@ export default function CreatePage() {
   const [consent, setConsent] = useState(false);
   const [status, setStatus] = useState<StepStatus>("idle");
   const [error, setError] = useState<string | null>(null);
-
-  const previews = useMemo(
-    () => photos.map((f) => URL.createObjectURL(f)),
-    [photos],
-  );
+  const { state: prepareState, prepare } = usePhotoPrepare(10);
 
   const onIndustryChange = (next: Industry) => {
     setIndustry(next);
@@ -100,8 +98,14 @@ export default function CreatePage() {
       return;
     }
 
-    setStatus("uploading-meta");
     try {
+      setStatus("preparing");
+      const prepared = await prepare(photos);
+      if (prepared.length === 0) {
+        throw new Error("No usable photos after preparation");
+      }
+
+      setStatus("uploading-meta");
       const createRes = await fetch("/api/brago/google-posts", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -120,12 +124,11 @@ export default function CreatePage() {
 
       setStatus("uploading-photos");
       const fd = new FormData();
-      photos.forEach((f, i) => fd.set(`photo_${i}`, f));
+      prepared.forEach((f, i) => fd.set(`photo_${i}`, f));
       const upRes = await fetch(
         `/api/brago/google-posts/${postId}/photos/upload`,
         { method: "POST", body: fd },
       );
-      // Phase 3 lands the photo endpoint; Phase 2 tolerates 404 so the flow still progresses to the output page.
       if (upRes.status === 404) {
         setStatus("done");
         router.push(`/${locale}/google-posts/${postId}`);
@@ -144,13 +147,17 @@ export default function CreatePage() {
   };
 
   const stepLabel =
-    status === "uploading-meta"
-      ? "Creating post…"
-      : status === "uploading-photos"
-        ? "Uploading photos…"
-        : status === "done"
-          ? "Opening your post…"
-          : "Create Google post";
+    status === "preparing"
+      ? prepareState.status === "preparing"
+        ? `Preparing ${prepareState.processed} of ${prepareState.total}…`
+        : "Preparing photos…"
+      : status === "uploading-meta"
+        ? "Creating post…"
+        : status === "uploading-photos"
+          ? "Uploading photos…"
+          : status === "done"
+            ? "Opening your post…"
+            : "Create Google post";
 
   return (
     <div className="relative min-h-screen">
@@ -227,25 +234,7 @@ export default function CreatePage() {
             </span>
           </label>
 
-          {previews.length > 0 && (
-            <ul className="grid grid-cols-3 gap-2">
-              {previews.map((src, idx) => (
-                <li
-                  key={src}
-                  className="relative aspect-square overflow-hidden rounded-md border border-border"
-                >
-                  <img src={src} alt="" className="h-full w-full object-cover" />
-                  <button
-                    type="button"
-                    onClick={() => removeAt(idx)}
-                    className="absolute top-1 right-1 rounded-full bg-black/60 text-white text-[10px] px-1.5 py-0.5"
-                  >
-                    Remove
-                  </button>
-                </li>
-              ))}
-            </ul>
-          )}
+          <PhotoGrid files={photos} onRemove={removeAt} />
 
           <label className="flex gap-2 text-sm">
             <input
@@ -262,7 +251,9 @@ export default function CreatePage() {
           <Button
             type="submit"
             disabled={
-              status === "uploading-meta" || status === "uploading-photos"
+              status === "preparing" ||
+              status === "uploading-meta" ||
+              status === "uploading-photos"
             }
             className="rounded-full"
           >
