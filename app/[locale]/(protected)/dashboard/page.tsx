@@ -11,6 +11,7 @@ import { useCallback, useEffect, useState } from "react";
 import { getDefaultOneTimePack } from "@/lib/billing-display";
 import { getSubscriptionPlanTranslationKey } from "@/lib/account-settings";
 import type { ClientUserProfile, UserProfileResponse } from "@/lib/client-api";
+import { RecentGooglePosts } from "@/features/brago/dashboard/recent-google-posts";
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -117,9 +118,25 @@ export default function DashboardPage() {
           <h1 className="text-4xl md:text-6xl font-bold text-foreground mb-4">
             {t('title')}
           </h1>
-          <p className="text-xl text-muted-foreground mb-12">
+          <p className="text-xl text-muted-foreground mb-6">
             {t('welcome')}, {displayUser?.name || displayUser?.email}
           </p>
+
+          <div className="flex flex-wrap gap-3 mb-12">
+            <Button
+              onClick={() => router.push(`/${locale}/create`)}
+              className="rounded-full"
+            >
+              Upload job photos
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => router.push(`/${locale}/posts`)}
+              className="rounded-full"
+            >
+              View all Google posts
+            </Button>
+          </div>
 
           {paymentSuccess && (
             <div className="mb-8 p-4 bg-green-500/10 border border-green-500/20 rounded-lg">
@@ -128,6 +145,12 @@ export default function DashboardPage() {
               </p>
             </div>
           )}
+
+          {/* Recent Google posts */}
+          <div className="mb-12">
+            <h2 className="text-xl font-semibold text-foreground mb-4">Recent Google posts</h2>
+            <RecentGooglePosts />
+          </div>
         </motion.div>
 
         <motion.div

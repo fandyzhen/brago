@@ -257,3 +257,164 @@ export const postImagePair = pgTable(
     postIdx: index("post_image_pair_post_idx").on(t.postId),
   })
 );
+
+// === Brago Google-Ready Posts P0 (2026-05-29) ===
+
+export const googlePost = pgTable(
+  "google_post",
+  {
+    id: text("id").primaryKey(),
+    userId: text("user_id")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    brandProfileId: text("brand_profile_id").references(() => brandProfile.id, {
+      onDelete: "set null",
+    }),
+    industry: varchar("industry", { length: 32 }).notNull(),
+    serviceType: varchar("service_type", { length: 64 }).notNull(),
+    serviceArea: text("service_area"),
+    jobLocation: text("job_location"),
+    language: varchar("language", { length: 4 }).default("en").notNull(), // 'en' | 'es'
+    status: varchar("status", { length: 16 }).default("draft").notNull(), // draft | ready | posted_manually | archived
+    bestPhotoId: text("best_photo_id"),
+    imageMode: varchar("image_mode", { length: 24 })
+      .default("single_after")
+      .notNull(), // single_after | before_after_proof
+    beforePhotoId: text("before_photo_id"),
+    afterPhotoId: text("after_photo_id"),
+    proofRecommendationJson: text("proof_recommendation_json"),
+    finalImageUrl: text("final_image_url"),
+    caption: text("caption"),
+    captionPolicyJson: text("caption_policy_json"),
+    ctaRecommendation: varchar("cta_recommendation", { length: 32 })
+      .default("call_now_button")
+      .notNull(),
+    postedAt: timestamp("posted_at"),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at")
+      .defaultNow()
+      .$onUpdate(() => new Date())
+      .notNull(),
+  },
+  (t) => ({
+    userIdx: index("google_post_user_idx").on(t.userId),
+    createdAtIdx: index("google_post_user_created_idx").on(t.userId, t.createdAt),
+  })
+);
+
+export const googlePostPhoto = pgTable(
+  "google_post_photo",
+  {
+    id: text("id").primaryKey(),
+    googlePostId: text("google_post_id")
+      .notNull()
+      .references(() => googlePost.id, { onDelete: "cascade" }),
+    userId: text("user_id")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    originalUrl: text("original_url").notNull(),
+    processedUrl: text("processed_url"),
+    thumbnailUrl: text("thumbnail_url"),
+    originalMimeType: varchar("original_mime_type", { length: 32 }),
+    detectedRole: varchar("detected_role", { length: 16 }), // before | after | process | detail | team | other
+    roleConfidence: integer("role_confidence"), // 0-100
+    bestAfterScore: integer("best_after_score"), // 0-100
+    cropHintJson: text("crop_hint_json"),
+    riskFlagsJson: text("risk_flags_json"),
+    whySelected: text("why_selected"),
+    sortOrder: integer("sort_order").default(0).notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+  (t) => ({
+    postIdx: index("google_post_photo_post_idx").on(t.googlePostId),
+  })
+);
+
+export const brandVoiceProfile = pgTable("brand_voice_profile", {
+  id: text("id").primaryKey(),
+  userId: text("user_id")
+    .notNull()
+    .unique()
+    .references(() => user.id, { onDelete: "cascade" }),
+  brandProfileId: text("brand_profile_id").references(() => brandProfile.id, {
+    onDelete: "set null",
+  }),
+  voiceJson: text("voice_json").notNull(),
+  customerLanguage: varchar("customer_language", { length: 8 })
+    .default("en")
+    .notNull(), // en | es | mixed
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at")
+    .defaultNow()
+    .$onUpdate(() => new Date())
+    .notNull(),
+});
+
+export const captionHistory = pgTable(
+  "caption_history",
+  {
+    id: text("id").primaryKey(),
+    userId: text("user_id")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    googlePostId: text("google_post_id").references(() => googlePost.id, {
+      onDelete: "set null",
+    }),
+    captionText: text("caption_text").notNull(),
+    language: varchar("language", { length: 4 }).default("en").notNull(),
+    industry: varchar("industry", { length: 32 }).notNull(),
+    serviceType: varchar("service_type", { length: 64 }).notNull(),
+    openingPhrase: text("opening_phrase"),
+    keyPhrasesJson: text("key_phrases_json"),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+  (t) => ({
+    userServiceIdx: index("caption_history_user_service_idx").on(
+      t.userId,
+      t.serviceType,
+      t.createdAt,
+    ),
+  })
+);
+
+export const reminderSettings = pgTable("reminder_settings", {
+  id: text("id").primaryKey(),
+  userId: text("user_id")
+    .notNull()
+    .unique()
+    .references(() => user.id, { onDelete: "cascade" }),
+  timezone: text("timezone").default("America/New_York").notNull(),
+  enabled: boolean("enabled").default(true).notNull(),
+  dayOfWeek: integer("day_of_week").default(1).notNull(), // 0=Sun, 1=Mon
+  hour: integer("hour").default(9).notNull(),
+  lastSentAt: timestamp("last_sent_at"),
+  pausedUntil: timestamp("paused_until"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at")
+    .defaultNow()
+    .$onUpdate(() => new Date())
+    .notNull(),
+});
+
+export const uploadConsent = pgTable(
+  "upload_consent",
+  {
+    id: text("id").primaryKey(),
+    userId: text("user_id")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    googlePostId: text("google_post_id").references(() => googlePost.id, {
+      onDelete: "set null",
+    }),
+    hasMarketingPermission: boolean("has_marketing_permission")
+      .default(false)
+      .notNull(),
+    acceptedTermsVersion: varchar("accepted_terms_version", { length: 16 })
+      .default("v1")
+      .notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+  (t) => ({
+    userIdx: index("upload_consent_user_idx").on(t.userId),
+  })
+);

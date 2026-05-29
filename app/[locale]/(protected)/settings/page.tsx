@@ -188,6 +188,27 @@ export default function SettingsPage() {
               {t("title")}
             </h1>
             <p className="text-xl text-muted-foreground">{t("subtitle")}</p>
+
+            <nav className="mt-6 flex flex-wrap gap-2 text-xs">
+              <a
+                href={`/${locale}/settings/brand`}
+                className="rounded-full border border-border bg-card px-3 py-1.5 text-foreground hover:bg-foreground/5"
+              >
+                Business profile
+              </a>
+              <a
+                href={`/${locale}/settings/voice`}
+                className="rounded-full border border-border bg-card px-3 py-1.5 text-foreground hover:bg-foreground/5"
+              >
+                Posting style
+              </a>
+              <a
+                href={`/${locale}/settings/reminders`}
+                className="rounded-full border border-border bg-card px-3 py-1.5 text-foreground hover:bg-foreground/5"
+              >
+                Weekly reminders
+              </a>
+            </nav>
           </div>
 
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
