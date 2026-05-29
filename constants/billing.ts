@@ -1,6 +1,9 @@
 export type BillingKind = "subscription" | "one_time";
 
 export type PlanKey =
+  | "brago_local_monthly"
+  | "brago_local_yearly"
+  // 兼容历史 key（保留以便存量订阅 webhook 仍能匹配）
   | "starter_monthly"
   | "starter_yearly"
   | "pro_monthly"
@@ -42,6 +45,34 @@ type OneTimePack = {
 };
 
 export const subscriptionPlans: Record<PlanKey, SubscriptionPlan> = {
+  // Brago Local monthly — $19/mo promo (normally $39), 30 Google-ready posts
+  brago_local_monthly: {
+    key: "brago_local_monthly",
+    kind: "subscription",
+    priceCents: 1900,
+    currency: "usd",
+    creditsPerCycle: 30,
+    cycle: "month",
+    creemPriceId: undefined, // TODO: fill from Creem dashboard
+    grantSchedule: { mode: "per_cycle" },
+  },
+  // Brago Local yearly — $190/yr, 360 posts spread monthly (30 / month)
+  brago_local_yearly: {
+    key: "brago_local_yearly",
+    kind: "subscription",
+    priceCents: 19000,
+    currency: "usd",
+    creditsPerCycle: 360,
+    cycle: "year",
+    creemPriceId: undefined, // TODO: fill from Creem dashboard
+    grantSchedule: {
+      mode: "installments",
+      grantsPerCycle: 12,
+      intervalMonths: 1,
+      creditsPerGrant: 30,
+      initialGrants: 1,
+    },
+  },
   // Pro plan — $9.90/mo, 100 posts
   starter_monthly: {
     key: "starter_monthly",
@@ -118,3 +149,19 @@ export function isSubscriptionKey(key: string): key is PlanKey {
 export function isPackKey(key: string): key is PackKey {
   return (key as PackKey) in oneTimePacks;
 }
+
+// Brago Local marketing display constants (used by pricing page + checkout buttons)
+export const BRAGO_LOCAL_DISPLAY = {
+  promoPriceCents: 1900,
+  normalPriceCents: 3900,
+  monthlyCreditsLabel: "30 Google-ready posts / month",
+  promoBadge: "Launch price for early customers",
+  annual: {
+    priceCents: 19000,
+    altPriceCents: 19900,
+  },
+} as const;
+
+// 公开端展示用的主推订阅 key（控制 pricing 页和 dashboard 升级 CTA 指向哪一档）
+export const PRIMARY_SUBSCRIPTION_KEY: PlanKey = "brago_local_monthly";
+export const PRIMARY_ANNUAL_KEY: PlanKey = "brago_local_yearly";

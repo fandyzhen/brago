@@ -57,6 +57,9 @@ Desktop.ini
 .local-docs/
 .mcp.json
 
+# superpowers ephemeral cache
+.superpowers/
+
 # fumadocs generated
 .source/
 public/fumadocs-style.css

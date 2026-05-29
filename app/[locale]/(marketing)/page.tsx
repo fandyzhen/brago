@@ -17,7 +17,7 @@ export async function generateMetadata(props: {
   return generatePageMetadata({
     locale,
     path: "",
-    title: "Brago - Before/After Marketing Posts for Local Services",
+    title: "Brago — Google-ready posts from finished job photos",
     description: t("description"),
   });
 }
@@ -27,7 +27,7 @@ const INDUSTRIES = [
     slug: "/industries/pressure-washing-marketing",
     name: "Pressure Washing",
     accent: "#1E5EFF",
-    scenes: ["Driveways", "Patios", "Siding", "Decks"],
+    scenes: ["Driveways", "Patios", "Siding", "Walkways"],
   },
   {
     slug: "/industries/auto-detailing-marketing",
@@ -35,13 +35,19 @@ const INDUSTRIES = [
     accent: "#FFD63A",
     scenes: ["Interior Detail", "Pet Hair", "Exterior Shine", "Mobile"],
   },
+  {
+    slug: "/industries/cleaning-marketing",
+    name: "Cleaning",
+    accent: "#22C55E",
+    scenes: ["Carpet", "Move-out", "Window", "Commercial"],
+  },
 ];
 
 const HOW_IT_WORKS = [
-  { step: "1", label: "Upload job photos", detail: "Before and after. Phone photos work great." },
-  { step: "2", label: "Choose service type", detail: "Pressure washing, detailing, and more." },
-  { step: "3", label: "Pick where to post", detail: "Google, Facebook/Nextdoor, or Instagram." },
-  { step: "4", label: "Download and post", detail: "Image + caption ready in under 60 seconds." },
+  { step: "1", label: "Upload job photos", detail: "1-10 from today's job. Phone photos work great." },
+  { step: "2", label: "Brago picks the best after shot", detail: "Strongest image, auto-cropped square for Google." },
+  { step: "3", label: "Write a Google-safe caption", detail: "Sounds like you. No salesy filler, no AI clichés." },
+  { step: "4", label: "Copy and paste to Google", detail: "You stay in control. No auto-posting." },
 ];
 
 export default function Home() {
@@ -97,10 +103,10 @@ export default function Home() {
         <section className="w-full py-16 md:py-24 border-t border-border">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-foreground tracking-tight">
-              From job photos to post in 60 seconds
+              From job photos to a Google-ready post
             </h2>
             <p className="mt-3 text-muted-foreground">
-              No design skills. No templates to browse. Just upload and go.
+              No design work. No platform login. Just upload today&apos;s job and copy the result to Google.
             </p>
           </div>
           <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-6">
@@ -121,16 +127,16 @@ export default function Home() {
           <div className="grid md:grid-cols-3 gap-8">
             {[
               {
-                title: "Real photos, real results",
-                body: "Brago works with actual job photos — not stock images or mockups. The before/after contrast does the marketing for you.",
+                title: "Real job photos, not stock",
+                body: "Brago works with actual job photos. The real after shot does the marketing for you — that's the point of a Google Business Profile photo.",
               },
               {
-                title: "No design skills needed",
-                body: "You answer two questions. Brago handles the layout, headline, caption, and formatting for each channel.",
+                title: "Google-safe by default",
+                body: "Captions stay within Google's posting rules. No phone numbers in the text, no URLs, no salesy AI clichés.",
               },
               {
-                title: "Your brand, your posts",
-                body: "Set up your business name, service area, and trust badges once. Every post is consistent and professional.",
+                title: "You stay in control",
+                body: "Brago drafts the post. You review and paste it into Google yourself. No platform tokens, no auto-posting, no risk to your profile.",
               },
             ].map((item) => (
               <div key={item.title}>
@@ -146,17 +152,16 @@ export default function Home() {
       <div className="relative border-t border-border bg-secondary/30">
         <div className="max-w-4xl mx-auto px-6 py-20 md:py-28 text-center">
           <h2 className="text-3xl md:text-5xl font-bold text-foreground tracking-tight">
-            Turn your next finished job into a marketing post
+            Turn today&apos;s finished job into a Google post
           </h2>
           <p className="mt-4 text-muted-foreground max-w-lg mx-auto">
-            Upload before/after photos. Get a polished post for Google, Facebook, Nextdoor, or Instagram.
-            Free to start.
+            Upload the photos, get a Google-ready post, copy and paste it to your Google Business Profile. Free to try.
           </p>
           <Link
-            href="/dashboard"
+            href="/free-google-post-generator"
             className="mt-8 inline-flex items-center px-8 py-4 rounded-full bg-foreground text-background text-sm font-semibold hover:bg-foreground/90 transition-colors"
           >
-            Create your first post — it&apos;s free
+            Create a free Google post
           </Link>
         </div>
       </div>

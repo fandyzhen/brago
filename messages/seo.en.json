@@ -1,12 +1,17 @@
 {
   "home": {
-    "title": "Brago - Before/After Marketing Posts for Local Services",
-    "description": "Turn finished job photos into before/after marketing posts for Google Business Profile, Facebook, Nextdoor, and Instagram.",
+    "title": "Brago — Google-ready posts from finished job photos",
+    "description": "Upload finished job photos, get a Google Business Profile post that is ready to copy and paste. No auto-posting, no platform risk.",
     "ogImage": "/og-image.png"
   },
   "pricing": {
     "title": "Pricing | Brago",
-    "description": "Simple pricing for local service crews. Start free, upgrade when you need more posts.",
+    "description": "Free to try, $19/mo for the Brago Local plan. Built for solo and small local service crews.",
+    "ogImage": "/og-image.png"
+  },
+  "freeGenerator": {
+    "title": "Free Google Business Post Generator for Pressure Washers | Brago",
+    "description": "Upload a job photo and get a Google-safe caption you can paste into your Google Business Profile. No signup for the first draft.",
     "ogImage": "/og-image.png"
   },
   "contact": {
@@ -16,12 +21,12 @@
   },
   "login": {
     "title": "Log In | Brago",
-    "description": "Sign in to your Brago account to create before/after marketing posts from your job photos.",
+    "description": "Sign in to your Brago account to write your next Google Business Profile post.",
     "ogImage": "/og-image.png"
   },
   "signup": {
     "title": "Sign Up | Brago",
-    "description": "Create your Brago account and turn your first finished job into a marketing post today.",
+    "description": "Create your Brago account and turn today's finished job into a Google-ready post.",
     "ogImage": "/og-image.png"
   },
   "terms": {

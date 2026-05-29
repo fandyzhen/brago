@@ -1,33 +1,38 @@
 {
   "home": {
-    "title": "Sistine AI - 通过 Vibe Coding 将您的 AI SaaS 产品投入生产",
-    "description": "Sistine AI 是一个提供广泛 AI 工具和服务的平台,帮助您掌控业务。生成图像、文本以及启动业务所需的一切。",
-    "ogImage": "https://ai-saas-template-aceternity.vercel.app/banner.png"
+    "title": "Brago — 把完工照片变成 Google 现成贴文",
+    "description": "上传完工照片，Brago 帮你挑选最合适的 after 图，生成可以直接复制到 Google Business Profile 的文案。",
+    "ogImage": "/og-image.png"
   },
   "pricing": {
-    "title": "定价方案 - Sistine AI SaaS 入门套件",
-    "description": "为您的 AI SaaS 选择完美的方案。此定价模块由 Sistine Starter 构建 - 与 Creem 完全集成,支持订阅支付。",
-    "ogImage": "https://ai-saas-template-aceternity.vercel.app/banner.png"
+    "title": "定价 | Brago",
+    "description": "免费体验 3 条贴文，需要长期 Google 习惯时升级 Brago Local（$19/月）。",
+    "ogImage": "/og-image.png"
+  },
+  "freeGenerator": {
+    "title": "免费 Google Business 贴文生成器 - 高压清洗师专用 | Brago",
+    "description": "上传一张完工照片，得到一段符合 Google 政策的文案，可直接粘贴到 Google Business Profile。首版无需注册。",
+    "ogImage": "/og-image.png"
   },
   "blog": {
-    "title": "博客 - Sistine AI",
-    "description": "来自我们团队的最新见解与更新。了解 AI SaaS 开发、vibe coding 以及构建生产级应用的最佳实践。",
-    "ogImage": "https://ai-saas-template-aceternity.vercel.app/banner.png"
+    "title": "Brago Blog",
+    "description": "本地服务商如何利用 Google Business Profile 获客的实操经验。",
+    "ogImage": "/og-image.png"
   },
   "contact": {
-    "title": "联系我们 - Sistine AI",
-    "description": "与 Sistine AI 团队取得联系。我们很乐意倾听您的声音,并会尽快回复。",
-    "ogImage": "https://ai-saas-template-aceternity.vercel.app/banner.png"
+    "title": "联系我们 | Brago",
+    "description": "与 Brago 团队取得联系。我们很乐意听到你的反馈。",
+    "ogImage": "/og-image.png"
   },
   "login": {
-    "title": "登录 - Sistine AI",
-    "description": "登录您的 Sistine AI 账户,访问为您业务提供的强大 AI 工具和服务。",
-    "ogImage": "https://ai-saas-template-aceternity.vercel.app/banner.png"
+    "title": "登录 | Brago",
+    "description": "登录 Brago，写下下一条 Google Business Profile 贴文。",
+    "ogImage": "/og-image.png"
   },
   "signup": {
-    "title": "注册 - Sistine AI",
-    "description": "创建您的 Sistine AI 账户,立即使用我们强大的工具开始构建您的 AI SaaS 产品。",
-    "ogImage": "https://ai-saas-template-aceternity.vercel.app/banner.png"
+    "title": "注册 | Brago",
+    "description": "创建 Brago 账号，把今天完工的活变成 Google 现成贴文。",
+    "ogImage": "/og-image.png"
   },
   "terms": {
     "title": "服务条款 - Sistine AI",

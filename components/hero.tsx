@@ -7,11 +7,10 @@ import { HiArrowRight } from "react-icons/hi2";
 import { LocaleLink } from "@/components/locale-link";
 import { useTranslations } from "next-intl";
 
-const CHANNELS = [
-  { label: "Google Business Profile", color: "bg-blue-50 text-blue-700 border-blue-200" },
-  { label: "Facebook", color: "bg-indigo-50 text-indigo-700 border-indigo-200" },
-  { label: "Nextdoor", color: "bg-green-50 text-green-700 border-green-200" },
-  { label: "Instagram", color: "bg-pink-50 text-pink-700 border-pink-200" },
+const STEPS = [
+  { label: "Upload job photos", hint: "1-10 from today's job" },
+  { label: "Pick the best after shot", hint: "Brago suggests the strongest" },
+  { label: "Copy to Google", hint: "Caption is Google-safe" },
 ];
 
 export const Hero = () => {
@@ -66,13 +65,13 @@ export const Hero = () => {
         transition={{ ease: "easeOut", duration: 0.5, delay: 0.4 }}
         className="flex items-center gap-4 justify-center mt-8 relative z-10"
       >
-        <Button as={LocaleLink} href="/dashboard">
+        <Button as={LocaleLink} href="/free-google-post-generator">
           {t("cta.primary")}
         </Button>
         <Button
           variant="simple"
           as={LocaleLink}
-          href="/industries"
+          href="/industries/pressure-washing-marketing"
           className="flex space-x-2 items-center group"
         >
           <span>{t("cta.secondary")}</span>
@@ -80,22 +79,26 @@ export const Hero = () => {
         </Button>
       </motion.div>
 
-      {/* Channel chips */}
-      <motion.div
+      {/* Three step strip */}
+      <motion.ol
         initial={{ y: 40, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ ease: "easeOut", duration: 0.5, delay: 0.5 }}
-        className="flex flex-wrap items-center justify-center gap-2 mt-8 relative z-10"
+        className="flex flex-wrap items-center justify-center gap-2 mt-8 relative z-10 list-none"
       >
-        {CHANNELS.map((ch) => (
-          <span
-            key={ch.label}
-            className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border ${ch.color}`}
+        {STEPS.map((step, idx) => (
+          <li
+            key={step.label}
+            className="inline-flex items-center gap-2 rounded-full border border-border bg-background/80 px-3 py-1 text-xs font-medium"
           >
-            {ch.label}
-          </span>
+            <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-foreground text-background text-[10px]">
+              {idx + 1}
+            </span>
+            <span>{step.label}</span>
+            <span className="hidden md:inline text-muted-foreground">· {step.hint}</span>
+          </li>
         ))}
-      </motion.div>
+      </motion.ol>
 
       {/* Before/after visual mockup */}
       <motion.div
@@ -147,20 +150,20 @@ export const Hero = () => {
               {/* Bottom info strip */}
               <div className="absolute bottom-0 inset-x-0 bg-foreground/90 px-4 py-2 flex items-center justify-between">
                 <div>
-                  <p className="text-background text-xs font-semibold">Concrete restored, not replaced.</p>
-                  <p className="text-background/60 text-[10px]">Serving Austin, TX · Licensed · Insured</p>
+                  <p className="text-background text-xs font-semibold">Google-ready photo</p>
+                  <p className="text-background/60 text-[10px]">1080×1080 · Auto-cropped to the result</p>
                 </div>
                 <div className="text-right">
-                  <p className="text-background/70 text-[10px]">★★★★★ 247</p>
-                  <p className="text-background/50 text-[9px]">(512) 555-0184</p>
+                  <p className="text-background/70 text-[10px]">★★★★★</p>
+                  <p className="text-background/50 text-[9px]">Google Business Profile</p>
                 </div>
               </div>
             </div>
             {/* Caption preview below */}
             <div className="px-6 py-4 border-t border-border">
-              <p className="text-xs text-muted-foreground font-mono">Caption preview</p>
+              <p className="text-xs text-muted-foreground font-mono">Google caption preview</p>
               <p className="mt-1 text-sm text-foreground leading-relaxed">
-                Just finished a full driveway pressure wash in Austin. Before/after says it all. Licensed &amp; insured — serving North Austin and surrounding areas. Message for a free quote. 🧹
+                Knocked out a driveway in South Austin today. Pulled out years of grime and dark stains. If yours could use the same, the Call button on our Google profile is the easiest way to reach us.
               </p>
             </div>
           </div>

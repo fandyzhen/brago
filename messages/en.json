@@ -64,13 +64,13 @@
     }
   },
   "hero": {
-    "badge": "⚡ Before/after posts in 60 seconds",
+    "badge": "Google-ready posts",
     "title": "Let your work brag.",
-    "description": "Turn every finished job into a trust-building before/after post in 60 seconds.",
-    "supporting": "Upload job photos. Brago turns them into polished posts for Google Business Profile, Facebook, Nextdoor, and Instagram.",
+    "description": "Turn finished job photos into Google-ready posts.",
+    "supporting": "Drafts ready in moments — copy and paste to your Google Business Profile. No auto-posting, no platform risk.",
     "cta": {
-      "primary": "Create Your First Post",
-      "secondary": "See examples"
+      "primary": "Create a free Google post",
+      "secondary": "See example"
     }
   },
   "features": {
@@ -96,79 +96,38 @@
     }
   },
   "pricing": {
-    "title": "Pricing Plans",
-    "subtitle": "Simple, transparent pricing that scales with your business",
-    "description": "Choose between live recurring subscriptions and a one-time credit top-up. Every price on this page is driven directly from the billing config used at checkout.",
+    "title": "Pricing",
+    "subtitle": "Free to try. One plan to grow.",
+    "description": "Brago focuses on getting your Google Business Profile fresh every week. Free to try a few posts, then a single Brago Local plan if you want the habit.",
     "billing": {
       "monthly": "Monthly",
       "yearly": "Yearly"
     },
-    "comparison": {
-      "title": "Plan Comparison",
-      "rows": {
-        "purchaseType": "Purchase type",
-        "monthlyPrice": "Monthly price",
-        "yearlyPrice": "Yearly price",
-        "monthlyCredits": "Credits on monthly billing",
-        "yearlyCredits": "Credits on yearly billing",
-        "delivery": "Credit delivery",
-        "bestFor": "Best for"
-      },
-      "values": {
-        "subscription": "Subscription",
-        "oneTime": "One-time pack",
-        "notApplicable": "N/A",
-        "creditsPerMonth": "{credits} / month",
-        "creditsPerYear": "{credits} / year",
-        "oneTimeCredits": "{credits} once",
-        "yearlyInstallments": "{credits} released each month on annual billing",
-        "instantAfterPayment": "Added instantly after payment",
-        "bestForStarter": "Shipping an MVP with recurring usage",
-        "bestForPro": "Heavier production workloads and frequent generation",
-        "bestForCredits": "Top-ups without changing your subscription"
-      }
+    "free": {
+      "name": "Free",
+      "price": "$0",
+      "tagline": "Try it before you commit",
+      "feature_posts": "3 Google posts total",
+      "feature_after_shot": "Best after shot",
+      "feature_caption": "Google-safe captions",
+      "feature_languages": "English / Spanish output",
+      "feature_no_card": "No credit card required",
+      "cta": "Start free"
     },
-    "details": {
-      "monthlyCredits": "{credits} credits each month",
-      "yearlyCredits": "{credits} credits per year",
-      "subscriptionDelivery": "Recurring subscription billed through Creem",
-      "yearlyInstallments": "Annual billing releases {credits} credits each month",
-      "oneTimeCredits": "{credits} credits in one payment",
-      "oneTimeDelivery": "One-time checkout, credits added instantly"
-    },
-    "tiers": {
-      "pro": {
-        "name": "Pro",
-        "description": "For small crews posting a few jobs a week.",
-        "cta": "Start Pro",
-        "features": [
-          "100 posts per month, no watermark",
-          "Google Business Profile, Facebook, Nextdoor, Instagram",
-          "Pressure washing and auto detailing templates",
-          "Brand profile saved — phone, service area, trust badges"
-        ]
-      },
-      "crew": {
-        "name": "Crew",
-        "description": "For busier crews with high job volume.",
-        "cta": "Start Crew",
-        "features": [
-          "300 posts per month, no watermark",
-          "Everything in Pro",
-          "Priority access to new templates",
-          "Batch generate for multiple jobs"
-        ]
-      },
-      "pack_200": {
-        "name": "Post Pack",
-        "description": "One-time top-up if you run short.",
-        "cta": "Buy {credits} Posts",
-        "features": [
-          "Posts added immediately after payment",
-          "Keeps your current plan unchanged",
-          "Useful for busy seasons or one-off bursts"
-        ]
-      }
+    "local": {
+      "name": "Brago Local",
+      "price": "$19/mo",
+      "normalPrice": "Normally $39/mo",
+      "badge": "Launch price for early customers",
+      "feature_posts": "30 Google-ready posts per month",
+      "feature_after_shot": "Best after shot",
+      "feature_caption": "Google-safe captions",
+      "feature_languages": "English / Spanish output",
+      "feature_history": "History-aware wording — no repeat openings",
+      "feature_reminder": "Weekly Google reminders",
+      "feature_no_watermark": "No Brago watermark on exports",
+      "annual_label": "Or $190/year",
+      "cta": "Start Brago Local"
     }
   },
   "testimonials": {
