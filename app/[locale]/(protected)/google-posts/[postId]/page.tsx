@@ -35,6 +35,15 @@ type Photo = {
   riskFlagsJson: string | null;
 };
 
+type RiskFlags = {
+  visibleFace: boolean;
+  visibleLicensePlate: boolean;
+  visibleHouseNumber: boolean;
+  tooBlurryToUse: boolean;
+  tooDarkToUse: boolean;
+  likelyCustomerPrivateProperty: boolean;
+};
+
 const STATUS_LABEL: Record<Post["status"], string> = {
   draft: "Draft",
   ready: "Ready for Google",
@@ -47,12 +56,12 @@ export default function GooglePostPage() {
   const [post, setPost] = useState<Post | null>(null);
   const [photos, setPhotos] = useState<Photo[]>([]);
   const [loading, setLoading] = useState(true);
-  const [marking, setMarking] = useState(false);
+  const [busy, setBusy] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [aiAvailable, setAiAvailable] = useState<boolean | null>(null);
 
   const refetch = useCallback(async () => {
     if (!postId) return;
-    setError(null);
     try {
       const res = await fetch(`/api/brago/google-posts/${postId}`);
       const data = await res.json();
@@ -70,16 +79,68 @@ export default function GooglePostPage() {
     refetch();
   }, [refetch]);
 
-  const onMarkPosted = async () => {
+  const callAnalyze = async () => {
     if (!postId) return;
-    setMarking(true);
+    setBusy("Analyzing photos…");
+    setError(null);
+    try {
+      const res = await fetch(`/api/brago/google-posts/${postId}/analyze`, {
+        method: "POST",
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data?.error ?? "Analyze failed");
+      if (typeof data.aiAvailable === "boolean") setAiAvailable(data.aiAvailable);
+      await refetch();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Analyze failed");
+    } finally {
+      setBusy(null);
+    }
+  };
+
+  const callRender = async (input: {
+    mode?: Post["imageMode"];
+    photoId?: string;
+    beforePhotoId?: string;
+    afterPhotoId?: string;
+  } = {}) => {
+    if (!postId) return;
+    setBusy("Generating Google photo…");
+    setError(null);
+    try {
+      const res = await fetch(
+        `/api/brago/google-posts/${postId}/render-photo`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            mode: input.mode ?? post?.imageMode,
+            photoId: input.photoId,
+            beforePhotoId: input.beforePhotoId,
+            afterPhotoId: input.afterPhotoId,
+          }),
+        },
+      );
+      const data = await res.json();
+      if (!res.ok) throw new Error(data?.error ?? "Render failed");
+      await refetch();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Render failed");
+    } finally {
+      setBusy(null);
+    }
+  };
+
+  const markPosted = async () => {
+    if (!postId) return;
+    setBusy("Marking…");
     try {
       await fetch(`/api/brago/google-posts/${postId}/mark-posted`, {
         method: "POST",
       });
       await refetch();
     } finally {
-      setMarking(false);
+      setBusy(null);
     }
   };
 
@@ -108,7 +169,32 @@ export default function GooglePostPage() {
     );
   }
 
-  const preview = photos[0];
+  const recommendedPhoto =
+    photos.find((p) => p.id === post.bestPhotoId) ?? photos[0] ?? null;
+  let recRisks: RiskFlags | null = null;
+  if (recommendedPhoto?.riskFlagsJson) {
+    try {
+      recRisks = JSON.parse(recommendedPhoto.riskFlagsJson) as RiskFlags;
+    } catch {
+      recRisks = null;
+    }
+  }
+  const proofRec = post.proofRecommendationJson
+    ? (() => {
+        try {
+          return JSON.parse(post.proofRecommendationJson);
+        } catch {
+          return null;
+        }
+      })()
+    : null;
+
+  const heroSrc =
+    post.finalImageUrl ??
+    recommendedPhoto?.processedUrl ??
+    recommendedPhoto?.thumbnailUrl ??
+    recommendedPhoto?.originalUrl ??
+    null;
 
   return (
     <div className="relative min-h-screen">
@@ -121,51 +207,137 @@ export default function GooglePostPage() {
           {post.serviceArea ? `${post.serviceArea} · ${post.serviceType}` : post.serviceType}
         </h1>
         <p className="mt-1 text-xs text-muted-foreground">
-          Status: {STATUS_LABEL[post.status]} · {post.language.toUpperCase()} · Mode: {post.imageMode === "before_after_proof" ? "Before & after proof" : "Single after"}
+          Status: {STATUS_LABEL[post.status]} · {post.language.toUpperCase()} · Mode:{" "}
+          {post.imageMode === "before_after_proof" ? "Before & after proof" : "Single after"}
+          {aiAvailable === false ? " · Photo AI not connected" : ""}
         </p>
 
-        {/* Hero photo / placeholder */}
+        {/* Hero photo */}
         <div className="mt-6">
-          {post.finalImageUrl ? (
+          {heroSrc ? (
             <img
-              src={post.finalImageUrl}
-              alt=""
-              className="w-full rounded-2xl border border-border"
-            />
-          ) : preview ? (
-            <img
-              src={preview.thumbnailUrl ?? preview.processedUrl ?? preview.originalUrl}
+              src={heroSrc}
               alt=""
               className="w-full rounded-2xl border border-border"
             />
           ) : (
             <div className="rounded-2xl border border-dashed border-border bg-card p-10 text-center text-sm text-muted-foreground">
-              Photos and AI selection wire up in the next phase.
+              No photos uploaded.
             </div>
+          )}
+          {recommendedPhoto?.whySelected && (
+            <p className="mt-2 text-xs text-muted-foreground">
+              <span className="font-medium">Why this photo?</span> {recommendedPhoto.whySelected}
+            </p>
           )}
         </div>
 
-        {/* Photos grid */}
+        {recRisks &&
+          (recRisks.visibleFace ||
+            recRisks.visibleLicensePlate ||
+            recRisks.visibleHouseNumber) && (
+            <div className="mt-3 rounded-md bg-yellow-100 text-yellow-900 text-xs px-3 py-2">
+              {recRisks.visibleFace && "⚠ Face visible. "}
+              {recRisks.visibleLicensePlate && "⚠ License plate visible. "}
+              {recRisks.visibleHouseNumber && "⚠ House number visible. "}
+              Review before posting.
+            </div>
+          )}
+
+        {/* Find best after shot */}
+        {photos.length > 0 && !post.bestPhotoId && (
+          <button
+            disabled={!!busy}
+            onClick={callAnalyze}
+            className="mt-4 rounded-full bg-foreground text-background px-4 py-2 text-sm font-medium disabled:opacity-50"
+          >
+            {busy === "Analyzing photos…" ? "Analyzing…" : "Find the best after shot"}
+          </button>
+        )}
+
+        {/* Mode toggle */}
         {photos.length > 0 && (
-          <div className="mt-6 grid grid-cols-3 gap-2">
-            {photos.map((p) => (
-              <div
-                key={p.id}
-                className="relative aspect-square overflow-hidden rounded-md border border-border"
-              >
-                <img
-                  src={p.thumbnailUrl ?? p.processedUrl ?? p.originalUrl}
-                  alt=""
-                  className="h-full w-full object-cover"
-                />
-                {p.detectedRole && (
-                  <span className="absolute bottom-1 left-1 rounded bg-black/60 text-white text-[10px] px-1">
-                    {p.detectedRole}
-                  </span>
-                )}
-              </div>
-            ))}
+          <div className="mt-4 grid grid-cols-2 gap-2">
+            <button
+              disabled={!!busy || !post.bestPhotoId}
+              onClick={() =>
+                callRender({
+                  mode: "single_after",
+                  photoId: post.bestPhotoId ?? undefined,
+                })
+              }
+              className={`rounded-md border px-3 py-2 text-xs ${
+                post.imageMode === "single_after"
+                  ? "bg-foreground text-background"
+                  : "border-border"
+              } disabled:opacity-50`}
+            >
+              Single after
+            </button>
+            <button
+              disabled={
+                !!busy || !post.beforePhotoId || !post.afterPhotoId
+              }
+              onClick={() =>
+                callRender({
+                  mode: "before_after_proof",
+                  beforePhotoId: post.beforePhotoId ?? undefined,
+                  afterPhotoId: post.afterPhotoId ?? undefined,
+                })
+              }
+              className={`rounded-md border px-3 py-2 text-xs ${
+                post.imageMode === "before_after_proof"
+                  ? "bg-foreground text-background"
+                  : "border-border"
+              } disabled:opacity-50`}
+            >
+              Before & after proof
+            </button>
           </div>
+        )}
+
+        {proofRec && (
+          <p className="mt-2 text-xs text-muted-foreground">
+            Brago suggests: <strong>{proofRec.mode}</strong>. {proofRec.reason}
+          </p>
+        )}
+
+        {/* Alternatives */}
+        {photos.length > 1 && (
+          <details className="mt-4">
+            <summary className="text-xs cursor-pointer text-muted-foreground">
+              See alternatives ({photos.length} photos)
+            </summary>
+            <div className="mt-3 grid grid-cols-3 gap-2">
+              {photos.map((p) => {
+                const src = p.thumbnailUrl ?? p.processedUrl ?? p.originalUrl;
+                const selected = p.id === post.bestPhotoId;
+                return (
+                  <button
+                    key={p.id}
+                    disabled={!!busy}
+                    onClick={() =>
+                      callRender({ mode: "single_after", photoId: p.id })
+                    }
+                    className={`relative aspect-square overflow-hidden rounded-md border ${
+                      selected ? "ring-2 ring-blue-500" : "border-border"
+                    } disabled:opacity-50`}
+                  >
+                    <img
+                      src={src}
+                      alt=""
+                      className="h-full w-full object-cover"
+                    />
+                    {p.detectedRole && (
+                      <span className="absolute bottom-1 left-1 rounded bg-black/60 text-white text-[10px] px-1">
+                        {p.detectedRole}
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          </details>
         )}
 
         {/* Caption placeholder */}
@@ -175,7 +347,7 @@ export default function GooglePostPage() {
             <p className="whitespace-pre-wrap text-sm leading-relaxed">{post.caption}</p>
           ) : (
             <p className="text-xs text-muted-foreground">
-              Caption generation lands in Phase 5. Once enabled, click &ldquo;Write Google caption&rdquo; below.
+              Caption generation lands in Phase 5. Once enabled, &ldquo;Write Google caption&rdquo; appears below.
             </p>
           )}
         </section>
@@ -183,15 +355,17 @@ export default function GooglePostPage() {
         {/* Actions */}
         <div className="mt-6 flex flex-wrap gap-2">
           <button
-            onClick={onMarkPosted}
-            disabled={marking || post.status === "posted_manually"}
+            onClick={markPosted}
+            disabled={!!busy || post.status === "posted_manually"}
             className="rounded-full border border-border px-4 py-2 text-sm disabled:opacity-50"
           >
             {post.status === "posted_manually" ? "Marked as posted" : "Mark as posted"}
           </button>
           {post.caption && (
             <button
-              onClick={() => post.caption && navigator.clipboard.writeText(post.caption)}
+              onClick={() =>
+                post.caption && navigator.clipboard.writeText(post.caption)
+              }
               className="rounded-full bg-foreground text-background px-4 py-2 text-sm"
             >
               Copy Google post
@@ -205,7 +379,8 @@ export default function GooglePostPage() {
           </Link>
         </div>
 
-        {error && <p className="mt-4 text-sm text-red-600">{error}</p>}
+        {busy && <p className="mt-3 text-xs text-muted-foreground">{busy}</p>}
+        {error && <p className="mt-3 text-sm text-red-600">{error}</p>}
       </Container>
     </div>
   );
