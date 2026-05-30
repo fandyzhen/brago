@@ -13,8 +13,9 @@ export async function POST(
   { params }: { params: Promise<{ postId: string }> },
 ) {
   const { postId } = await params;
-  const body = (await req.json().catch(() => ({}))) as { anonId?: string };
+  const body = (await req.json().catch(() => ({}))) as { anonId?: string; customContext?: string };
   const anonId = body?.anonId;
+  const customContext = body?.customContext;
   if (!anonId) return NextResponse.json({ error: "missing_anon_id" }, { status: 400 });
 
   const postRows = await db
@@ -34,6 +35,7 @@ export async function POST(
       serviceType: post.serviceType,
       serviceArea: post.serviceArea,
       language: post.language as CaptionLanguage,
+      customInstruction: customContext || undefined,
     });
   } catch (err) {
     console.error("[anon caption] error", err);
