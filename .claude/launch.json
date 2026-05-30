@@ -1,0 +1,30 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "Next.js Dev (默认)",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["dev"],
+      "port": 3000,
+      "autoPort": false
+    },
+    {
+      "name": "Next.js Dev (Turbopack)",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["dev:turbopack"],
+      "port": 3000
+    },
+    {
+      "name": "Next.js Dev (Webpack 兜底)",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["dev:webpack"],
+      "port": 3000
+    },
+    {
+      "name": "Drizzle Studio (数据库)",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["db:studio"],
+      "port": 4983
+    }
+  ]
+}
