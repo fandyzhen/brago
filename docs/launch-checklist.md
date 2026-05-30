@@ -121,6 +121,15 @@
 - **当前状态**：代码已落地（`app/api/contact/route.ts`）+ Resend 链路本地实测通过（2026-05-30，QQ 邮箱收到测试邮件）。**未配置该 env 时不会报错，只会静默跳过邮件、仅入库**——所以上线时如果忘了配，你只会从 DB 里看到提交记录但收不到任何通知
 - **依赖用户提供**：决定生产收件邮箱（可仍用 `35457311@qq.com` 或公司支持邮箱）
 
+### P0-4 匿名试用流（/free-google-post-generator 改造）
+- [ ] R2 控制台为 `anon-tmp/` 前缀配置 lifecycle rule：24h 自动删除
+- [ ] R2 控制台确认 `anon-tmp/` 前缀对象公开可读（vision 调用需要公网 URL）
+- [ ] Vercel 注册 `/api/cron/cleanup-anonymous` 每天凌晨 03:00 UTC 跑（`vercel.json` 已配，仅需 deploy 后确认生效）
+- [ ] OpenRouter 余额监控：当前 $5，按 $0.012/次试用估算，每千访客 ~$12 → 上线前充值到 ≥ $50
+- [ ] 端到端 smoke：清浏览器 → /free-google-post-generator → 走完 brand/upload/tone → 看到半墙 → 点 Copy 弹注册 → 邮箱注册 → 跳 `/google-posts/[id]` 200 + 图正常显示
+- **当前状态**：代码已落地（spec: docs/superpowers/specs/2026-05-30-anonymous-trial-design.md，plan: docs/superpowers/plans/2026-05-30-anonymous-trial-plan.md）。本地 dev DB 已 push 0012 schema，本地实测通过
+- **依赖用户提供**：R2 lifecycle 配置 + OpenRouter 充值
+
 ---
 
 ## P1 — 上线后才能跑通核心功能
