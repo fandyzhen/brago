@@ -6,6 +6,7 @@ import { googlePost } from "@/lib/db/schema";
 import { generateCaption } from "@/lib/brago/caption/generate";
 import { canUserAfford, deductCredits } from "@/lib/credits";
 import type { CaptionLanguage, Industry } from "@/lib/brago/types";
+import { isAiTextAvailable } from "@/lib/brago/caption/text-provider";
 
 export const runtime = "nodejs";
 
@@ -47,7 +48,7 @@ export async function POST(
     (post.language as CaptionLanguage | undefined) ??
     "en";
 
-  const useAi = Boolean(process.env.VOLCANO_ENGINE_API_KEY);
+  const useAi = isAiTextAvailable();
   if (useAi && CAPTION_CREDIT_COST > 0) {
     if (!(await canUserAfford(access.user.id, CAPTION_CREDIT_COST))) {
       return NextResponse.json(
