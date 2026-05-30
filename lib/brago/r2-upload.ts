@@ -1,5 +1,5 @@
 import "server-only";
-import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import { PutObjectCommand, CopyObjectCommand, S3Client } from "@aws-sdk/client-s3";
 
 const ACCESS_KEY_ID = process.env.STORAGE_ACCESS_KEY_ID || "";
 const SECRET = process.env.STORAGE_SECRET_ACCESS_KEY || "";
@@ -71,4 +71,39 @@ export function bufferToDataUrl(
   contentType: string,
 ): string {
   return `data:${contentType};base64,${buffer.toString("base64")}`;
+}
+
+export const ANON_TMP_PREFIX = "anon-tmp";
+
+export function buildAnonTmpKey(anonId: string, photoId: string, suffix: string): string {
+  const safeSuffix = suffix.replace(/[^a-zA-Z0-9._-]/g, "_");
+  return `${ANON_TMP_PREFIX}/${anonId}/${photoId}_${safeSuffix}`;
+}
+
+export function buildClaimedKey(userId: string, postId: string, photoId: string, suffix: string): string {
+  const safeSuffix = suffix.replace(/[^a-zA-Z0-9._-]/g, "_");
+  return `brago/google-posts/${userId}/${postId}/claimed/${photoId}_${safeSuffix}`;
+}
+
+export function publicUrlFor(key: string): string {
+  return `${PUBLIC_URL.replace(/\/$/, "")}/${key}`;
+}
+
+export function keyFromPublicUrl(url: string): string | null {
+  const prefix = PUBLIC_URL.replace(/\/$/, "") + "/";
+  return url.startsWith(prefix) ? url.slice(prefix.length) : null;
+}
+
+export async function copyR2Object(srcKey: string, destKey: string): Promise<string> {
+  if (!r2Client) {
+    throw new Error("R2 not configured");
+  }
+  await r2Client.send(
+    new CopyObjectCommand({
+      Bucket: BUCKET,
+      CopySource: `${BUCKET}/${encodeURIComponent(srcKey)}`,
+      Key: destKey,
+    }),
+  );
+  return publicUrlFor(destKey);
 }
