@@ -29,7 +29,9 @@ export default function RootLayout({
   return (
     <main>
       <NavBar />
-      {children}
+      {/* pt-20 / md:pt-24 reserves room for the fixed top-4 nav (~60-72px tall).
+          Pages should not add their own top padding to clear the nav. */}
+      <div className="pt-20 md:pt-24">{children}</div>
       <Footer />
     </main>
   );

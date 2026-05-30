@@ -1,116 +1,93 @@
 "use client";
 import React from "react";
 import { Logo } from "./Logo";
-import { useTranslations } from 'next-intl';
-import { LocaleLink } from './locale-link';
-import { NewsletterInline } from './newsletter-inline';
+import { useTranslations } from "next-intl";
+import { LocaleLink } from "./locale-link";
+import { NewsletterInline } from "./newsletter-inline";
 
 export const Footer = () => {
   const t = useTranslations();
-  
-  const links = [
-    {
-      name: t('navigation.main.industries'),
-      href: "/industries",
-    },
-    {
-      name: t('navigation.main.templates'),
-      href: "/templates",
-    },
-    {
-      name: t('navigation.main.pricing'),
-      href: "/pricing",
-    },
-    {
-      name: t('navigation.main.contact'),
-      href: "/contact",
-    },
+
+  const product = [
+    { name: t("navigation.main.industries"), href: "/industries" },
+    { name: t("navigation.main.templates"), href: "/templates" },
+    { name: t("navigation.main.pricing"), href: "/pricing" },
+    { name: t("navigation.main.contact"), href: "/contact" },
   ];
   const legal = [
-    {
-      name: t('navigation.footer.legal.terms'),
-      href: "/terms",
-    },
-    {
-      name: t('navigation.footer.legal.privacy'),
-      href: "/privacy",
-    },
-    {
-      name: t('navigation.footer.legal.cookies'),
-      href: "/cookies",
-    },
-    {
-      name: t('navigation.footer.legal.refund'),
-      href: "/refund",
-    },
+    { name: t("navigation.footer.legal.terms"), href: "/terms" },
+    { name: t("navigation.footer.legal.privacy"), href: "/privacy" },
+    { name: t("navigation.footer.legal.cookies"), href: "/cookies" },
+    { name: t("navigation.footer.legal.refund"), href: "/refund" },
   ];
-  const socials = [
-    {
-      name: "Twitter / X",
-      href: "https://x.com/bragoapp",
-      external: true,
-    },
-  ];
+
   return (
-    <div className="relative">
-      <div className="border-t border-border px-8 pt-20 pb-32 relative bg-background">
-        <div className="max-w-7xl mx-auto">
-          {/* Footer Links Section */}
-          <div className="text-sm text-muted-foreground flex sm:flex-row flex-col justify-between items-start">
-            <div>
-              <div className="mr-4 md:flex mb-4">
-                <Logo />
-              </div>
-              <div>{t('common.brand.copyright')}</div>
-              <div className="mt-2">{t('common.brand.allRightsReserved')}</div>
-              {/* Newsletter Inline */}
-              <div className="mt-6">
-                <NewsletterInline />
-              </div>
+    <footer className="relative border-t border-border bg-background">
+      <div className="mx-auto max-w-7xl px-6 pt-10 pb-12 md:px-8 md:pt-20 md:pb-32">
+        {/* Mobile: stacked. Desktop: brand left, link columns right. */}
+        <div className="grid gap-10 md:grid-cols-[minmax(0,1fr)_auto] md:items-start md:gap-16">
+          {/* Brand block */}
+          <div className="grid gap-4">
+            <Logo />
+            <div className="text-sm text-muted-foreground">
+              <div>{t("common.brand.copyright")}</div>
+              <div className="mt-0.5">{t("common.brand.allRightsReserved")}</div>
             </div>
-            <div className="grid grid-cols-3 gap-10 items-start mt-10 md:mt-0">
-              <div className="flex justify-center space-y-4 flex-col mt-4">
-                {links.map((link) => (
-                  <LocaleLink
-                    key={link.name}
-                    className="transition-colors hover:text-foreground text-muted-foreground text-xs sm:text-sm"
-                    href={link.href}
-                  >
-                    {link.name}
-                  </LocaleLink>
-                ))}
+            <div className="max-w-xs">
+              <NewsletterInline />
+            </div>
+          </div>
+
+          {/* Link columns */}
+          <div className="grid grid-cols-2 gap-8 md:grid-cols-3 md:gap-12">
+            <FooterColumn title={t("footer.product.title")} links={product} />
+            <FooterColumn title={t("footer.legal.title")} links={legal} />
+            <div className="col-span-2 grid gap-3 md:col-span-1">
+              <div className="text-xs font-bold uppercase tracking-wide text-foreground">
+                {t("footer.social.title")}
               </div>
-              <div className="flex justify-center space-y-4 flex-col mt-4">
-                {legal.map((link) => (
-                  <LocaleLink
-                    key={link.name}
-                    className="transition-colors hover:text-foreground text-muted-foreground text-xs sm:text-sm"
-                    href={link.href}
-                  >
-                    {link.name}
-                  </LocaleLink>
-                ))}
-              </div>
-              <div className="flex justify-center space-y-4 flex-col mt-4">
-                {socials.map((link) => (
-                  <a
-                    key={link.name}
-                    className="transition-colors hover:text-foreground text-muted-foreground text-xs sm:text-sm"
-                    href={link.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    {link.name}
-                  </a>
-                ))}
-              </div>
+              <a
+                className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+                href="https://x.com/bragoapp"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Twitter / X
+              </a>
             </div>
           </div>
         </div>
       </div>
-      <p className="text-center text-5xl md:text-9xl lg:text-[18rem] font-bold bg-clip-text text-transparent bg-gradient-to-b from-muted to-border inset-x-0">
+
+      {/* Giant brand wash — desktop only. On mobile it's distracting and adds dead space. */}
+      <p className="hidden bg-gradient-to-b from-muted to-border bg-clip-text text-center text-9xl font-bold text-transparent md:block lg:text-[18rem]">
         BRAGO
       </p>
-    </div>
+    </footer>
   );
 };
+
+function FooterColumn({
+  title,
+  links,
+}: {
+  title: string;
+  links: { name: string; href: string }[];
+}) {
+  return (
+    <div className="grid gap-3">
+      <div className="text-xs font-bold uppercase tracking-wide text-foreground">
+        {title}
+      </div>
+      {links.map((link) => (
+        <LocaleLink
+          key={link.name}
+          href={link.href}
+          className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+        >
+          {link.name}
+        </LocaleLink>
+      ))}
+    </div>
+  );
+}

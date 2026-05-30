@@ -36,7 +36,8 @@ export default async function FreeGoogleGeneratorPage(props: {
 
   return (
     <div className="bg-paper-glow relative overflow-hidden">
-      <Container className="relative z-20 py-8 md:py-24 max-w-3xl">
+      {/* No top padding here — the marketing layout already reserves space for the fixed nav */}
+      <Container className="relative z-20 pb-12 md:pb-24 max-w-3xl">
         <p className="mb-3 inline-flex items-center gap-2 font-display text-[11px] md:text-xs font-bold uppercase tracking-[0.15em] text-foreground">
           <span className="h-1.5 w-1.5 rounded-full bg-brand" />
           Free trial · No card needed
