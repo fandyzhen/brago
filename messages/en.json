@@ -792,7 +792,7 @@
         "languageLabel": "Language"
       },
       "consent": {
-        "text": "I agree to the <link>Privacy Policy</link> & photo processing."
+        "text": "I accept the <link>Privacy Policy</link>."
       },
       "generateCta": "Generate my Google post"
     },

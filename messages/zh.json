@@ -789,7 +789,7 @@
         "languageLabel": "语言"
       },
       "consent": {
-        "text": "同意<link>隐私政策</link>并授权处理照片"
+        "text": "我同意 Brago <link>隐私政策</link>"
       },
       "generateCta": "生成我的 Google 贴文"
     },
