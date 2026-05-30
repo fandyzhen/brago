@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp, boolean, integer, varchar, index } from "drizzle-orm/pg-core";
+import { pgTable, text, timestamp, boolean, integer, varchar, index, uniqueIndex } from "drizzle-orm/pg-core";
 
 export const user = pgTable("user", {
   id: text("id").primaryKey(),
@@ -215,6 +215,22 @@ export const contactMessage = pgTable(
   },
   (table) => ({
     createdAtIdx: index("contact_message_created_at_idx").on(table.createdAt),
+  }),
+);
+
+export const anonymousQuota = pgTable(
+  "anonymous_quota",
+  {
+    id: text("id").primaryKey(),
+    ipHash: text("ip_hash").notNull(),
+    usageDate: text("usage_date").notNull(), // YYYY-MM-DD UTC
+    count: integer("count").default(0).notNull(),
+    lastAnonId: text("last_anon_id"),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+  (t) => ({
+    ipDateUq: uniqueIndex("anonymous_quota_ip_date_uq").on(t.ipHash, t.usageDate),
+    createdAtIdx: index("anonymous_quota_created_at_idx").on(t.createdAt),
   }),
 );
 
