@@ -40,9 +40,11 @@ export const proofRecommendationSchema = z.object({
   mode: z.enum(["single_after", "before_after_proof"]),
   beforePhotoId: z.string().optional(),
   afterPhotoId: z.string().optional(),
-  pairConfidence: z.number().min(0).max(1),
-  transformationScore: z.number().min(0).max(10),
-  reason: z.string().max(280),
+  // single_after 模式下模型常省略这两个数值字段；缺失时给默认 0
+  // （语义安全：没有置信度/转换分就当作弱 proof，后处理会保持 single_after）
+  pairConfidence: z.number().min(0).max(1).default(0),
+  transformationScore: z.number().min(0).max(10).default(0),
+  reason: z.string().max(280).default(""),
 });
 
 export const photoVisionAnalysisSchema = z.object({
