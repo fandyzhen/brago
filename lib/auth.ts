@@ -59,6 +59,20 @@ export const auth = betterAuth({
           } catch (error) {
             console.error("[Auth] Failed to seed reminder_settings:", error);
           }
+          try {
+            const cookieHeader = ctx.request?.headers.get("cookie") ?? null;
+            const { readAnonIdFromRequestCookies } = await import("@/lib/brago/anonymous/cookies");
+            const { claimAnonymousPost } = await import("@/lib/brago/anonymous/claim");
+            const anonId = await readAnonIdFromRequestCookies(cookieHeader);
+            if (anonId) {
+              const claimed = await claimAnonymousPost(newSession.user.id, anonId);
+              if (claimed) {
+                console.log(`[Auth] Claimed anonymous post ${claimed} for ${newSession.user.email}`);
+              }
+            }
+          } catch (error) {
+            console.error("[Auth] Failed to claim anonymous post:", error);
+          }
         }
       }
     }),
