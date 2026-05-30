@@ -284,8 +284,8 @@ export const googlePost = pgTable(
   {
     id: text("id").primaryKey(),
     userId: text("user_id")
-      .notNull()
       .references(() => user.id, { onDelete: "cascade" }),
+    anonId: text("anon_id"),
     brandProfileId: text("brand_profile_id").references(() => brandProfile.id, {
       onDelete: "set null",
     }),
@@ -318,6 +318,7 @@ export const googlePost = pgTable(
   (t) => ({
     userIdx: index("google_post_user_idx").on(t.userId),
     createdAtIdx: index("google_post_user_created_idx").on(t.userId, t.createdAt),
+    anonIdx: index("google_post_anon_id_idx").on(t.anonId),
   })
 );
 
@@ -329,7 +330,6 @@ export const googlePostPhoto = pgTable(
       .notNull()
       .references(() => googlePost.id, { onDelete: "cascade" }),
     userId: text("user_id")
-      .notNull()
       .references(() => user.id, { onDelete: "cascade" }),
     originalUrl: text("original_url").notNull(),
     processedUrl: text("processed_url"),
