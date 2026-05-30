@@ -713,6 +713,27 @@
       "title": "把完工照片变成 Google 现成贴文",
       "description": "Brago 把今天的活儿照片变成可直接粘贴到 Google 商家资料的安全贴文，几秒搞定。"
     },
+    "testimonials": {
+      "eyebrow": "客户真实反馈",
+      "industriesLabel": "已支持的服务行业",
+      "industries": ["家政保洁", "草坪园艺", "汽车精洗", "维修上门", "物业管理"],
+      "items": [
+        {
+          "industry": "保洁",
+          "initials": "LM",
+          "quote": "现在每个工地结束，掏手机拍 3 张就能直接发到 Google，省下的 30 分钟够多接一单。",
+          "author": "L. Martínez",
+          "business": "SparkleHome 家政"
+        },
+        {
+          "industry": "园艺",
+          "initials": "DK",
+          "quote": "以前要让助理帮我写文案，现在 Brago 直接出英语+西语双版本，邻里口碑变成了 Google 评分。",
+          "author": "D. Kowalski",
+          "business": "GreenEdge 草坪养护"
+        }
+      ]
+    },
     "form": {
       "nameLabel": "姓名",
       "namePlaceholder": "张三",
@@ -725,7 +746,9 @@
       "submitButton": "提交",
       "submitting": "发送中...",
       "submitSuccess": "消息发送成功！",
-      "submitError": "消息发送失败，请重试。"
+      "submitError": "消息发送失败，请重试。",
+      "successHint": "我们已收到你的消息，会在 1 个工作日内回复到你填写的邮箱。",
+      "sendAnother": "再发一条"
     }
   },
   "blog": {

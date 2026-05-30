@@ -78,6 +78,13 @@
       "when": 1780026923016,
       "tag": "0010_smart_shinobi_shaw",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1780121038128,
+      "tag": "0011_superb_glorian",
+      "breakpoints": true
     }
   ]
 }

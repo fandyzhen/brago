@@ -716,6 +716,27 @@
       "title": "Google-ready posts from your finished work",
       "description": "Brago turns today's job photos into a Google-safe post you can paste into your Business Profile in seconds."
     },
+    "testimonials": {
+      "eyebrow": "What operators say",
+      "industriesLabel": "Built for service crews",
+      "industries": ["Cleaning", "Lawn care", "Auto detailing", "Handyman", "Property care"],
+      "items": [
+        {
+          "industry": "Cleaning",
+          "initials": "LM",
+          "quote": "Three phone shots after a job and it's already on Google. I get 30 minutes back every day — enough for one more booking.",
+          "author": "L. Martínez",
+          "business": "SparkleHome Cleaning"
+        },
+        {
+          "industry": "Lawn care",
+          "initials": "DK",
+          "quote": "I used to have my assistant write captions. Brago drops English + Spanish versions in one tap and our review count is finally moving.",
+          "author": "D. Kowalski",
+          "business": "GreenEdge Lawn"
+        }
+      ]
+    },
     "form": {
       "nameLabel": "Full Name",
       "namePlaceholder": "John Doe",
@@ -728,7 +749,9 @@
       "submitButton": "Submit",
       "submitting": "Sending...",
       "submitSuccess": "Message sent successfully!",
-      "submitError": "Failed to send message. Please try again."
+      "submitError": "Failed to send message. Please try again.",
+      "successHint": "We received your message and will reply to the email you provided within one business day.",
+      "sendAnother": "Send another"
     }
   },
   "blog": {

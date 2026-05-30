@@ -199,6 +199,25 @@ export const newsletterSubscription = pgTable("newsletter_subscription", {
   updatedAt: timestamp("updated_at").defaultNow().$onUpdate(() => new Date()).notNull(),
 });
 
+export const contactMessage = pgTable(
+  "contact_message",
+  {
+    id: text("id").primaryKey(),
+    name: text("name").notNull(),
+    email: text("email").notNull(),
+    company: text("company").notNull(),
+    message: text("message").notNull(),
+    locale: varchar("locale", { length: 8 }),
+    ipAddress: text("ip_address"),
+    userAgent: text("user_agent"),
+    emailDelivered: boolean("email_delivered").default(false).notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+  (table) => ({
+    createdAtIdx: index("contact_message_created_at_idx").on(table.createdAt),
+  }),
+);
+
 // Brand profiles — one per user, stores their business identity for poster generation
 export const brandProfile = pgTable("brand_profile", {
   id: text("id").primaryKey(),

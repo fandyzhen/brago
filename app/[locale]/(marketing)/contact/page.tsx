@@ -1,9 +1,8 @@
 import { Background } from "@/components/background";
 import { Metadata } from "next";
-import { FeaturedTestimonials } from "@/components/featured-testimonials";
-import { cn } from "@/lib/utils";
 import { HorizontalGradient } from "@/components/horizontal-gradient";
 import { ContactForm } from "@/features/marketing/components/contact-form";
+import { ContactTestimonials } from "@/features/marketing/components/contact-testimonials";
 import { getTranslations } from 'next-intl/server';
 import type { Locale } from "@/i18n.config";
 import { generatePageMetadata } from "@/lib/metadata";
@@ -29,13 +28,7 @@ export default async function ContactPage(
     params: Promise<{ locale: Locale }>;
   }
 ) {
-  const params = await props.params;
-
-  const {
-    locale
-  } = params;
-
-  const t = await getTranslations({ locale, namespace: 'contact' });
+  await props.params;
 
   return (
     <div className="relative overflow-hidden py-20 md:py-0 px-4 md:px-20 bg-background">
@@ -43,23 +36,7 @@ export default async function ContactPage(
         <Background />
         <ContactForm />
         <div className="relative w-full z-20 hidden md:flex border-l border-border overflow-hidden bg-background items-center justify-center">
-          <div className="max-w-sm mx-auto">
-            <FeaturedTestimonials />
-            <p
-              className={cn(
-                "font-semibold text-xl text-center text-muted-foreground"
-              )}
-            >
-              {t('testimonial.title')}
-            </p>
-            <p
-              className={cn(
-                "font-normal text-base text-center text-foreground mt-8"
-              )}
-            >
-              {t('testimonial.description')}
-            </p>
-          </div>
+          <ContactTestimonials />
           <HorizontalGradient className="top-20" />
           <HorizontalGradient className="bottom-20" />
           <HorizontalGradient className="-right-80 transform rotate-90 inset-y-0 h-full scale-x-150" />

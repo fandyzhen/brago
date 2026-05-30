@@ -114,6 +114,13 @@
 - [ ] `NEXT_PUBLIC_APP_URL` 改成生产 https 域名
 - **当前状态**：本地是 `http://localhost:3000`，上线必须改
 
+### P0-3 Contact 表单收件邮箱
+- [ ] 生产环境 `CONTACT_INBOX_EMAIL` 配置成实际接收咨询的邮箱（当前本地 `.env.local` 已是 `35457311@qq.com`）
+- [ ] 上线后真实提交一次 `/contact`，确认 QQ 邮箱（或新配的邮箱）收到主题 `New contact from {姓名} ({公司})` 的邮件，且 `replyTo` 为提交者邮箱
+- [ ] 顺便确认 `contact_message` 表里这条记录的 `email_delivered = true`
+- **当前状态**：代码已落地（`app/api/contact/route.ts`）+ Resend 链路本地实测通过（2026-05-30，QQ 邮箱收到测试邮件）。**未配置该 env 时不会报错，只会静默跳过邮件、仅入库**——所以上线时如果忘了配，你只会从 DB 里看到提交记录但收不到任何通知
+- **依赖用户提供**：决定生产收件邮箱（可仍用 `35457311@qq.com` 或公司支持邮箱）
+
 ---
 
 ## P1 — 上线后才能跑通核心功能
