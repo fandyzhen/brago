@@ -754,6 +754,84 @@
       "sendAnother": "Send another"
     }
   },
+  "freeTrial": {
+    "title": "Try Brago free — Google posts in 30 seconds",
+    "subtitle": "Upload your job photos. We pick the strongest after shot and write a Google-safe caption you can paste straight into your Business Profile.",
+    "form": {
+      "optional": "optional",
+      "industry": {
+        "title": "What kind of work?",
+        "options": {
+          "pressure_washing": "Pressure washing",
+          "auto_detailing": "Auto detailing",
+          "cleaning": "Cleaning"
+        }
+      },
+      "photos": {
+        "title": "Job photos",
+        "hintEmpty": "Add 1–9 photos. 3+ unlocks Best Shot picking.",
+        "hintMore": "Add {count} more to unlock Best Shot picking.",
+        "hintReady": "We'll pick the strongest after shot from this set."
+      },
+      "location": {
+        "title": "Where was the job?",
+        "placeholder": "Neighborhood, town, or area"
+      },
+      "note": {
+        "title": "Describe this job",
+        "placeholder": "e.g. \"first wash in 5 years\", \"customer moving out next day\""
+      },
+      "style": {
+        "title": "Style",
+        "toneLabel": "Tone",
+        "toneOptions": {
+          "friendly": "Friendly local",
+          "professional": "Professional",
+          "local_pride": "Local pride"
+        },
+        "languageLabel": "Language"
+      },
+      "consent": {
+        "text": "I agree to Brago's <link>Privacy Policy</link> and consent to processing my uploaded photos for caption generation."
+      },
+      "generateCta": "Generate my Google post"
+    },
+    "steps": {
+      "generating": {
+        "creating": "Setting up your trial…",
+        "vision": "Picking the strongest after shot…",
+        "caption": "Writing a Google-safe caption…",
+        "failed": "Generation failed. Please try again."
+      },
+      "result": {
+        "title": "Your Google Business post is ready",
+        "whyThisPhoto": "Why this photo?",
+        "captionLabel": "Caption",
+        "policyOk": "GBP policy ✓",
+        "unlockCta": "Sign up to unlock",
+        "unlockSubtext": "Save this post · 300 credits · no card",
+        "lockedCopy": "Copy",
+        "lockedDownload": "Download",
+        "lockedSpanish": "Spanish",
+        "lockedRegen": "Redo"
+      },
+      "quotaUsed": {
+        "title": "Today's free trial is used",
+        "body": "Sign up to keep generating — 300 credits included on the house.",
+        "cta": "Create my account"
+      }
+    },
+    "signupModal": {
+      "title": "Unlock & save this post",
+      "subtitle": "Create your free account — we'll save the post you just generated.",
+      "emailLabel": "Email",
+      "passwordLabel": "Password",
+      "submit": "Create account",
+      "googleCta": "Continue with Google",
+      "loginHint": "Already have an account?",
+      "loginLink": "Sign in"
+    }
+  },
   "blog": {
     "title": "Blog",
     "subtitle": "Latest insights and updates from our team",

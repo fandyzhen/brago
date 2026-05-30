@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp, boolean, integer, varchar, index } from "drizzle-orm/pg-core";
+import { pgTable, text, timestamp, boolean, integer, varchar, index, uniqueIndex } from "drizzle-orm/pg-core";
 
 export const user = pgTable("user", {
   id: text("id").primaryKey(),
@@ -218,6 +218,22 @@ export const contactMessage = pgTable(
   }),
 );
 
+export const anonymousQuota = pgTable(
+  "anonymous_quota",
+  {
+    id: text("id").primaryKey(),
+    ipHash: text("ip_hash").notNull(),
+    usageDate: text("usage_date").notNull(), // YYYY-MM-DD UTC
+    count: integer("count").default(0).notNull(),
+    lastAnonId: text("last_anon_id"),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+  (t) => ({
+    ipDateUq: uniqueIndex("anonymous_quota_ip_date_uq").on(t.ipHash, t.usageDate),
+    createdAtIdx: index("anonymous_quota_created_at_idx").on(t.createdAt),
+  }),
+);
+
 // Brand profiles — one per user, stores their business identity for poster generation
 export const brandProfile = pgTable("brand_profile", {
   id: text("id").primaryKey(),
@@ -284,8 +300,8 @@ export const googlePost = pgTable(
   {
     id: text("id").primaryKey(),
     userId: text("user_id")
-      .notNull()
       .references(() => user.id, { onDelete: "cascade" }),
+    anonId: text("anon_id"),
     brandProfileId: text("brand_profile_id").references(() => brandProfile.id, {
       onDelete: "set null",
     }),
@@ -318,6 +334,7 @@ export const googlePost = pgTable(
   (t) => ({
     userIdx: index("google_post_user_idx").on(t.userId),
     createdAtIdx: index("google_post_user_created_idx").on(t.userId, t.createdAt),
+    anonIdx: index("google_post_anon_id_idx").on(t.anonId),
   })
 );
 
@@ -329,7 +346,6 @@ export const googlePostPhoto = pgTable(
       .notNull()
       .references(() => googlePost.id, { onDelete: "cascade" }),
     userId: text("user_id")
-      .notNull()
       .references(() => user.id, { onDelete: "cascade" }),
     originalUrl: text("original_url").notNull(),
     processedUrl: text("processed_url"),

@@ -751,6 +751,84 @@
       "sendAnother": "再发一条"
     }
   },
+  "freeTrial": {
+    "title": "免费试用 Brago — 30 秒做出 Google 商家贴文",
+    "subtitle": "上传你今天的活儿照片，我们帮你挑最强的成品图、写一段符合 Google 商家规范的文案，可以直接粘贴到你的商家资料。",
+    "form": {
+      "optional": "选填",
+      "industry": {
+        "title": "做的是什么活儿？",
+        "options": {
+          "pressure_washing": "压力清洗",
+          "auto_detailing": "汽车精洗",
+          "cleaning": "保洁"
+        }
+      },
+      "photos": {
+        "title": "工作照片",
+        "hintEmpty": "1–9 张，3 张及以上能帮你挑最强成品图。",
+        "hintMore": "再添 {count} 张激活挑图功能。",
+        "hintReady": "够了 — 我们会从中挑出最强的那张。"
+      },
+      "location": {
+        "title": "这次工作在哪？",
+        "placeholder": "小区、街道、片区都行"
+      },
+      "note": {
+        "title": "描述这次工作",
+        "placeholder": "比如「这家车道 5 年没洗过」「客户下周就搬走了」"
+      },
+      "style": {
+        "title": "风格",
+        "toneLabel": "语气",
+        "toneOptions": {
+          "friendly": "亲切本地",
+          "professional": "专业",
+          "local_pride": "邻里口碑"
+        },
+        "languageLabel": "语言"
+      },
+      "consent": {
+        "text": "我已阅读并同意 Brago 的<link>隐私政策</link>，授权 Brago 处理我上传的照片用于生成文案。"
+      },
+      "generateCta": "生成我的 Google 贴文"
+    },
+    "steps": {
+      "generating": {
+        "creating": "正在为你准备试用…",
+        "vision": "正在挑选最强的成品图…",
+        "caption": "正在撰写符合 Google 规范的文案…",
+        "failed": "生成失败，请重试。"
+      },
+      "result": {
+        "title": "你的 Google 商家贴文已就绪",
+        "whyThisPhoto": "为什么选这张？",
+        "captionLabel": "文案",
+        "policyOk": "符合 GBP 规范 ✓",
+        "unlockCta": "注册解锁",
+        "unlockSubtext": "保存这条 · 送 300 积分 · 无需绑卡",
+        "lockedCopy": "复制",
+        "lockedDownload": "下载",
+        "lockedSpanish": "西语版",
+        "lockedRegen": "重生"
+      },
+      "quotaUsed": {
+        "title": "今日免费试用已用完",
+        "body": "注册即可继续生成，还附送 300 积分。",
+        "cta": "立即注册"
+      }
+    },
+    "signupModal": {
+      "title": "解锁并保存这条贴文",
+      "subtitle": "创建免费账号，我们会把你刚才生成的内容保存到你的账户。",
+      "emailLabel": "邮箱",
+      "passwordLabel": "密码",
+      "submit": "创建账号",
+      "googleCta": "用 Google 继续",
+      "loginHint": "已有账号？",
+      "loginLink": "登录"
+    }
+  },
   "blog": {
     "title": "博客",
     "subtitle": "来自我们团队的最新见解与更新",

@@ -55,7 +55,7 @@ export default function AutoDetailingMarketingPage() {
     <div className="bg-background">
       {/* Hero */}
       <div className="border-b border-border">
-        <Container className="py-20 md:py-28">
+        <Container className="py-10 md:py-16">
           <div className="max-w-3xl">
             <p className="text-sm font-medium text-muted-foreground uppercase tracking-widest mb-4">
               Auto Detailing Marketing
