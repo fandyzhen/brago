@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useState } from "react";
+import { mapWithConcurrency } from "@/lib/brago/concurrency";
 
 export type PrepareStatus =
   | { status: "idle" }
@@ -56,20 +57,29 @@ export function usePhotoPrepare(maxFiles = 10) {
           file: File,
           opts: Record<string, unknown>,
         ) => Promise<File>;
-        let heicTo: HeicToFn | null = null;
+        // HEIC 库懒加载：多个并发任务共享同一次 import，避免重复加载
+        let heicToPromise: Promise<HeicToFn> | null = null;
+        const getHeicTo = (): Promise<HeicToFn> => {
+          if (!heicToPromise) {
+            heicToPromise = import("heic-to")
+              .catch(() => null)
+              .then((mod) => {
+                const fn = pickHeicToFn(mod);
+                if (!fn) {
+                  throw new Error("HEIC conversion library failed to load");
+                }
+                return fn;
+              });
+          }
+          return heicToPromise;
+        };
 
-        const out: File[] = [];
-        for (let i = 0; i < list.length; i++) {
-          const file = list[i];
+        let done = 0;
+        // 并发上限 3：压缩走 web worker，太多并发会吃满移动端 CPU/内存
+        const out = await mapWithConcurrency(list, 3, async (file) => {
           let working: File = file;
           if (isHeic(file)) {
-            if (!heicTo) {
-              const mod = await import("heic-to").catch(() => null);
-              heicTo = pickHeicToFn(mod);
-              if (!heicTo) {
-                throw new Error("HEIC conversion library failed to load");
-              }
-            }
+            const heicTo = await getHeicTo();
             const converted = await heicTo({
               blob: file,
               type: "image/jpeg",
@@ -88,13 +98,10 @@ export function usePhotoPrepare(maxFiles = 10) {
             fileType: "image/jpeg",
             initialQuality: 0.85,
           });
-          out.push(compressed);
-          setState({
-            status: "preparing",
-            processed: i + 1,
-            total: list.length,
-          });
-        }
+          done += 1;
+          setState({ status: "preparing", processed: done, total: list.length });
+          return compressed;
+        });
 
         setState({ status: "ready", files: out });
         return out;
