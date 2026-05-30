@@ -751,6 +751,69 @@
       "sendAnother": "再发一条"
     }
   },
+  "freeTrial": {
+    "title": "免费试用 Brago — 30 秒做出 Google 商家贴文",
+    "subtitle": "上传你今天的活儿照片，我们帮你挑最强的成品图、写一段符合 Google 商家规范的文案，可以直接粘贴到你的商家资料。",
+    "steps": {
+      "upload": {
+        "title": "添加 3–10 张工作照片",
+        "hint": "拖拽照片或点击上传。JPEG/PNG/HEIC，单张 ≤ 10MB。",
+        "next": "继续"
+      },
+      "brand": {
+        "title": "告诉我们这次的工作",
+        "serviceTypeLabel": "服务类型",
+        "cityLabel": "城市/服务区",
+        "cityPlaceholder": "上海浦东",
+        "brandNameLabel": "公司/店铺名",
+        "brandNamePlaceholder": "晶晶家政",
+        "phoneLabel": "电话（选填，不会写进文案）",
+        "next": "继续"
+      },
+      "tone": {
+        "title": "语气与语言",
+        "toneLabel": "语气",
+        "toneOptions": {
+          "friendly": "亲切本地",
+          "professional": "专业",
+          "local_pride": "邻里口碑"
+        },
+        "languageLabel": "语言",
+        "generate": "生成我的 Google 贴文"
+      },
+      "generating": {
+        "vision": "正在挑选最强的成品图…",
+        "caption": "正在撰写符合 Google 规范的文案…"
+      },
+      "result": {
+        "title": "你的 Google 商家贴文已就绪",
+        "whyThisPhoto": "为什么选这张？",
+        "captionLabel": "文案",
+        "policyOk": "符合 GBP 规范 ✓",
+        "unlockCta": "免费注册 · 解锁并保存这条贴文",
+        "unlockSubtext": "送 300 积分，无需信用卡。",
+        "lockedCopy": "复制文案",
+        "lockedDownload": "下载图片",
+        "lockedSpanish": "切换西班牙语",
+        "lockedRegen": "重新生成"
+      },
+      "quotaUsed": {
+        "title": "今日免费试用已用完",
+        "body": "注册即可继续生成，还附送 300 积分。",
+        "cta": "立即注册"
+      }
+    },
+    "signupModal": {
+      "title": "解锁并保存这条贴文",
+      "subtitle": "创建免费账号，我们会把你刚才生成的内容保存到你的账户。",
+      "emailLabel": "邮箱",
+      "passwordLabel": "密码",
+      "submit": "创建账号",
+      "googleCta": "用 Google 继续",
+      "loginHint": "已有账号？",
+      "loginLink": "登录"
+    }
+  },
   "blog": {
     "title": "博客",
     "subtitle": "来自我们团队的最新见解与更新",

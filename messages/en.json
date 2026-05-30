@@ -754,6 +754,69 @@
       "sendAnother": "Send another"
     }
   },
+  "freeTrial": {
+    "title": "Try Brago free — Google posts in 30 seconds",
+    "subtitle": "Upload your job photos. We pick the strongest after shot and write a Google-safe caption you can paste straight into your Business Profile.",
+    "steps": {
+      "upload": {
+        "title": "Add 3–10 job photos",
+        "hint": "Drag photos here or click to browse. JPEG/PNG/HEIC, up to 10MB each.",
+        "next": "Continue"
+      },
+      "brand": {
+        "title": "Tell us about the job",
+        "serviceTypeLabel": "Service type",
+        "cityLabel": "City or neighborhood",
+        "cityPlaceholder": "South Austin",
+        "brandNameLabel": "Business name",
+        "brandNamePlaceholder": "SparkleHome Cleaning",
+        "phoneLabel": "Phone (optional, never shown in caption)",
+        "next": "Continue"
+      },
+      "tone": {
+        "title": "Voice & language",
+        "toneLabel": "Tone",
+        "toneOptions": {
+          "friendly": "Friendly local",
+          "professional": "Professional",
+          "local_pride": "Local pride"
+        },
+        "languageLabel": "Language",
+        "generate": "Draft my Google post"
+      },
+      "generating": {
+        "vision": "Picking the strongest after shot…",
+        "caption": "Writing a Google-safe caption…"
+      },
+      "result": {
+        "title": "Your Google Business post is ready",
+        "whyThisPhoto": "Why this photo?",
+        "captionLabel": "Caption",
+        "policyOk": "GBP policy ✓",
+        "unlockCta": "Sign up free to unlock & save this post",
+        "unlockSubtext": "300 credits included. No card required.",
+        "lockedCopy": "Copy caption",
+        "lockedDownload": "Download image",
+        "lockedSpanish": "Switch to Spanish",
+        "lockedRegen": "Regenerate"
+      },
+      "quotaUsed": {
+        "title": "Today's free trial is used",
+        "body": "Sign up to keep generating — 300 credits included on the house.",
+        "cta": "Create my account"
+      }
+    },
+    "signupModal": {
+      "title": "Unlock & save this post",
+      "subtitle": "Create your free account — we'll save the post you just generated.",
+      "emailLabel": "Email",
+      "passwordLabel": "Password",
+      "submit": "Create account",
+      "googleCta": "Continue with Google",
+      "loginHint": "Already have an account?",
+      "loginLink": "Sign in"
+    }
+  },
   "blog": {
     "title": "Blog",
     "subtitle": "Latest insights and updates from our team",
