@@ -25,15 +25,40 @@ export const scoresSchema = z.object({
   googleFit: z.number().min(0).max(10),
 });
 
+// 默认值：模型边缘输出（缺字段 / 数值越界）时兜底，避免整条分析因
+// 非关键字段而 502。关键结构（photoId / role / 推荐图 / proof.mode）保持严格。
+const DEFAULT_SCORES = {
+  resultVisibility: 0,
+  transformationStrength: 0,
+  subjectCompleteness: 0,
+  trustSignal: 0,
+  googleFit: 0,
+};
+const DEFAULT_CROP_HINT = {
+  xPct: 0,
+  yPct: 0,
+  widthPct: 100,
+  heightPct: 100,
+  preferredAspectRatio: "1:1" as const,
+};
+const DEFAULT_RISK_FLAGS = {
+  visibleFace: false,
+  visibleLicensePlate: false,
+  visibleHouseNumber: false,
+  tooBlurryToUse: false,
+  tooDarkToUse: false,
+  likelyCustomerPrivateProperty: false,
+};
+
 export const photoVisionItemSchema = z.object({
   photoId: z.string(),
   role: z.enum(["before", "after", "process", "detail", "team", "other"]),
-  roleConfidence: z.number().min(0).max(1),
-  bestAfterScore: z.number().min(0).max(10),
-  scores: scoresSchema,
-  cropHint: cropHintSchema,
-  riskFlags: riskFlagsSchema,
-  why: z.string().max(280),
+  roleConfidence: z.number().min(0).max(1).catch(0.5),
+  bestAfterScore: z.number().min(0).max(10).catch(0),
+  scores: scoresSchema.catch(DEFAULT_SCORES),
+  cropHint: cropHintSchema.catch(DEFAULT_CROP_HINT),
+  riskFlags: riskFlagsSchema.catch(DEFAULT_RISK_FLAGS),
+  why: z.string().max(280).catch(""),
 });
 
 export const proofRecommendationSchema = z.object({
