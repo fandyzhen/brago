@@ -5,7 +5,6 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useLocale, useTranslations } from 'next-intl';
 import { Button } from "@/components/button";
 import { Container } from "@/components/container";
-import { Background } from "@/components/background";
 import { motion } from "framer-motion";
 import { useCallback, useEffect, useState } from "react";
 import { getDefaultOneTimePack } from "@/lib/billing-display";
@@ -96,8 +95,7 @@ export default function DashboardPage() {
 
   if (loading && !user) {
     return (
-      <div className="relative min-h-screen">
-        <Background />
+      <div className="bg-paper-glow relative min-h-screen">
         <Container className="relative z-10 py-20">
           <div className="flex justify-center items-center h-64">
             <p className="text-muted-foreground">{tCommon('status.loading')}</p>
@@ -108,18 +106,17 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="relative min-h-screen">
-      <Background />
-      <Container className="relative z-10 py-20">
+    <div className="bg-paper-glow relative min-h-screen">
+      <Container className="relative z-10 py-16 md:py-20">
         <motion.div
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ ease: "easeOut", duration: 0.5 }}
         >
-          <h1 className="text-4xl md:text-6xl font-bold text-foreground mb-4">
+          <h1 className="font-display text-3xl md:text-5xl font-extrabold tracking-tight text-foreground mb-3">
             {t('title')}
           </h1>
-          <p className="text-xl text-muted-foreground mb-6">
+          <p className="text-base md:text-lg text-muted-foreground mb-6">
             {t('welcome')}, {displayUser?.name || displayUser?.email}
           </p>
 
@@ -129,15 +126,14 @@ export default function DashboardPage() {
 
           <div className="flex flex-wrap gap-3 mb-12">
             <Button
+              variant="accent"
               onClick={() => router.push(`/${locale}/create`)}
-              className="rounded-full"
             >
               Upload job photos
             </Button>
             <Button
               variant="outline"
               onClick={() => router.push(`/${locale}/posts`)}
-              className="rounded-full"
             >
               View all Google posts
             </Button>
@@ -153,7 +149,7 @@ export default function DashboardPage() {
 
           {/* Recent Google posts */}
           <div className="mb-12">
-            <h2 className="text-xl font-semibold text-foreground mb-4">Recent Google posts</h2>
+            <h2 className="font-display text-xl font-bold text-foreground mb-4">Recent Google posts</h2>
             <RecentGooglePosts />
           </div>
         </motion.div>
@@ -165,8 +161,8 @@ export default function DashboardPage() {
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
         >
           {/* Personal Info Card */}
-          <div className="bg-card/50 backdrop-blur-md rounded-2xl p-6 border border-border">
-            <h3 className="text-xl font-semibold text-card-foreground mb-4">
+          <div className="bg-card rounded-2xl p-6 border border-border shadow-sm">
+            <h3 className="font-display text-lg font-bold text-card-foreground mb-4">
               {t('cards.personalInfo.title')}
             </h3>
             <div className="space-y-3">
@@ -192,8 +188,8 @@ export default function DashboardPage() {
           </div>
 
           {/* Quick Actions Card */}
-          <div className="bg-card/50 backdrop-blur-md rounded-2xl p-6 border border-border">
-            <h3 className="text-xl font-semibold text-card-foreground mb-4">
+          <div className="bg-card rounded-2xl p-6 border border-border shadow-sm">
+            <h3 className="font-display text-lg font-bold text-card-foreground mb-4">
               {t('cards.quickActions.title')}
             </h3>
             <div className="space-y-3">
@@ -222,8 +218,8 @@ export default function DashboardPage() {
           </div>
 
           {/* Statistics Card */}
-          <div className="bg-card/50 backdrop-blur-md rounded-2xl p-6 border border-border">
-            <h3 className="text-xl font-semibold text-card-foreground mb-4">
+          <div className="bg-card rounded-2xl p-6 border border-border shadow-sm">
+            <h3 className="font-display text-lg font-bold text-card-foreground mb-4">
               {t('cards.statistics.title')}
             </h3>
             <div className="space-y-3">

@@ -10,7 +10,6 @@ import { ChevronRight, MessageSquare, Image as ImageIcon, Video } from "lucide-r
 import { Button } from "@/components/button";
 import { Logo } from "@/components/Logo";
 import { ModeToggle } from "@/components/mode-toggle";
-import { LanguageSwitcher } from "@/components/language-switcher";
 import { useSession, signOut } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 import { useLocale, useTranslations } from 'next-intl';
@@ -159,9 +158,6 @@ export const MobileNavbar = () => {
             ))}
           </div>
           <div className="flex flex-col w-full items-start gap-4 px-6 py-5 border-t border-border bg-secondary">
-            <div className="w-full">
-              <LanguageSwitcher />
-            </div>
             {session.data?.user ? (
               <>
                 <div className="flex flex-col gap-2 w-full">

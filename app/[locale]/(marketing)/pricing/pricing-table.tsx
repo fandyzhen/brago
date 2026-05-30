@@ -68,11 +68,11 @@ export function PricingTable() {
             <table className="min-w-full divide-y divide-border">
               <thead>
                 <tr>
-                  <th className="max-w-xs py-3.5 pl-4 pr-3 text-left text-3xl font-extrabold text-foreground sm:pl-0" />
+                  <th className="max-w-xs py-3.5 pl-3 pr-2 text-left text-3xl font-extrabold text-foreground sm:pl-0 sm:pr-3" />
                   {tiers.map((tier) => (
                     <th
                       scope="col"
-                      className="px-3 py-3.5 text-center text-lg font-semibold text-foreground"
+                      className="px-2 py-3.5 text-center text-sm font-semibold text-foreground sm:px-3 sm:text-lg"
                       key={tier.id}
                     >
                       {tier.name}
@@ -83,13 +83,13 @@ export function PricingTable() {
               <tbody className="divide-y divide-border">
                 {rows.map((row) => (
                   <tr key={row.title}>
-                    <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-foreground sm:pl-0">
+                    <td className="py-4 pl-3 pr-2 text-sm font-medium text-foreground sm:pl-0 sm:pr-3">
                       {row.title}
                     </td>
                     {tiers.map((tier) => (
                       <td
                         key={`${row.title}-${tier.id}`}
-                        className="whitespace-nowrap px-3 py-4 text-center text-sm text-muted-foreground"
+                        className="px-2 py-4 text-center text-sm text-muted-foreground sm:px-3"
                       >
                         {row.values[tier.id]}
                       </td>

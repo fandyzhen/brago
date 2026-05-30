@@ -5,7 +5,6 @@ import { motion } from "framer-motion";
 import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { signOut, useSession } from "@/lib/auth-client";
-import { Background } from "@/components/background";
 import { Button } from "@/components/button";
 import { Container } from "@/components/container";
 import {
@@ -162,8 +161,7 @@ export default function SettingsPage() {
 
   if (loading && !displayUser) {
     return (
-      <div className="relative min-h-screen">
-        <Background />
+      <div className="bg-paper-glow relative min-h-screen">
         <Container className="relative z-10 py-20">
           <div className="flex h-64 items-center justify-center">
             <p className="text-muted-foreground">{tCommon("status.loading")}</p>
@@ -174,20 +172,19 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="relative min-h-screen">
-      <Background />
-      <Container className="relative z-10 py-20">
+    <div className="bg-paper-glow relative min-h-screen">
+      <Container className="relative z-10 py-16 md:py-20">
         <motion.div
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ ease: "easeOut", duration: 0.5 }}
           className="mx-auto max-w-5xl"
         >
-          <div className="mb-12">
-            <h1 className="mb-4 text-4xl font-bold text-foreground md:text-6xl">
+          <div className="mb-10 md:mb-12">
+            <h1 className="mb-3 font-display text-3xl font-extrabold tracking-tight text-foreground md:text-5xl">
               {t("title")}
             </h1>
-            <p className="text-xl text-muted-foreground">{t("subtitle")}</p>
+            <p className="text-base md:text-lg text-muted-foreground">{t("subtitle")}</p>
 
             <nav className="mt-6 flex flex-wrap gap-2 text-xs">
               <a
@@ -217,9 +214,9 @@ export default function SettingsPage() {
               initial={{ y: 40, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ ease: "easeOut", duration: 0.5, delay: 0.1 }}
-              className="rounded-3xl border border-border bg-card/50 p-6 backdrop-blur-md lg:col-span-2"
+              className="rounded-3xl border border-border bg-card p-6 shadow-sm lg:col-span-2"
             >
-              <h2 className="text-2xl font-semibold text-card-foreground">
+              <h2 className="font-display text-2xl font-bold text-card-foreground">
                 {t("sections.profile.title")}
               </h2>
               <p className="mt-2 text-sm text-muted-foreground">
@@ -238,7 +235,7 @@ export default function SettingsPage() {
                     id="settings-name"
                     value={name}
                     onChange={(event) => setName(event.target.value)}
-                    className="w-full rounded-xl border border-border bg-background px-4 py-3 text-foreground outline-none transition focus:border-primary"
+                    className="w-full rounded-xl border border-border bg-background px-4 py-3 text-foreground outline-none transition focus:border-brand focus:ring-2 focus:ring-ring/40"
                     placeholder={t("sections.profile.namePlaceholder")}
                   />
                 </div>
@@ -277,9 +274,9 @@ export default function SettingsPage() {
               initial={{ y: 40, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ ease: "easeOut", duration: 0.5, delay: 0.15 }}
-              className="rounded-3xl border border-border bg-card/50 p-6 backdrop-blur-md"
+              className="rounded-3xl border border-border bg-card p-6 shadow-sm"
             >
-              <h2 className="text-2xl font-semibold text-card-foreground">
+              <h2 className="font-display text-2xl font-bold text-card-foreground">
                 {t("sections.billing.title")}
               </h2>
               <p className="mt-2 text-sm text-muted-foreground">
@@ -335,9 +332,9 @@ export default function SettingsPage() {
               initial={{ y: 40, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ ease: "easeOut", duration: 0.5, delay: 0.2 }}
-              className="rounded-3xl border border-border bg-card/50 p-6 backdrop-blur-md lg:col-span-3"
+              className="rounded-3xl border border-border bg-card p-6 shadow-sm lg:col-span-3"
             >
-              <h2 className="text-2xl font-semibold text-card-foreground">
+              <h2 className="font-display text-2xl font-bold text-card-foreground">
                 {t("sections.security.title")}
               </h2>
               <p className="mt-2 text-sm text-muted-foreground">

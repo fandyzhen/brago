@@ -49,13 +49,13 @@ export function FreeGeneratorClient() {
   };
 
   return (
-    <form onSubmit={onGenerate} className="mt-8 grid gap-4 rounded-2xl border border-border bg-card p-6">
-      <label className="grid gap-1 text-sm">
-        <span className="text-muted-foreground">Service type</span>
+    <form onSubmit={onGenerate} className="mt-8 grid gap-4 rounded-2xl border border-border bg-card p-6 shadow-tactile">
+      <label className="grid gap-1.5 text-sm">
+        <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Service type</span>
         <select
           value={serviceType}
           onChange={(e) => setServiceType(e.target.value)}
-          className="rounded-md border border-border bg-background px-3 py-2"
+          className="rounded-xl border border-border bg-background px-4 py-3 text-base text-foreground focus:border-brand focus:outline-none focus:ring-2 focus:ring-ring/40"
         >
           {SERVICE_TYPES.map((s) => (
             <option key={s.value} value={s.value}>{s.label}</option>
@@ -63,21 +63,21 @@ export function FreeGeneratorClient() {
         </select>
       </label>
 
-      <label className="grid gap-1 text-sm">
-        <span className="text-muted-foreground">City or neighborhood</span>
+      <label className="grid gap-1.5 text-sm">
+        <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">City or neighborhood</span>
         <input
           value={city}
           onChange={(e) => setCity(e.target.value)}
           placeholder="South Austin"
-          className="rounded-md border border-border bg-background px-3 py-2"
+          className="rounded-xl border border-border bg-background px-4 py-3 text-base text-foreground placeholder:text-muted-foreground/60 focus:border-brand focus:outline-none focus:ring-2 focus:ring-ring/40"
         />
       </label>
 
-      <Button type="submit" disabled={loading} className="rounded-full">
+      <Button variant="accent" type="submit" disabled={loading}>
         {loading ? "Drafting…" : "Draft my Google caption"}
       </Button>
 
-      {error && <p className="text-sm text-red-600">{error}</p>}
+      {error && <p className="text-sm font-medium text-red-600">{error}</p>}
 
       {caption && (
         <div className="mt-2 rounded-xl border border-border bg-background p-4">
@@ -85,7 +85,7 @@ export function FreeGeneratorClient() {
           <button
             type="button"
             onClick={copy}
-            className="mt-3 text-xs text-muted-foreground underline hover:text-foreground"
+            className="mt-3 inline-flex items-center gap-1.5 rounded-lg bg-brand/15 px-3 py-1.5 text-xs font-bold text-brand-foreground transition-colors hover:bg-brand/25"
           >
             {copied ? "Copied!" : "Copy caption"}
           </button>

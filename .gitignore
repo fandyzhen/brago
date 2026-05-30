@@ -66,3 +66,9 @@ public/fumadocs-style.css
 
 # scripts
 /scripts/manage-users.ts
+
+# Local UI preview artifacts (Playwright / screenshots)
+.playwright-mcp/
+brago-*.png
+redesign-*.png
+prot-*.png

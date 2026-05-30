@@ -27,7 +27,7 @@ const INDUSTRIES = [
     tagline: "Auto detailing Google posts",
     description:
       "Interior, pet hair removal, exterior shine, and mobile detailing jobs → Google-safe captions and best-photo selection.",
-    accent: "#FFD63A",
+    accent: "#F59E0B",
     scenes: ["Interior Detail", "Pet Hair Removal", "Exterior Shine", "Wheels", "Mobile Detail"],
     available: true,
   },
@@ -78,10 +78,11 @@ export default async function IndustriesPage() {
     <Container className="py-20 md:py-32">
       {/* Header */}
       <div className="max-w-2xl">
-        <p className="text-sm font-medium text-muted-foreground uppercase tracking-widest mb-4">
+        <p className="mb-4 inline-flex items-center gap-2 font-display text-xs font-bold text-foreground uppercase tracking-[0.18em]">
+          <span className="h-2 w-2 rounded-full bg-brand" />
           Industries
         </p>
-        <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-foreground">
+        <h1 className="font-display text-4xl md:text-5xl font-extrabold tracking-tight text-foreground">
           Google-ready posts for local service crews
         </h1>
         <p className="mt-4 text-lg text-muted-foreground">
@@ -97,7 +98,7 @@ export default async function IndustriesPage() {
             {industry.available ? (
               <Link
                 href={`/industries/${industry.slug}`}
-                className="group block h-full rounded-2xl border border-border bg-background p-6 transition-all hover:border-foreground/20 hover:shadow-md"
+                className="group block h-full rounded-2xl border border-border bg-card p-6 shadow-sm transition-all hover:-translate-y-0.5 hover:border-brand/50 hover:shadow-tactile"
               >
                 <IndustryCard industry={industry} />
               </Link>
@@ -111,8 +112,8 @@ export default async function IndustriesPage() {
       </div>
 
       {/* Bottom CTA */}
-      <div className="mt-20 rounded-2xl border border-border bg-secondary/50 p-8 md:p-12 text-center">
-        <h2 className="text-2xl md:text-3xl font-bold text-foreground">
+      <div className="bg-paper-glow mt-20 rounded-2xl border border-border p-8 md:p-12 text-center">
+        <h2 className="font-display text-2xl md:text-3xl font-extrabold text-foreground">
           Turn today&apos;s job into a Google post
         </h2>
         <p className="mt-3 text-muted-foreground max-w-xl mx-auto">
@@ -120,7 +121,7 @@ export default async function IndustriesPage() {
         </p>
         <Link
           href="/free-google-post-generator"
-          className="mt-6 inline-flex items-center px-6 py-3 rounded-full bg-foreground text-background text-sm font-semibold hover:bg-foreground/90 transition-colors"
+          className="mt-6 inline-flex items-center px-6 py-3 rounded-xl bg-brand text-brand-foreground text-sm font-bold shadow-tactile transition-all hover:-translate-y-0.5"
         >
           Create a free Google post
         </Link>
@@ -144,7 +145,7 @@ function IndustryCard({
         style={{ backgroundColor: industry.accent }}
       />
       <div className="flex items-start justify-between gap-2">
-        <h2 className="text-lg font-semibold text-foreground group-hover:text-foreground transition-colors">
+        <h2 className="font-display text-lg font-bold text-foreground transition-colors">
           {industry.name}
         </h2>
         {comingSoon && (

@@ -89,7 +89,7 @@ export default function AutoDetailingMarketingPage() {
       <Container className="py-16 md:py-24">
         <div className="grid md:grid-cols-2 gap-12 items-start">
           <div>
-            <h2 className="text-2xl md:text-3xl font-bold text-foreground">
+            <h2 className="text-2xl md:text-3xl font-display font-extrabold text-foreground">
               Great results. Not enough time to show them.
             </h2>
             <p className="mt-4 text-muted-foreground leading-relaxed">
@@ -104,7 +104,7 @@ export default function AutoDetailingMarketingPage() {
                 "Clients who see your work online are already pre-sold before they call.",
               ].map((point) => (
                 <li key={point} className="flex items-start gap-3 text-sm text-muted-foreground">
-                  <span className="mt-1 w-1.5 h-1.5 rounded-full bg-[#FFD63A] shrink-0" />
+                  <span className="mt-1 w-1.5 h-1.5 rounded-full bg-[#F59E0B] shrink-0" />
                   {point}
                 </li>
               ))}
@@ -133,7 +133,7 @@ export default function AutoDetailingMarketingPage() {
       {/* Channels */}
       <div id="examples" className="border-y border-border bg-secondary/30">
         <Container className="py-16 md:py-24">
-          <h2 className="text-2xl md:text-3xl font-bold text-foreground max-w-2xl">
+          <h2 className="text-2xl md:text-3xl font-display font-extrabold text-foreground max-w-2xl">
             Where auto detailers should post — and why before/after works
           </h2>
           <p className="mt-4 text-muted-foreground max-w-2xl leading-relaxed">
@@ -173,7 +173,7 @@ export default function AutoDetailingMarketingPage() {
 
       {/* Headline examples */}
       <Container className="py-16 md:py-24">
-        <h2 className="text-2xl md:text-3xl font-bold text-foreground">
+        <h2 className="text-2xl md:text-3xl font-display font-extrabold text-foreground">
           Auto detailing headline examples
         </h2>
         <p className="mt-3 text-muted-foreground">
@@ -191,7 +191,7 @@ export default function AutoDetailingMarketingPage() {
         </div>
 
         {/* Caption examples */}
-        <h2 className="mt-16 text-2xl md:text-3xl font-bold text-foreground">
+        <h2 className="mt-16 text-2xl md:text-3xl font-display font-extrabold text-foreground">
           Caption examples by channel
         </h2>
         <div className="mt-8 space-y-5">
@@ -209,7 +209,7 @@ export default function AutoDetailingMarketingPage() {
       {/* How it works */}
       <div className="border-y border-border bg-secondary/30">
         <Container className="py-16 md:py-20">
-          <h2 className="text-2xl md:text-3xl font-bold text-foreground text-center">
+          <h2 className="text-2xl md:text-3xl font-display font-extrabold text-foreground text-center">
             From job photos to post in 60 seconds
           </h2>
           <div className="mt-10 grid sm:grid-cols-2 md:grid-cols-4 gap-6">
@@ -233,7 +233,7 @@ export default function AutoDetailingMarketingPage() {
 
       {/* FAQ */}
       <Container className="py-16 md:py-24">
-        <h2 className="text-2xl md:text-3xl font-bold text-foreground">
+        <h2 className="text-2xl md:text-3xl font-display font-extrabold text-foreground">
           Frequently asked questions
         </h2>
         <div className="mt-8 space-y-5 max-w-2xl">
@@ -249,7 +249,7 @@ export default function AutoDetailingMarketingPage() {
       {/* CTA */}
       <div className="border-t border-border">
         <Container className="py-20 md:py-28 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold text-foreground">
+          <h2 className="text-3xl md:text-4xl font-display font-extrabold text-foreground">
             Turn your next finished detail into a marketing post
           </h2>
           <p className="mt-4 text-muted-foreground max-w-lg mx-auto">

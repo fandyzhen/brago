@@ -81,7 +81,7 @@ export default function GoogleBusinessProfilePostsPage() {
       <Container className="py-16 md:py-24">
         <div className="grid md:grid-cols-2 gap-12 items-start">
           <div>
-            <h2 className="text-2xl md:text-3xl font-bold text-foreground">
+            <h2 className="text-2xl md:text-3xl font-display font-extrabold text-foreground">
               What Google Business Profile posts are — and what they&apos;re not
             </h2>
             <p className="mt-4 text-muted-foreground leading-relaxed">
@@ -144,7 +144,7 @@ export default function GoogleBusinessProfilePostsPage() {
       {/* GBP vs other channels */}
       <div className="border-y border-border bg-secondary/30">
         <Container className="py-16 md:py-24">
-          <h2 className="text-2xl md:text-3xl font-bold text-foreground">
+          <h2 className="text-2xl md:text-3xl font-display font-extrabold text-foreground">
             Google Business Profile posts vs. Facebook and Instagram
           </h2>
           <p className="mt-4 text-muted-foreground max-w-2xl leading-relaxed">
@@ -191,7 +191,7 @@ export default function GoogleBusinessProfilePostsPage() {
 
       {/* Industry links */}
       <Container className="py-16 md:py-24">
-        <h2 className="text-2xl md:text-3xl font-bold text-foreground">
+        <h2 className="text-2xl md:text-3xl font-display font-extrabold text-foreground">
           GBP post examples by industry
         </h2>
         <p className="mt-3 text-muted-foreground">
@@ -219,7 +219,7 @@ export default function GoogleBusinessProfilePostsPage() {
       {/* CTA */}
       <div className="border-t border-border">
         <Container className="py-20 md:py-28 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold text-foreground">
+          <h2 className="text-3xl md:text-4xl font-display font-extrabold text-foreground">
             Create a Google Business Profile post from your next job
           </h2>
           <p className="mt-4 text-muted-foreground max-w-lg mx-auto">

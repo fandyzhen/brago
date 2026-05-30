@@ -19,10 +19,10 @@ export function NavBar() {
       }}
       className="fixed top-4 z-50 w-[calc(100%-2rem)] max-w-[calc(100vw-2rem)] lg:max-w-7xl mx-auto inset-x-0"
     >
-      <div className="hidden lg:block w-full">
+      <div className="hidden md:block w-full">
         <DesktopNavbar />
       </div>
-      <div className="flex h-full w-full items-center lg:hidden ">
+      <div className="flex h-full w-full items-center md:hidden ">
         <MobileNavbar />
       </div>
     </motion.nav>

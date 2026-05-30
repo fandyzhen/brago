@@ -54,7 +54,7 @@ export function FormShell<TFieldValues extends FieldValues>({
         <div className="mx-auto w-full max-w-md">
           <div>
             <div className="flex">{headerContent}</div>
-            <h2 className="mt-8 text-2xl font-bold leading-9 tracking-tight text-foreground">
+            <h2 className="mt-8 font-display text-2xl font-extrabold leading-9 tracking-tight text-foreground">
               {title}
             </h2>
             {description ? (
@@ -74,7 +74,7 @@ export function FormShell<TFieldValues extends FieldValues>({
                 </div>
               ) : null}
 
-              <Button className="w-full" disabled={isLoading} type="submit">
+              <Button variant="accent" className="w-full" disabled={isLoading} type="submit">
                 {isLoading ? submitLoadingText ?? submitText : submitText}
               </Button>
 

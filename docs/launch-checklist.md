@@ -12,11 +12,12 @@
 ## P0 Google-Ready Posts 发布前必做（2026-05-29 重设计后）
 
 ### G1 — 外部 AI / 存储 / 邮件 key
-- [ ] `VOLCANO_ENGINE_API_KEY` 填生产 key（缺失时 Brago 走 fallback：手动选 best after + 模板 caption，UI 已提示 "Photo AI not connected"）
-- [ ] `VOLCANO_ENGINE_VISION_MODEL`（或 `BRAGO_VISION_MODEL`）选实际模型名（spec 14.2 要求当天查官方文档）
-- [ ] `VOLCANO_ENGINE_TEXT_MODEL` 同上
-- [ ] 全套 `STORAGE_*` R2 变量配生产 bucket 和公网域名（缺失时 upload 路径自动 fall-back 到 data URL，性能差但能跑通）
-- [ ] `RESEND_API_KEY` 切真 key + verified `RESEND_FROM_EMAIL`
+> **2026-05-30 更新**：AI 已改用 OpenRouter（详见 G11）、R2 已配好并端到端实测、Resend key 已填（域名待验证）、BETTER_AUTH_SECRET 已是真值。豆包降级为可选 fallback。
+- [x] **AI 文案 + 选图**：已接 OpenRouter（`OPENAI_API_KEY` 已填、模型已选型并实测通过，详见 G11）
+- [ ] （可选）`VOLCANO_ENGINE_API_KEY` 豆包作为 OpenRouter 之外的备选；不填则 OpenRouter → 模板/启发式逐级 fallback
+- [x] 全套 `STORAGE_*` R2 变量已配生产 bucket（`brago-images`）+ 公网域名，**端到端实测通过**（上传→R2→公网 200 image/jpeg，详见 P1-4）
+- [x] `RESEND_API_KEY` 已切真 key；⚠️ `RESEND_FROM_EMAIL`（`noreply@dzqjiaju.com`）域名仍需在 Resend 完成 DNS 验证（SPF/DKIM）才能真正发信
+- [x] `BETTER_AUTH_SECRET` 已是真实随机值
 - [ ] `BRAGO_CAPTION_CREDIT_COST` / `BRAGO_REWRITE_CREDIT_COST` 调成业务目标值（默认 1，AI 调用时扣，fallback 不扣）
 
 ### G2 — Creem 产品 ID（新 plan key）
@@ -32,7 +33,9 @@
 - [ ] `CRON_SECRET`（Bearer / x-cron-secret）或 `CRON_JOBS_USERNAME`/`CRON_JOBS_PASSWORD` 配到 Vercel
 
 ### G4 — 数据库迁移
-- [ ] 生产数据库执行最新迁移（`drizzle/0010_smart_shinobi_shaw.sql` 新增 google_post / google_post_photo / brand_voice_profile / caption_history / reminder_settings / upload_consent 共 6 张表）
+- [ ] 生产库建 6 张新表：google_post / google_post_photo / brand_voice_profile / caption_history / reminder_settings / upload_consent（源：`drizzle/0010_smart_shinobi_shaw.sql`）
+- ⚠️ **本项目数据库是 `db:push` 托管的**（线上库里没有 `drizzle.__drizzle_migrations` 追踪表）→ **必须用 `pnpm db:push`，不能用 `pnpm db:migrate`**。后者会以为 0000–0009 都没跑，尝试重建已存在的 user/payment/... 表，直接 `relation already exists` 失败
+- [x] 2026-05-29 UI 预览时已对当前 `.env.local` 指向的 Neon 库直接执行 0010 的 6 张 CREATE TABLE（纯增量、未动现有表）。**若生产复用同一个库 → 已就绪；若是独立 prod 库 → 仍需在 prod 上 `pnpm db:push`**
 - [ ] 已有 starter/pro/pack 等历史订阅数据不受影响
 
 ### G5 — R2 文件 lifecycle（P1）
@@ -60,6 +63,40 @@
 - [ ] cron 模拟 7 天后跑一次 `/api/cron/brago-weekly-reminders`，确认收到 Resend 邮件
 - [ ] 邮件里点 `Pause for 4 weeks` 验证 `/reminders/unsubscribe?u=...` 可用
 
+### G9 — 品牌名残留清理（Sistine → Brago）✅ 已完成（2026-05-29，lint/build/test 236 通过）
+核心页之外的次级表面原本仍是模板品牌 "Sistine AI"，已全部清理：
+- [x] `lib/email.ts` 6 类交易邮件（验证/重置密码/欢迎/购买确认/到期/积分不足）品牌名 → Brago
+- [x] `app/api/newsletter/{subscribe,unsubscribe}/route.ts` newsletter 邮件 + 退订页 → Brago
+- [x] `lib/metadata.ts` OpenGraph `siteName`、`lib/docs-ui.ts` 中文文档站标题 → Brago
+- [x] `messages/seo.zh.json` 4 个法律页中文 SEO `<title>` → Brago（`seo.en.json` 本就干净）
+- [x] `messages/en.json` + `zh.json` demo 标题 + signup/contact 测评栏（虚构"被数千名用户使用"换成真实、不造假的 Brago 文案）
+- [x] 删除 4 个弃用死组件 `components/{cta,features,testimonials,grid-features}.tsx`（含 Vibe Coding / 虚构 "$5K MRR" 好评）+ en/zh.json 里对应的 4 个孤立命名空间（已确认全仓无 import/引用）
+- [x] `/contact` 移除指向模板作者的 twitter/github 外链
+- 剩余（不阻断上线，按需处理）：
+  - [ ] `app/[locale]/demo/layout.tsx` 内部 env 变量名 `NEXT_PUBLIC_SHOW_SISTINE_DEMOS`（功能性、非用户可见，可选改名）
+  - [ ] `messages/seo.zh.json` 各 `ogImage` 仍指向模板 banner `ai-saas-template-aceternity.vercel.app/banner.png` → 换成 Brago 自己的 OG 图
+  - [ ] `common.brand.tagline`（en/zh.json）仍是旧定位 "Before/After Marketing Posts for Local Services" → 应改为 Google-ready posts 表述（这是旧 Brago 定位残留，非 Sistine）
+
+### G10 — AI 错误展示 polish（fallback 行为已验证）
+- [ ] 输出页点 `Find the best after shot` 在 key 无效/上游报错时，会把**原始上游 JSON** 直接显示给用户（实测 `Doubao vision error: 401 {"error":...,"Request id":...}`，源 `app/api/brago/google-posts/[postId]/analyze/route.ts:57-63` 把 `err.message` 透传 → 输出页 client 原样渲染）→ 应改成友好提示 + 引导"手动选最佳 after 图"
+- [ ] `Switch to Spanish`：无有效 AI key 时只翻转语言标记（status → ES），caption 内容仍是英文（模板兜底无西语版本）→ 配好 `VOLCANO_ENGINE_TEXT_MODEL` + 真 key 后会真正翻译；若要 fallback 也支持西语需补西语模板
+- ✅ caption 模板兜底已验证：无 AI key 时 `Write Google caption` 仍产出符合 GBP policy 的英文 caption（实测含软 CTA "Call button on our Google profile"，无电话/URL/em-dash/全大写）
+- ✅ 缺 key 时不假装成功（vision 报错而非伪造推荐），符合 spec §14
+
+### G11 — AI 模型供应商（OpenRouter）✅ 已配置 + 端到端实测（2026-05-30）
+> 部署面向美国市场（英文文案），AI 走 **OpenRouter**（OpenAI 兼容协议，一个 key 调所有模型）。代码已抽象 provider，优先级 **OpenAI 兼容 → 豆包 → 本地模板/启发式**，缺 key 自动降级不崩。
+- [x] 新增 OpenAI 兼容客户端 `lib/brago/openai-compat.ts`（走 OpenRouter 时自动加 HTTP-Referer / X-Title）
+- [x] 文案 provider `lib/brago/caption/openai-text.ts` + 选图 provider `lib/brago/vision/openai.ts`，与豆包**共用抽出的 prompt**（`caption/prompt-builders.ts`、`vision/shared.ts`，避免两家文案/判图标准漂移）
+- [x] 修复 `generate-caption` / `rewrite` route 计费标志原本只认豆包 key 的 bug → 改用 `isAiTextAvailable()`（否则只配 OpenRouter 会漏扣积分）
+- [x] **模型选型**（基于 OpenRouter 实测定价，质量不降前提下性价比最优）：
+  - 文案 `OPENAI_TEXT_MODEL=anthropic/claude-haiku-4.5`（$1/$5 per M，约 **$0.0005/条**，本地老板口吻地道，Claude 文案强项）
+  - 选图 `OPENAI_VISION_MODEL=openai/gpt-4o-mini`（$0.15/$0.6 per M，约 **$0.012/次**，vision 够用 + JSON 输出最稳）
+  - `OPENAI_BASE_URL=https://openrouter.ai/api/v1`
+- [x] **实测通过**：文案生成质量达标（地道、合规无违禁词）；选图正确识别 before/after + 推荐最佳图 + JSON schema 校验通过（curl 直测）
+- 综合成本 ≈ **$0.012/帖**（1 文案 + 1 选图），比全用 gpt-5.5（$0.044/帖）省 **~3.7×**
+- [ ] **上线前关注**：OpenRouter 账户余额监控（当前 key 余额约 $5）；量产前充值
+- [ ] **避坑备注**：曾遇 403「provider Terms of Service」= 旧 key 所在账户的隐私/数据策略挡了 OpenAI/Anthropic/Google（免费 provider 不受影响）；换新 key 后正常。若再遇 403 → 查 OpenRouter **Settings → Privacy** 的数据策略开关，或确认用对账户
+
 ---
 
 ## P0 — 不修就瘫痪的事
@@ -69,8 +106,8 @@
 - [ ] `RESEND_FROM_EMAIL` 改成 Resend 已验证的域名邮箱（当前是 `noreply@yourdomain.com` 占位）
 - [ ] `RESEND_VERIFIED_DOMAIN` 配置好（生产模式要求）
 - [ ] 测试：注册一个新邮箱，30 秒内收到验证邮件，点链接能自动登录
-- **当前状态**：占位值，导致所有新用户注册卡在 /check-email 页（已用 SQL 手工 verify 测试账号绕过）
-- **依赖用户提供**：去 https://resend.com/api-keys 申请 + verified domain
+- **当前状态（2026-05-30 更新）**：`RESEND_API_KEY` 已填真 key、`RESEND_FROM_EMAIL=Brago <noreply@dzqjiaju.com>` 已配。⚠️ **仍需在 Resend 后台完成 `dzqjiaju.com` 的 DNS 域名验证（SPF/DKIM）**，否则发信被拒。未验证前新用户注册仍会卡 /check-email（已用 SQL 手工 verify 测试账号绕过）
+- **依赖用户提供**：在 https://resend.com 完成 `dzqjiaju.com` 域名 verify
 
 ### P0-2 Better Auth 生产 URL
 - [ ] `.env.local` / 生产环境的 `BETTER_AUTH_URL` 改成生产 https 域名
@@ -97,10 +134,10 @@
 - [ ] 至少建 1 个 admin 账号（`pnpm admin:setup` 或手工 UPDATE `user.role='admin'`）
 
 ### P1-4 Cloudflare R2 存储配置
-- [ ] `.env.local` / 生产配置全部 `STORAGE_*` 变量（REGION/BUCKET_NAME/ACCESS_KEY_ID/SECRET_ACCESS_KEY/ENDPOINT/PUBLIC_URL）
-- [ ] 测试：调一次 `/api/posters/finalize`，看返回的 URL 是不是 R2 公网链接 + 浏览器能直接打开
-- **当前状态**：未配置。Create 流的 finalize 端点临时走 base64 dataURL fallback（性能差但能用）
-- **依赖用户提供**：Cloudflare R2 账户 + bucket + 对应 access key
+- [x] `.env.local` 全部 `STORAGE_*` 变量已配（REGION=auto / BUCKET_NAME=brago-images / ACCESS_KEY_ID / SECRET_ACCESS_KEY / ENDPOINT / PUBLIC_URL）
+- [x] **端到端实测通过（2026-05-30）**：走 /create 上传照片 → 创建 post 200 → 上传 R2 200 → R2 公网 URL `curl` 返回 200 image/jpeg。凭据/bucket/endpoint/公网访问全部正确
+- **当前状态**：✅ 已配置并实测。生产若用**独立 bucket/域名**需替换对应 `STORAGE_*` 值；当前 `PUBLIC_URL` 用 r2.dev 开发域名，生产建议绑自定义域
+- **依赖用户提供**：（生产）确认 `brago-images` 桶公共访问已开 + 可选自定义域
 
 ---
 
@@ -192,6 +229,6 @@
 
 ---
 
-**最后更新**：2026-05-25  
+**最后更新**：2026-05-30（AI 改用 OpenRouter + R2 实测 + Resend key 已填 + UI 全站 Job-Site Bold 改造）  
 **文件路径**：`docs/launch-checklist.md`  
 **触发关键词**：用户说"准备上线"/"上线前检查"/"现在能上吗"/"check launch" → Claude 读此文件

@@ -2,7 +2,6 @@ import { Metadata } from "next";
 import Link from "next/link";
 import type { Locale } from "@/i18n.config";
 import { generatePageMetadata } from "@/lib/metadata";
-import { Background } from "@/components/background";
 import { Container } from "@/components/container";
 import { FreeGeneratorClient } from "./client";
 
@@ -21,11 +20,13 @@ export async function generateMetadata(props: {
 
 export default function FreeGoogleGeneratorPage() {
   return (
-    <div className="relative overflow-hidden">
-      <Background />
+    <div className="bg-paper-glow relative overflow-hidden">
       <Container className="relative z-20 py-16 md:py-24 max-w-2xl">
-        <p className="text-xs uppercase tracking-widest text-muted-foreground mb-3">Free tool</p>
-        <h1 className="text-3xl md:text-5xl font-bold text-foreground tracking-tight">
+        <p className="mb-3 inline-flex items-center gap-2 font-display text-xs font-bold uppercase tracking-[0.18em] text-foreground">
+          <span className="h-2 w-2 rounded-full bg-brand" />
+          Free tool
+        </p>
+        <h1 className="font-display text-3xl md:text-5xl font-extrabold text-foreground tracking-tight">
           Free Google Business Post Generator for Pressure Washers
         </h1>
         <p className="mt-4 text-muted-foreground">
@@ -34,14 +35,14 @@ export default function FreeGoogleGeneratorPage() {
 
         <FreeGeneratorClient />
 
-        <section className="mt-12 rounded-2xl border border-border bg-card p-6">
-          <h2 className="text-lg font-semibold">Want best-photo selection and history-aware wording?</h2>
+        <section className="mt-12 rounded-2xl border border-border bg-card p-6 shadow-sm">
+          <h2 className="font-display text-lg font-bold">Want best-photo selection and history-aware wording?</h2>
           <p className="mt-2 text-sm text-muted-foreground">
             Brago Local picks the strongest after shot from a batch, dedupes your last 10 posts so you don&apos;t sound repetitive, and emails a weekly reminder when your Google profile goes stale.
           </p>
           <Link
             href="/signup"
-            className="mt-4 inline-flex items-center rounded-full bg-foreground text-background px-5 py-2 text-sm font-semibold"
+            className="mt-4 inline-flex items-center rounded-xl bg-brand text-brand-foreground px-5 py-2.5 text-sm font-bold shadow-tactile transition-all hover:-translate-y-0.5"
           >
             Try full Brago with best photo selection
           </Link>

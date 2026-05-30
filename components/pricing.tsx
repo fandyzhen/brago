@@ -6,7 +6,6 @@ import { useCallback } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { Button } from "./button";
-import { cn } from "@/lib/utils";
 import { useSession } from "@/lib/auth-client";
 import {
   BRAGO_LOCAL_DISPLAY,
@@ -59,13 +58,13 @@ export function Pricing() {
         {/* Free tier */}
         <div className="flex h-full flex-col justify-between rounded-2xl border border-border bg-card px-6 py-8">
           <div>
-            <h3 className="text-base font-semibold leading-7 text-foreground">{t("free.name")}</h3>
+            <h3 className="font-display text-base font-bold leading-7 text-foreground">{t("free.name")}</h3>
             <p className="mt-4">
               <motion.span
                 initial={{ x: -10, opacity: 0 }}
                 animate={{ x: 0, opacity: 1 }}
                 transition={{ duration: 0.2, ease: "easeOut" }}
-                className="inline-block text-4xl font-bold tracking-tight text-foreground"
+                className="inline-block font-display text-4xl font-extrabold tracking-tight text-foreground"
               >
                 {t("free.price")}
               </motion.span>
@@ -90,17 +89,17 @@ export function Pricing() {
 
         {/* Brago Local */}
         <div className="relative flex h-full flex-col justify-between rounded-2xl bg-primary px-6 py-8 shadow-2xl">
-          <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-amber-300 px-3 py-1 text-[11px] font-semibold text-amber-950">
+          <span className="absolute -top-3 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-brand px-3 py-1 text-[11px] font-bold text-brand-foreground shadow-sm">
             {t("local.badge")}
           </span>
           <div>
-            <h3 className="text-base font-semibold leading-7 text-primary-foreground">{t("local.name")}</h3>
+            <h3 className="font-display text-base font-bold leading-7 text-primary-foreground">{t("local.name")}</h3>
             <p className="mt-4 flex items-baseline gap-2">
               <motion.span
                 initial={{ x: -10, opacity: 0 }}
                 animate={{ x: 0, opacity: 1 }}
                 transition={{ duration: 0.2, ease: "easeOut" }}
-                className="inline-block text-4xl font-bold tracking-tight text-primary-foreground"
+                className="inline-block font-display text-4xl font-extrabold tracking-tight text-primary-foreground"
               >
                 {promoPrice}<span className="text-base font-medium">/mo</span>
               </motion.span>
@@ -126,8 +125,9 @@ export function Pricing() {
           </div>
           <div className="mt-8 grid gap-2">
             <Button
+              variant="accent"
               onClick={() => startCheckout(PRIMARY_SUBSCRIPTION_KEY)}
-              className={cn("block w-full rounded-full bg-background px-3.5 py-2.5 text-center text-sm font-semibold text-foreground shadow-sm hover:bg-background/90")}
+              className="block w-full rounded-full text-sm"
             >
               {t("local.cta")} — {promoPrice}/mo
             </Button>

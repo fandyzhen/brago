@@ -8,7 +8,6 @@ import { useTranslations } from "next-intl";
 import { Logo } from "@/components/Logo";
 import { cn } from "@/lib/utils";
 import { ModeToggle } from "@/components/mode-toggle";
-import { LanguageSwitcher } from "@/components/language-switcher";
 import { marketingNavigationKeys } from "@/features/navigation/config";
 
 import { NavBarItem } from "./navbar-item";
@@ -73,7 +72,6 @@ export const DesktopNavbar = () => {
         </div>
       </div>
       <div className="flex space-x-2 items-center">
-        <LanguageSwitcher />
         <ModeToggle />
         <UserMenu />
       </div>

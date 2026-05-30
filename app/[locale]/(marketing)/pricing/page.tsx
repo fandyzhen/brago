@@ -1,5 +1,4 @@
 import { Container } from "@/components/container";
-import { Background } from "@/components/background";
 import { Heading } from "@/components/heading";
 import { Subheading } from "@/components/subheading";
 import { Pricing } from "@/components/pricing";
@@ -40,8 +39,7 @@ export default async function PricingPage(
   const t = await getTranslations({ locale, namespace: 'pricing' });
 
   return (
-    <div className="relative overflow-hidden py-20 md:py-0">
-      <Background />
+    <div className="bg-paper-glow relative overflow-hidden py-20 md:py-0">
       <Container className="flex flex-col items-center justify-between  pb-20">
         <div className="relative z-20 py-10 md:pt-40">
           <Heading as="h1">{t('title')}</Heading>

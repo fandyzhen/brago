@@ -93,7 +93,7 @@ export default function PressureWashingMarketingPage() {
       <Container className="py-16 md:py-24">
         <div className="grid md:grid-cols-2 gap-12 items-start">
           <div>
-            <h2 className="text-2xl md:text-3xl font-bold text-foreground">
+            <h2 className="text-2xl md:text-3xl font-display font-extrabold text-foreground">
               You have the photos. Posting takes too long.
             </h2>
             <p className="mt-4 text-muted-foreground leading-relaxed">
@@ -137,7 +137,7 @@ export default function PressureWashingMarketingPage() {
       {/* Before/after proof section */}
       <div id="examples" className="border-y border-border bg-secondary/30">
         <Container className="py-16 md:py-24">
-          <h2 className="text-2xl md:text-3xl font-bold text-foreground max-w-2xl">
+          <h2 className="text-2xl md:text-3xl font-display font-extrabold text-foreground max-w-2xl">
             Why before/after works for pressure washing marketing
           </h2>
           <p className="mt-4 text-muted-foreground max-w-2xl leading-relaxed">
@@ -177,7 +177,7 @@ export default function PressureWashingMarketingPage() {
 
       {/* Headline examples */}
       <Container className="py-16 md:py-24">
-        <h2 className="text-2xl md:text-3xl font-bold text-foreground">
+        <h2 className="text-2xl md:text-3xl font-display font-extrabold text-foreground">
           Pressure washing headline examples
         </h2>
         <p className="mt-3 text-muted-foreground">
@@ -195,7 +195,7 @@ export default function PressureWashingMarketingPage() {
         </div>
 
         {/* Caption examples */}
-        <h2 className="mt-16 text-2xl md:text-3xl font-bold text-foreground">
+        <h2 className="mt-16 text-2xl md:text-3xl font-display font-extrabold text-foreground">
           Caption examples by channel
         </h2>
         <p className="mt-3 text-muted-foreground">
@@ -216,7 +216,7 @@ export default function PressureWashingMarketingPage() {
       {/* How it works */}
       <div className="border-y border-border bg-secondary/30">
         <Container className="py-16 md:py-20">
-          <h2 className="text-2xl md:text-3xl font-bold text-foreground text-center">
+          <h2 className="text-2xl md:text-3xl font-display font-extrabold text-foreground text-center">
             From job photos to post in 60 seconds
           </h2>
           <div className="mt-10 grid sm:grid-cols-2 md:grid-cols-4 gap-6">
@@ -240,7 +240,7 @@ export default function PressureWashingMarketingPage() {
 
       {/* FAQ */}
       <Container className="py-16 md:py-24">
-        <h2 className="text-2xl md:text-3xl font-bold text-foreground">
+        <h2 className="text-2xl md:text-3xl font-display font-extrabold text-foreground">
           Frequently asked questions
         </h2>
         <div className="mt-8 space-y-5 max-w-2xl">
@@ -256,7 +256,7 @@ export default function PressureWashingMarketingPage() {
       {/* CTA */}
       <div className="border-t border-border">
         <Container className="py-20 md:py-28 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold text-foreground">
+          <h2 className="text-3xl md:text-4xl font-display font-extrabold text-foreground">
             Turn your next finished job into a marketing post
           </h2>
           <p className="mt-4 text-muted-foreground max-w-lg mx-auto">

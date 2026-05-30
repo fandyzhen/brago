@@ -104,10 +104,11 @@ export default function ReminderSettingsPage() {
     <div className="relative min-h-screen">
       <Background />
       <Container className="relative z-10 py-12 max-w-md">
-        <p className="text-xs uppercase tracking-widest text-muted-foreground mb-2">
+        <p className="mb-2 inline-flex items-center gap-2 font-display text-xs font-bold uppercase tracking-[0.18em] text-foreground">
+          <span className="h-2 w-2 rounded-full bg-brand" />
           Settings
         </p>
-        <h1 className="text-2xl font-bold">Weekly Google reminders</h1>
+        <h1 className="font-display text-2xl font-extrabold tracking-tight">Weekly Google reminders</h1>
         <p className="mt-2 text-sm text-muted-foreground">
           A quick email when we notice your Google profile has gone seven days without a new post.
         </p>
@@ -133,7 +134,7 @@ export default function ReminderSettingsPage() {
                 dayOfWeek: Number(e.target.value),
               }))
             }
-            className="rounded-md border border-border bg-background px-3 py-2"
+            className="rounded-xl border border-border bg-background px-4 py-2.5 focus:border-brand focus:outline-none focus:ring-2 focus:ring-ring/40"
           >
             {DAYS.map((d, i) => (
               <option key={d} value={i}>
@@ -156,7 +157,7 @@ export default function ReminderSettingsPage() {
                 hour: Math.max(0, Math.min(23, Number(e.target.value) || 0)),
               }))
             }
-            className="rounded-md border border-border bg-background px-3 py-2"
+            className="rounded-xl border border-border bg-background px-4 py-2.5 focus:border-brand focus:outline-none focus:ring-2 focus:ring-ring/40"
           />
         </label>
 
@@ -167,7 +168,7 @@ export default function ReminderSettingsPage() {
             onChange={(e) =>
               setSettings((s) => ({ ...s, timezone: e.target.value }))
             }
-            className="rounded-md border border-border bg-background px-3 py-2"
+            className="rounded-xl border border-border bg-background px-4 py-2.5 focus:border-brand focus:outline-none focus:ring-2 focus:ring-ring/40"
           />
         </label>
 
@@ -177,7 +178,7 @@ export default function ReminderSettingsPage() {
           <button
             onClick={save}
             disabled={saving}
-            className="rounded-full bg-foreground text-background px-4 py-2 text-sm font-medium disabled:opacity-50"
+            className="rounded-full bg-brand text-brand-foreground px-5 py-2.5 text-sm font-bold shadow-tactile transition-all hover:-translate-y-0.5 disabled:translate-y-0 disabled:opacity-50"
           >
             {saving ? "Saving…" : "Save reminders"}
           </button>

@@ -35,22 +35,22 @@
     "ogImage": "/og-image.png"
   },
   "terms": {
-    "title": "服务条款 - Sistine AI",
-    "description": "阅读我们的服务条款,了解使用 Sistine AI 平台的规则和指南。",
+    "title": "服务条款 - Brago",
+    "description": "阅读我们的服务条款,了解使用 Brago 平台的规则和指南。",
     "ogImage": "https://ai-saas-template-aceternity.vercel.app/banner.png"
   },
   "privacy": {
-    "title": "隐私政策 - Sistine AI",
-    "description": "了解 Sistine AI 如何收集、使用和保护您的个人信息和数据。",
+    "title": "隐私政策 - Brago",
+    "description": "了解 Brago 如何收集、使用和保护您的个人信息和数据。",
     "ogImage": "https://ai-saas-template-aceternity.vercel.app/banner.png"
   },
   "cookies": {
-    "title": "Cookie 政策 - Sistine AI",
-    "description": "了解 Sistine AI 如何在我们的平台上使用 cookies 和类似的跟踪技术。",
+    "title": "Cookie 政策 - Brago",
+    "description": "了解 Brago 如何在我们的平台上使用 cookies 和类似的跟踪技术。",
     "ogImage": "https://ai-saas-template-aceternity.vercel.app/banner.png"
   },
   "refund": {
-    "title": "退款政策 - Sistine AI",
+    "title": "退款政策 - Brago",
     "description": "查看我们的退款政策,了解申请退款的条件和流程。",
     "ogImage": "https://ai-saas-template-aceternity.vercel.app/banner.png"
   }

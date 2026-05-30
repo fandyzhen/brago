@@ -23,7 +23,7 @@ describe("Button", () => {
 
     expect(button).toHaveClass("tracking-wide");
     expect(button).toHaveClass("text-base");
-    expect(button).toHaveClass("hover:bg-primary");
+    expect(button).toHaveClass("bg-card");
   });
 
   it("supports polymorphic rendering through the as prop", () => {

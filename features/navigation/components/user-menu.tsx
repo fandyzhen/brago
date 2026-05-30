@@ -82,7 +82,7 @@ export function UserMenu() {
     <div className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="h-6 w-6 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-xs ring-1 ring-transparent hover:ring-blue-500/50 transition-all"
+        className="h-6 w-6 rounded-full bg-brand flex items-center justify-center text-brand-foreground text-xs font-bold ring-1 ring-transparent hover:ring-brand/50 transition-all"
       >
         {user.image ? (
           <Image

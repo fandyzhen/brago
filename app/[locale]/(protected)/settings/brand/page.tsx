@@ -119,15 +119,15 @@ export default function BrandSettingsPage() {
           transition={{ duration: 0.4 }}
           className="max-w-xl mx-auto"
         >
-          <h1 className="text-2xl font-bold mb-1">Brand Profile</h1>
-          <p className="text-sm text-neutral-500 dark:text-neutral-400 mb-8">
+          <h1 className="font-display text-2xl font-extrabold tracking-tight mb-1">Brand Profile</h1>
+          <p className="text-sm text-muted-foreground mb-8">
             {returnTo
               ? "Fill in your business name to continue. Phone and service area are optional but help your posts."
               : "This info appears on your generated social posts."}
           </p>
 
           {loading ? (
-            <p className="text-neutral-400 text-sm">Loading…</p>
+            <p className="text-muted-foreground text-sm">Loading…</p>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-5">
               {/* Business Name */}
@@ -139,7 +139,7 @@ export default function BrandSettingsPage() {
                   placeholder="e.g. Austin Pressure Pros"
                   value={form.businessName ?? ""}
                   onChange={(e) => setForm((f) => ({ ...f, businessName: e.target.value }))}
-                  className="w-full rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-neutral-400 dark:focus:ring-neutral-500"
+                  className="w-full rounded-xl border border-border bg-background px-4 py-2.5 text-sm outline-none transition focus:border-brand focus:ring-2 focus:ring-ring/40"
                 />
               </div>
 
@@ -152,7 +152,7 @@ export default function BrandSettingsPage() {
                   placeholder="e.g. (512) 555-0184"
                   value={form.phone ?? ""}
                   onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))}
-                  className="w-full rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-neutral-400 dark:focus:ring-neutral-500"
+                  className="w-full rounded-xl border border-border bg-background px-4 py-2.5 text-sm outline-none transition focus:border-brand focus:ring-2 focus:ring-ring/40"
                 />
               </div>
 
@@ -165,7 +165,7 @@ export default function BrandSettingsPage() {
                   placeholder="e.g. Austin, TX"
                   value={form.serviceArea ?? ""}
                   onChange={(e) => setForm((f) => ({ ...f, serviceArea: e.target.value }))}
-                  className="w-full rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-neutral-400 dark:focus:ring-neutral-500"
+                  className="w-full rounded-xl border border-border bg-background px-4 py-2.5 text-sm outline-none transition focus:border-brand focus:ring-2 focus:ring-ring/40"
                 />
               </div>
 
@@ -185,9 +185,9 @@ export default function BrandSettingsPage() {
                       googleReviewCount: v === "" ? undefined : parseInt(v, 10),
                     }));
                   }}
-                  className="w-full rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-neutral-400 dark:focus:ring-neutral-500"
+                  className="w-full rounded-xl border border-border bg-background px-4 py-2.5 text-sm outline-none transition focus:border-brand focus:ring-2 focus:ring-ring/40"
                 />
-                <p className="text-xs text-neutral-400 mt-1">
+                <p className="text-xs text-muted-foreground mt-1">
                   Shown on your posts as ★★★★★ N Google reviews.
                 </p>
               </div>
@@ -227,7 +227,7 @@ export default function BrandSettingsPage() {
                 </p>
               )}
 
-              <Button type="submit" disabled={saving}>
+              <Button variant="accent" type="submit" disabled={saving}>
                 {saving ? "Saving…" : "Save brand profile"}
               </Button>
             </form>

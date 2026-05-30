@@ -74,7 +74,7 @@ export default function TemplatesPage() {
       </div>
 
       {/* Channel templates */}
-      <h2 className="mt-16 text-2xl font-bold text-foreground">By channel</h2>
+      <h2 className="mt-16 text-2xl font-display font-extrabold text-foreground">By channel</h2>
       <div className="mt-6 grid gap-5 md:grid-cols-3">
         {CHANNELS.map((ch) => (
           <div key={ch.name} className="relative">
@@ -95,7 +95,7 @@ export default function TemplatesPage() {
       </div>
 
       {/* Industry links */}
-      <h2 className="mt-16 text-2xl font-bold text-foreground">By industry</h2>
+      <h2 className="mt-16 text-2xl font-display font-extrabold text-foreground">By industry</h2>
       <p className="mt-2 text-muted-foreground text-sm">
         Each industry has its own set of templates with industry-appropriate scenes and examples.
       </p>
@@ -122,7 +122,7 @@ export default function TemplatesPage() {
 
       {/* CTA */}
       <div className="mt-20 rounded-2xl border border-border bg-secondary/50 p-8 md:p-12 text-center">
-        <h2 className="text-2xl md:text-3xl font-bold text-foreground">
+        <h2 className="text-2xl md:text-3xl font-display font-extrabold text-foreground">
           Start with your next finished job
         </h2>
         <p className="mt-3 text-muted-foreground max-w-xl mx-auto">

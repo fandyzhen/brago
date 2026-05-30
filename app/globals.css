@@ -6,91 +6,100 @@
 
 @layer base {
   :root {
-    /* 主要背景和前景色 */
-    --background: 0 0% 100%;
-    --foreground: 0 0% 3.9%;
+    /* 暖纸白底 + 暖墨前景 (Job-Site Bold) */
+    --background: 40 33% 97%;
+    --foreground: 28 16% 12%;
 
-    /* 卡片容器 */
+    /* 卡片容器 — 纯白卡片在暖纸底上更跳 */
     --card: 0 0% 100%;
-    --card-foreground: 0 0% 3.9%;
+    --card-foreground: 28 16% 12%;
 
     /* 弹出层 */
     --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 3.9%;
+    --popover-foreground: 28 16% 12%;
 
-    /* 主色调 (用于主要按钮、链接等) */
-    --primary: 0 0% 9%;
-    --primary-foreground: 0 0% 98%;
+    /* 主色调 — 墨黑，强主操作 */
+    --primary: 28 16% 12%;
+    --primary-foreground: 40 33% 97%;
 
     /* 次要色调 */
-    --secondary: 0 0% 96.1%;
-    --secondary-foreground: 0 0% 9%;
+    --secondary: 38 26% 92%;
+    --secondary-foreground: 28 16% 14%;
 
-    /* 柔和/禁用状态 */
-    --muted: 0 0% 96.1%;
-    --muted-foreground: 0 0% 35%;
+    /* 柔和/禁用状态 (加深以保证暖纸底上的可读性) */
+    --muted: 38 22% 93%;
+    --muted-foreground: 28 12% 32%;
 
-    /* 强调色 */
-    --accent: 0 0% 96.1%;
-    --accent-foreground: 0 0% 9%;
+    /* 强调表面 — 暖琥珀微染 */
+    --accent: 40 80% 92%;
+    --accent-foreground: 30 35% 18%;
 
-    /* 边框、输入框、焦点环 */
-    --border: 0 0% 89.8%;
-    --input: 0 0% 89.8%;
-    --ring: 0 0% 3.9%;
+    /* 边框、输入框、焦点环 (焦点环用品牌琥珀) */
+    --border: 34 18% 87%;
+    --input: 34 18% 87%;
+    --ring: 38 92% 50%;
+
+    /* 品牌色 — "Brag" 琥珀金 (奖杯/自豪, 黑字高对比) */
+    --brand: 38 92% 50%;
+    --brand-foreground: 30 40% 12%;
+    --brand-soft: 40 85% 90%;
 
     /* 渐变色支持 */
-    --gradient-from: 0 0% 96.1%;
-    --gradient-to: 0 0% 89.8%;
+    --gradient-from: 40 30% 96%;
+    --gradient-to: 34 20% 90%;
 
     /* 导航栏特定颜色 */
-    --navbar-bg: 0 0% 98%;
-    --navbar-bg-scrolled: 0 0% 96.1%;
+    --navbar-bg: 40 40% 98%;
+    --navbar-bg-scrolled: 40 30% 95%;
 
-    /* 阴影颜色 (用于导航栏、卡片等) */
-    --shadow-color: 0 0% 89.8%;
+    /* 阴影颜色 — 暖调 */
+    --shadow-color: 30 20% 60%;
 
     /* 悬停状态 */
-    --hover-bg: 0 0% 96.1%;
-    --hover-foreground: 0 0% 0%;
+    --hover-bg: 38 30% 93%;
+    --hover-foreground: 28 16% 8%;
   }
 
   .dark {
-    --background: 0 0% 3.9%;
-    --foreground: 0 0% 98%;
+    --background: 28 14% 8%;
+    --foreground: 40 28% 94%;
 
-    --card: 0 0% 3.9%;
-    --card-foreground: 0 0% 98%;
+    --card: 28 12% 11%;
+    --card-foreground: 40 28% 94%;
 
-    --popover: 0 0% 3.9%;
-    --popover-foreground: 0 0% 98%;
+    --popover: 28 12% 11%;
+    --popover-foreground: 40 28% 94%;
 
-    --primary: 0 0% 98%;
-    --primary-foreground: 0 0% 9%;
+    --primary: 40 28% 94%;
+    --primary-foreground: 28 14% 10%;
 
-    --secondary: 0 0% 14.9%;
-    --secondary-foreground: 0 0% 98%;
+    --secondary: 28 10% 16%;
+    --secondary-foreground: 40 28% 94%;
 
-    --muted: 0 0% 14.9%;
-    --muted-foreground: 0 0% 70%;
+    --muted: 28 10% 16%;
+    --muted-foreground: 38 12% 65%;
 
-    --accent: 0 0% 14.9%;
-    --accent-foreground: 0 0% 98%;
+    --accent: 34 40% 18%;
+    --accent-foreground: 40 60% 88%;
 
-    --border: 0 0% 14.9%;
-    --input: 0 0% 14.9%;
-    --ring: 0 0% 83.1%;
+    --border: 30 9% 20%;
+    --input: 30 9% 20%;
+    --ring: 38 95% 55%;
 
-    --gradient-from: 0 0% 3.9%;
-    --gradient-to: 0 0% 14.9%;
+    --brand: 38 95% 55%;
+    --brand-foreground: 30 45% 10%;
+    --brand-soft: 34 40% 20%;
 
-    --navbar-bg: 0 0% 11.8%;
-    --navbar-bg-scrolled: 0 0% 14.9%;
+    --gradient-from: 28 14% 10%;
+    --gradient-to: 28 10% 16%;
 
-    --shadow-color: 0 0% 14.9%;
+    --navbar-bg: 28 14% 10%;
+    --navbar-bg-scrolled: 28 12% 13%;
 
-    --hover-bg: 0 0% 14.9%;
-    --hover-foreground: 0 0% 100%;
+    --shadow-color: 0 0% 0%;
+
+    --hover-bg: 28 10% 16%;
+    --hover-foreground: 40 28% 100%;
   }
 }
 
@@ -118,5 +127,29 @@ body {
 @layer utilities {
   .text-balance {
     text-wrap: balance;
+  }
+
+  /* Hi-vis hazard stripes — job-site accent for thin divider bars */
+  .bg-hazard {
+    background-image: repeating-linear-gradient(
+      -45deg,
+      hsl(var(--brand)) 0 12px,
+      hsl(var(--foreground)) 12px 24px
+    );
+  }
+
+  /* Warm amber atmosphere behind hero / marketing sections */
+  .bg-paper-glow {
+    background-image:
+      radial-gradient(55% 45% at 50% -5%, hsl(var(--brand) / 0.12), transparent 70%),
+      radial-gradient(40% 40% at 100% 0%, hsl(var(--brand) / 0.06), transparent 60%);
+  }
+
+  /* Tactile pressed feel for chunky buttons */
+  .shadow-tactile {
+    box-shadow:
+      0 1px 0 0 hsl(var(--foreground) / 0.04),
+      0 2px 4px -1px hsl(var(--shadow-color) / 0.25),
+      0 8px 16px -6px hsl(var(--shadow-color) / 0.3);
   }
 }

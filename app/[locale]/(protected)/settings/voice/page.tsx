@@ -94,25 +94,26 @@ export default function VoiceSettingsPage() {
     <div className="relative min-h-screen">
       <Background />
       <Container className="relative z-10 py-12 max-w-xl">
-        <p className="text-xs uppercase tracking-widest text-muted-foreground mb-2">
+        <p className="mb-2 inline-flex items-center gap-2 font-display text-xs font-bold uppercase tracking-[0.18em] text-foreground">
+          <span className="h-2 w-2 rounded-full bg-brand" />
           Settings
         </p>
-        <h1 className="text-2xl font-bold">Your posting style</h1>
+        <h1 className="font-display text-2xl font-extrabold tracking-tight">Your posting style</h1>
         <p className="mt-2 text-sm text-muted-foreground">
           Brago uses these preferences when writing your Google captions. Only mention verified claims that you can actually back up.
         </p>
 
         <div className="mt-8 grid gap-6">
           <section>
-            <h2 className="text-sm font-medium mb-2">Speaker</h2>
+            <h2 className="font-display text-sm font-bold mb-2">Speaker</h2>
             <div className="flex flex-wrap gap-2">
               {(Object.keys(SPEAKER_LABEL) as Array<BrandVoiceProfile["speaker"]>).map((s) => (
                 <button
                   key={s}
                   type="button"
                   onClick={() => setVoice((v) => ({ ...v, speaker: s }))}
-                  className={`rounded-full border px-3 py-1 text-xs ${
-                    voice.speaker === s ? "bg-foreground text-background" : "border-border"
+                  className={`rounded-full border px-3.5 py-1.5 text-xs font-medium transition-colors ${
+                    voice.speaker === s ? "border-brand bg-brand text-brand-foreground" : "border-border"
                   }`}
                 >
                   {SPEAKER_LABEL[s]}
@@ -122,7 +123,7 @@ export default function VoiceSettingsPage() {
           </section>
 
           <section>
-            <h2 className="text-sm font-medium mb-2">Tone</h2>
+            <h2 className="font-display text-sm font-bold mb-2">Tone</h2>
             <div className="flex flex-wrap gap-2">
               {TONE_OPTIONS.map((t) => (
                 <button
@@ -131,9 +132,9 @@ export default function VoiceSettingsPage() {
                   onClick={() =>
                     setVoice((v) => ({ ...v, tone: toggle(v.tone, t) }))
                   }
-                  className={`rounded-full border px-3 py-1 text-xs ${
+                  className={`rounded-full border px-3.5 py-1.5 text-xs font-medium transition-colors ${
                     voice.tone.includes(t)
-                      ? "bg-foreground text-background"
+                      ? "border-brand bg-brand text-brand-foreground"
                       : "border-border"
                   }`}
                 >
@@ -144,7 +145,7 @@ export default function VoiceSettingsPage() {
           </section>
 
           <section>
-            <h2 className="text-sm font-medium mb-2">Avoid</h2>
+            <h2 className="font-display text-sm font-bold mb-2">Avoid</h2>
             <div className="flex flex-wrap gap-2">
               {AVOID_OPTIONS.map((t) => (
                 <button
@@ -153,9 +154,9 @@ export default function VoiceSettingsPage() {
                   onClick={() =>
                     setVoice((v) => ({ ...v, avoid: toggle(v.avoid, t) }))
                   }
-                  className={`rounded-full border px-3 py-1 text-xs ${
+                  className={`rounded-full border px-3.5 py-1.5 text-xs font-medium transition-colors ${
                     voice.avoid.includes(t)
-                      ? "bg-foreground text-background"
+                      ? "border-brand bg-brand text-brand-foreground"
                       : "border-border"
                   }`}
                 >
@@ -166,7 +167,7 @@ export default function VoiceSettingsPage() {
           </section>
 
           <section>
-            <h2 className="text-sm font-medium mb-2">Main customer language</h2>
+            <h2 className="font-display text-sm font-bold mb-2">Main customer language</h2>
             <select
               value={voice.customerLanguage}
               onChange={(e) =>
@@ -175,7 +176,7 @@ export default function VoiceSettingsPage() {
                   customerLanguage: e.target.value as BrandVoiceProfile["customerLanguage"],
                 }))
               }
-              className="rounded-md border border-border bg-background px-3 py-2 text-sm"
+              className="rounded-xl border border-border bg-background px-4 py-2.5 text-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-ring/40"
             >
               {(Object.keys(CUSTOMER_LANG_LABEL) as Array<BrandVoiceProfile["customerLanguage"]>).map((k) => (
                 <option key={k} value={k}>
@@ -186,7 +187,7 @@ export default function VoiceSettingsPage() {
           </section>
 
           <section>
-            <h2 className="text-sm font-medium mb-2">CTA style</h2>
+            <h2 className="font-display text-sm font-bold mb-2">CTA style</h2>
             <select
               value={voice.ctaStyle}
               onChange={(e) =>
@@ -195,7 +196,7 @@ export default function VoiceSettingsPage() {
                   ctaStyle: e.target.value as BrandVoiceProfile["ctaStyle"],
                 }))
               }
-              className="rounded-md border border-border bg-background px-3 py-2 text-sm"
+              className="rounded-xl border border-border bg-background px-4 py-2.5 text-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-ring/40"
             >
               {(Object.keys(CTA_LABEL) as Array<BrandVoiceProfile["ctaStyle"]>).map((k) => (
                 <option key={k} value={k}>
@@ -206,7 +207,7 @@ export default function VoiceSettingsPage() {
           </section>
 
           <section>
-            <h2 className="text-sm font-medium mb-2">Verified claims</h2>
+            <h2 className="font-display text-sm font-bold mb-2">Verified claims</h2>
             <p className="text-xs text-muted-foreground mb-2">
               Only enable items you can actually verify (license number, insurance certificate, etc.). Brago will not mention claims you have not turned on here.
             </p>
@@ -258,7 +259,7 @@ export default function VoiceSettingsPage() {
           <button
             onClick={save}
             disabled={saving}
-            className="rounded-full bg-foreground text-background px-4 py-2 text-sm font-medium disabled:opacity-50"
+            className="rounded-full bg-brand text-brand-foreground px-5 py-2.5 text-sm font-bold shadow-tactile transition-all hover:-translate-y-0.5 disabled:translate-y-0 disabled:opacity-50"
           >
             {saving ? "Saving…" : "Save posting style"}
           </button>

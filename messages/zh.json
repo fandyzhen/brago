@@ -71,28 +71,6 @@
       "secondary": "看示例"
     }
   },
-  "features": {
-    "title": "Vibe Coding 成功所需的一切功能",
-    "subtitle": "告别在样板代码上浪费时间。专注于描述您的独特功能，Sistine 会为您处理好底层基础。借助 AI 加速产品交付。",
-    "items": {
-      "aiOptimized": {
-        "title": "为 AI 辅助开发而生",
-        "description": "为 Cursor、Windsurf 和 Claude Code 等工具完美结构化。每个文件、每个组件都经过优化，便于 AI 理解和修改。"
-      },
-      "zeroPipeline": {
-        "title": "从零到生产的完整流程",
-        "description": "身份验证、支付、数据库、部署——一切均已配置完毕。只需向您的 AI 助手发出指令，即可见证您的 SaaS 产品诞生。"
-      },
-      "nonTechnical": {
-        "title": "对非技术背景的创始人友好",
-        "description": "分不清 React 和 Rails？没关系。只要您能清晰地描述您的想法，就能成功交付一款 SaaS 产品。"
-      },
-      "productionGrade": {
-        "title": "从第一天起即达生产级别",
-        "description": "支持真实用户、真实支付、真实规模。基于 Next.js、PostgreSQL 和 Creem 构建——与价值数十亿美元公司使用的技术栈一致。"
-      }
-    }
-  },
   "pricing": {
     "title": "定价",
     "subtitle": "免费体验，单档套餐让你成长",
@@ -128,129 +106,9 @@
       "cta": "开通 Brago Local"
     }
   },
-  "testimonials": {
-    "title": "来自 Vibe Coders 的成功故事",
-    "subtitle": "真实开发者与非技术背景创始人分享他们使用 Sistine 和 Vibe Coding 构建 AI SaaS 产品的经验。",
-    "items": [
-      {
-        "name": "Alex Chen",
-        "quote": "我不是开发者，我是营销人员。但我使用 Sistine + Cursor 在 3 天内发布了我的 AI SaaS。现在每月收入 5000 美元。",
-        "designation": "营销经理转型创始人"
-      },
-      {
-        "name": "Jordan Lee",
-        "quote": "我花了多年学习编码。现在我的非技术联合创始人使用 Vibe Coding 发布功能比我还快。这就是未来。",
-        "designation": "技术联合创始人"
-      },
-      {
-        "name": "Alice Johnson",
-        "quote": "从想法到每月 1 万美元收入只用了 2 个月。全靠感觉，无需编码。Sistine 让我能与有资金支持的创业公司竞争。",
-        "designation": "连续创业者"
-      },
-      {
-        "name": "Bob Smith",
-        "quote": "仅在本季度就构建并发布了 3 个不同的 AI SaaS 产品。使用 Sistine 进行 Vibe Coding 是我的秘密武器。",
-        "designation": "独立黑客"
-      },
-      {
-        "name": "Cathy Lee",
-        "quote": "我用普通英语向 Claude Code 描述功能。Sistine 处理其他一切。发布从未如此快速。",
-        "designation": "产品经理"
-      },
-      {
-        "name": "David Wright",
-        "quote": "身份验证、支付和部署都可以直接使用。我专注于独特的功能。我的 SaaS 第一周就盈利了。",
-        "designation": "独立创始人"
-      },
-      {
-        "name": "Eva Green",
-        "quote": "它带来的效率是无与伦比的。这是一个重要的工具，帮助我们削减成本并显著改善了最终产品。",
-        "designation": "运营总监"
-      },
-      {
-        "name": "Frank Moore",
-        "quote": "一个完美融入我们工作流程的强大解决方案。它增强了我们团队的能力，让我们能够处理更复杂的项目。",
-        "designation": "项目经理"
-      },
-      {
-        "name": "Grace Hall",
-        "quote": "它非常直观且易于使用。即使没有技术专业知识的人也可以利用它的强大功能来改善工作流程。",
-        "designation": "市场营销专家"
-      },
-      {
-        "name": "Henry Ford",
-        "quote": "它为我们节省了无数小时。强烈推荐给任何想要提高效率和生产力的人。",
-        "designation": "运营分析师"
-      },
-      {
-        "name": "Ivy Wilson",
-        "quote": "任何专业人士的必备工具。它彻底改变了我们解决问题和决策的方式。",
-        "designation": "商业顾问"
-      },
-      {
-        "name": "Jack Brown",
-        "quote": "结果总是令人印象深刻。这个 AI 不仅帮助我们达到了性能目标，还超越了预期。",
-        "designation": "绩效经理"
-      },
-      {
-        "name": "Kathy Adams",
-        "quote": "它帮助我们实现了曾经被认为不可能的事情。AI 的能力是突破性的，为我们开辟了新的道路。",
-        "designation": "创新负责人"
-      },
-      {
-        "name": "Leo Carter",
-        "quote": "具有真正影响力的变革性技术。它简化了我们的运营，为我们的流程带来了前所未有的效率。",
-        "designation": "技术策略师"
-      },
-      {
-        "name": "Mia Turner",
-        "quote": "简直是革命性的！它与我们现有系统的集成和增强方式简直是奇迹。",
-        "designation": "系统集成师"
-      }
-    ]
-  },
   "companies": {
     "title": "使用行业领先技术构建",
     "subtitle": "基于现代技术栈构建，被全球顶尖团队信赖"
-  },
-  "gridFeatures": {
-    "aiReady": {
-      "title": "AI 就绪架构",
-      "description": "预配置聊天、图像和视频生成工作流，默认接入 Volcano Engine。填好密钥即可开始构建。"
-    },
-    "creem": {
-      "title": "Creem 支付",
-      "description": "内置完整的计费系统，包括订阅、使用量跟踪和客户门户。"
-    },
-    "auth": {
-      "title": "身份认证系统",
-      "description": "Better Auth 支持邮箱密码和 OAuth。会话管理和受保护路由已就绪。"
-    },
-    "deploy": {
-      "title": "一键部署",
-      "description": "即刻部署到 Vercel、Railway 或任何平台。从第一天起即可投入生产。"
-    },
-    "typescript": {
-      "title": "TypeScript + Tailwind",
-      "description": "现代技术栈包括 Next.js 14、TypeScript、Tailwind CSS 和 shadcn/ui 组件。"
-    },
-    "database": {
-      "title": "数据库 + ORM",
-      "description": "PostgreSQL 配合 Drizzle ORM。类型安全的查询和迁移已配置。"
-    },
-    "seo": {
-      "title": "SEO 和营销",
-      "description": "元标签、Open Graph、站点地图和分析。为有机增长准备的一切。"
-    },
-    "vibeCoding": {
-      "title": "Vibe Coding 就绪",
-      "description": "针对 Cursor、Windsurf 和 Claude Code 进行了优化。AI 能理解每个组件。"
-    }
-  },
-  "cta": {
-    "title": "准备好交付您的 AI SaaS 产品了吗？",
-    "description": "加入数百名开发者的行列，他们已经通过 Sistine 和 Vibe Coding 成功发布了自己的 SaaS 产品。",
-    "button": "获取代码"
   },
   "auth": {
     "login": {
@@ -335,7 +193,7 @@
   },
   "demo": {
     "badge": "先试后买",
-    "title": "体验 Sistine AI",
+    "title": "体验 Brago",
     "description": "无需注册即可测试我们强大的 AI 功能。获得 3 次免费试用机会，探索我们的能力。",
     "limitReached": "您已达到演示限制。立即注册以继续使用完整功能的 AI 工具！",
     "signUpNow": "立即注册",
@@ -852,8 +710,8 @@
     "subtitle": "我们很乐意倾听您的声音。给我们发送消息，我们会尽快回复。",
     "description": "请联系我们，我们会以光速回复您。",
     "testimonial": {
-      "title": "Sistine AI 被数千名用户使用",
-      "description": "在众多 AI 应用中，Sistine AI 以其顶级的 AI 能力脱颖而出。"
+      "title": "把完工照片变成 Google 现成贴文",
+      "description": "Brago 把今天的活儿照片变成可直接粘贴到 Google 商家资料的安全贴文，几秒搞定。"
     },
     "form": {
       "nameLabel": "姓名",

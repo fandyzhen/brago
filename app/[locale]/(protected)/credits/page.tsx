@@ -119,10 +119,10 @@ export default function CreditsPage() {
           animate={{ y: 0, opacity: 1 }}
           transition={{ ease: "easeOut", duration: 0.5 }}
         >
-          <h1 className="text-4xl md:text-6xl font-bold text-foreground mb-4">
+          <h1 className="font-display text-3xl md:text-5xl font-extrabold tracking-tight text-foreground mb-3">
             {t('title')}
           </h1>
-          <p className="text-xl text-muted-foreground mb-12">
+          <p className="text-base md:text-lg text-muted-foreground mb-12">
             {t('subtitle')}
           </p>
         </motion.div>
@@ -135,11 +135,11 @@ export default function CreditsPage() {
           className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8"
         >
           {/* Current Balance */}
-          <div className="bg-card/50 backdrop-blur-md rounded-2xl p-6 border border-border">
+          <div className="bg-card rounded-2xl p-6 border border-border shadow-sm">
             <h3 className="text-lg font-medium text-muted-foreground mb-2">
               {t('balance.title')}
             </h3>
-            <div className="text-4xl font-bold text-card-foreground mb-4">
+            <div className="font-display text-4xl font-extrabold text-card-foreground mb-4">
               {credits}
             </div>
             <p className="text-sm text-muted-foreground">
@@ -148,13 +148,13 @@ export default function CreditsPage() {
           </div>
 
           {/* Quick Purchase Options */}
-          <div className="bg-card/50 backdrop-blur-md rounded-2xl p-6 border border-border">
+          <div className="bg-card rounded-2xl p-6 border border-border shadow-sm">
             <h3 className="text-lg font-medium text-muted-foreground mb-4">
               {t('purchase.title')}
             </h3>
             <div className="space-y-2">
               <Button
-                variant="primary"
+                variant="accent"
                 className="w-full justify-between"
                 onClick={() => startCheckout(creditPack.key)}
               >
@@ -165,7 +165,7 @@ export default function CreditsPage() {
           </div>
 
           {/* Usage Statistics */}
-          <div className="bg-card/50 backdrop-blur-md rounded-2xl p-6 border border-border">
+          <div className="bg-card rounded-2xl p-6 border border-border shadow-sm">
             <h3 className="text-lg font-medium text-muted-foreground mb-4">
               {t('statistics.title')}
             </h3>
@@ -203,8 +203,8 @@ export default function CreditsPage() {
           animate={{ y: 0, opacity: 1 }}
           transition={{ ease: "easeOut", duration: 0.5, delay: 0.2 }}
         >
-          <div className="bg-card/50 backdrop-blur-md rounded-2xl p-6 border border-border">
-            <h3 className="text-xl font-semibold text-card-foreground mb-4">
+          <div className="bg-card rounded-2xl p-6 border border-border shadow-sm">
+            <h3 className="font-display text-xl font-bold text-card-foreground mb-4">
               {t('history.title')}
             </h3>
 

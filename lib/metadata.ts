@@ -37,7 +37,7 @@ export function generatePageMetadata({
       title,
       description,
       url: canonicalUrl,
-      siteName: 'SISTINE AI',
+      siteName: 'Brago',
       images: [
         {
           url: ogImage,

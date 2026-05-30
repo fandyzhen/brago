@@ -80,10 +80,10 @@ export default function ProfilePage() {
         >
           {/* Header Section */}
           <div className="text-center mb-12">
-            <h1 className="text-4xl md:text-6xl font-bold text-foreground mb-4">
+            <h1 className="font-display text-3xl md:text-5xl font-extrabold tracking-tight text-foreground mb-4">
               {t('title')}
             </h1>
-            <p className="text-xl text-muted-foreground">
+            <p className="text-base md:text-lg text-muted-foreground">
               {t('subtitle')}
             </p>
           </div>
@@ -93,7 +93,7 @@ export default function ProfilePage() {
             initial={{ y: 40, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ ease: "easeOut", duration: 0.5, delay: 0.1 }}
-            className="bg-card/50 backdrop-blur-md rounded-3xl p-8 border border-border"
+            className="bg-card rounded-3xl p-8 border border-border shadow-sm"
           >
             {/* Avatar Section */}
             <div className="flex flex-col items-center mb-10">
@@ -101,7 +101,7 @@ export default function ProfilePage() {
                 initial={{ scale: 0.8, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{ ease: "easeOut", duration: 0.5, delay: 0.2 }}
-                className="w-32 h-32 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold text-4xl mb-6 ring-4 ring-border/50"
+                className="w-32 h-32 rounded-full bg-brand flex items-center justify-center text-brand-foreground font-display font-extrabold text-4xl mb-6 ring-4 ring-brand/20"
               >
                 {displayUser?.image ? (
                   <Image
@@ -115,7 +115,7 @@ export default function ProfilePage() {
                   initial
                 )}
               </motion.div>
-              <h2 className="text-3xl font-bold text-card-foreground mb-2">
+              <h2 className="font-display text-3xl font-extrabold text-card-foreground mb-2">
                 {displayUser?.name || t('sections.basicInfo.nameNotSet')}
               </h2>
               <p className="text-lg text-muted-foreground">{displayUser?.email}</p>
@@ -131,7 +131,7 @@ export default function ProfilePage() {
                 className="space-y-6"
               >
                 <div>
-                  <h3 className="text-lg font-semibold text-card-foreground mb-4">
+                  <h3 className="font-display text-lg font-bold text-card-foreground mb-4">
                     {t('sections.basicInfo.title')}
                   </h3>
                   <div className="space-y-4">
@@ -165,7 +165,7 @@ export default function ProfilePage() {
                 className="space-y-6"
               >
                 <div>
-                  <h3 className="text-lg font-semibold text-card-foreground mb-4">
+                  <h3 className="font-display text-lg font-bold text-card-foreground mb-4">
                     {t('sections.accountSettings.title')}
                   </h3>
                   <div className="space-y-4">

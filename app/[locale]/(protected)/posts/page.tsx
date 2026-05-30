@@ -33,25 +33,25 @@ export default async function PostsPage() {
     .limit(50);
 
   return (
-    <div className="bg-background min-h-screen">
+    <div className="bg-paper-glow min-h-screen">
       <Container className="py-10">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h1 className="text-2xl font-bold">Your Google posts</h1>
+            <h1 className="font-display text-2xl font-extrabold tracking-tight">Your Google posts</h1>
             <p className="text-sm text-muted-foreground mt-1">
               Every Google post you drafted, newest first.
             </p>
           </div>
           <Link
             href="/create"
-            className="rounded-lg bg-foreground text-background px-4 py-2 text-sm font-medium hover:opacity-90"
+            className="rounded-xl bg-brand text-brand-foreground px-4 py-2 text-sm font-bold shadow-tactile transition-all hover:-translate-y-0.5"
           >
             New post
           </Link>
         </div>
 
         {rows.length === 0 ? (
-          <div className="rounded-xl border border-dashed border-neutral-300 dark:border-neutral-700 py-16 text-center text-neutral-500">
+          <div className="rounded-xl border border-dashed border-border py-16 text-center text-muted-foreground">
             <p>No posts yet.</p>
             <Link
               href="/create"
@@ -65,7 +65,7 @@ export default async function PostsPage() {
             {rows.map((p) => (
               <li
                 key={p.id}
-                className="rounded-xl border border-neutral-200 dark:border-neutral-800 overflow-hidden bg-white dark:bg-neutral-900"
+                className="rounded-xl border border-border overflow-hidden bg-card shadow-sm transition-shadow hover:shadow-tactile"
               >
                 {p.outputUrl ? (
                   <a href={p.outputUrl} target="_blank" rel="noopener noreferrer">
@@ -78,13 +78,13 @@ export default async function PostsPage() {
                     />
                   </a>
                 ) : (
-                  <div className="w-full aspect-square bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center text-xs text-neutral-400">
+                  <div className="w-full aspect-square bg-muted flex items-center justify-center text-xs text-muted-foreground">
                     No image
                   </div>
                 )}
                 <div className="px-3 py-2">
                   <p className="text-sm font-medium line-clamp-1">{p.headline}</p>
-                  <p className="text-xs text-neutral-400 mt-1">
+                  <p className="text-xs text-muted-foreground mt-1">
                     {INDUSTRY_LABEL[p.industry] ?? p.industry} ·{" "}
                     {CHANNEL_LABEL[p.channel] ?? p.channel}
                   </p>
