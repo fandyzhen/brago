@@ -758,6 +758,7 @@
     "title": "Try Brago free — Google posts in 30 seconds",
     "subtitle": "Upload your job photos. We pick the strongest after shot and write a Google-safe caption you can paste straight into your Business Profile.",
     "form": {
+      "optional": "optional",
       "industry": {
         "title": "What kind of work?",
         "options": {
@@ -766,23 +767,19 @@
           "cleaning": "Cleaning"
         }
       },
-      "serviceType": { "title": "Service" },
       "photos": {
-        "title": "Drop your job photos",
-        "hintEmpty": "Add 1–10 photos. We'll pick the strongest after shot when you give us at least 3.",
+        "title": "Job photos",
+        "hintEmpty": "Add 1–9 photos. 3+ unlocks Best Shot picking.",
         "hintMore": "Add {count} more to unlock Best Shot picking.",
-        "hintReady": "Nice — we'll pick the strongest after shot from this set."
+        "hintReady": "We'll pick the strongest after shot from this set."
       },
       "location": {
         "title": "Where was the job?",
-        "placeholder": "Park Slope, South Austin, downtown…",
-        "helper": "Neighborhood, town, or area. Helps the caption feel local."
+        "placeholder": "Neighborhood, town, or area"
       },
       "note": {
-        "title": "Anything stand out about this job?",
-        "optional": "Optional",
-        "placeholder": "e.g. \"first wash in 5 years\", \"customer was moving out the next day\", \"pollen had baked in all summer\"",
-        "helper": "A detail, a customer story, what was tricky. Skip if it was routine — we'll write something solid anyway."
+        "title": "Describe this job",
+        "placeholder": "e.g. \"first wash in 5 years\", \"customer moving out next day\""
       },
       "style": {
         "title": "Style",

@@ -4,7 +4,9 @@ import { sql } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { anonymousQuota } from "@/lib/db/schema";
 
-export const DAILY_TRIAL_LIMIT = 1;
+// TEMP for dev/QA: 10 trials/day per IP. Launch checklist P0-4 tracks
+// the switch back to "1 per week" before going live.
+export const DAILY_TRIAL_LIMIT = 10;
 
 export class TrialQuotaExceededError extends Error {
   constructor() {

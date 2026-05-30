@@ -9,19 +9,21 @@ import { SignupModal } from "./components/signup-modal";
 
 type Industry = "pressure_washing" | "auto_detailing" | "cleaning";
 
-const SERVICE_TYPES: Record<Industry, string[]> = {
-  pressure_washing: ["driveway", "patio", "siding / house wash", "walkway", "deck", "fence", "roof"],
-  auto_detailing: ["interior detail", "exterior wash", "ceramic coating", "paint correction", "polish", "headlight restoration", "wheel cleaning", "engine bay"],
-  cleaning: ["deep clean", "move-in cleaning", "move-out cleaning", "recurring", "post construction", "office cleaning", "window cleaning", "carpet cleaning"],
+// Default service type per industry — used at post creation; vision later
+// refines this if it detects a specific subtype.
+const DEFAULT_SERVICE_TYPE: Record<Industry, string> = {
+  pressure_washing: "exterior cleaning",
+  auto_detailing: "vehicle detailing",
+  cleaning: "home cleaning",
 };
 
 type Tone = "friendly" | "professional" | "local_pride";
 type Lang = "en" | "es";
 
 type UploadedPhoto = {
-  id: string;          // gpp_* once uploaded; pending_* before
-  previewUrl: string;  // local objectURL
-  remoteUrl?: string;  // R2 URL after upload
+  id: string;
+  previewUrl: string;
+  remoteUrl?: string;
   status: "uploading" | "done" | "failed";
 };
 
@@ -32,7 +34,7 @@ type ResultPayload = {
   policyOk: boolean;
 };
 
-const MAX_PHOTOS = 10;
+const MAX_PHOTOS = 9;
 const MAX_CONCURRENT_UPLOADS = 3;
 
 export function FreeGeneratorClient() {
@@ -41,7 +43,6 @@ export function FreeGeneratorClient() {
   const { save } = useTrialState();
 
   const [industry, setIndustry] = useState<Industry>("pressure_washing");
-  const [serviceType, setServiceType] = useState<string>(SERVICE_TYPES.pressure_washing[0]);
   const [photos, setPhotos] = useState<UploadedPhoto[]>([]);
   const [location, setLocation] = useState("");
   const [note, setNote] = useState("");
@@ -52,30 +53,34 @@ export function FreeGeneratorClient() {
 
   const [postId, setPostId] = useState<string | null>(null);
   const [anonId, setAnonId] = useState<string | null>(null);
-  const [generating, setGenerating] = useState<"idle" | "creating" | "vision" | "caption" | "done" | "error" | "quota">("idle");
+  const [generating, setGenerating] = useState<
+    "idle" | "creating" | "vision" | "caption" | "done" | "error" | "quota"
+  >("idle");
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<ResultPayload | null>(null);
   const [signupOpen, setSignupOpen] = useState(false);
 
-  const uploadedCount = photos.filter(p => p.status === "done").length;
-  const canGenerate = uploadedCount >= 1 && location.trim().length > 0 && consent && generating === "idle";
+  const uploadedCount = photos.filter((p) => p.status === "done").length;
+  const canGenerate =
+    uploadedCount >= 1 && location.trim().length > 0 && consent && generating === "idle";
 
   // ensure we have an anon google_post before uploading
   const ensurePost = async (): Promise<{ postId: string; anonId: string } | null> => {
     if (postId && anonId) return { postId, anonId };
     setGenerating("creating");
     try {
+      const body: Record<string, unknown> = {
+        industry,
+        serviceType: DEFAULT_SERVICE_TYPE[industry],
+        tone,
+        language,
+      };
+      if (location.trim()) body.serviceArea = location.trim();
+
       const res = await fetch("/api/brago/anonymous/google-posts", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          industry,
-          serviceType,
-          serviceArea: location.trim() || null,
-          brandName: "Trial",       // server still requires it; placeholder, unused downstream
-          tone,
-          language,
-        }),
+        body: JSON.stringify(body),
       });
       if (res.status === 429) {
         setGenerating("quota");
@@ -101,25 +106,25 @@ export function FreeGeneratorClient() {
   const uploadFiles = async (files: File[]) => {
     const room = MAX_PHOTOS - photos.length;
     if (room <= 0) return;
-    const accept = files.slice(0, room).filter(f => f.type.startsWith("image/") && f.size <= 10 * 1024 * 1024);
+    const accept = files
+      .slice(0, room)
+      .filter((f) => f.type.startsWith("image/") && f.size <= 10 * 1024 * 1024);
 
-    // Render placeholders immediately
-    const pending: UploadedPhoto[] = accept.map(f => ({
+    const pending: UploadedPhoto[] = accept.map((f) => ({
       id: `pending_${crypto.randomUUID()}`,
       previewUrl: URL.createObjectURL(f),
       status: "uploading",
     }));
-    setPhotos(prev => [...prev, ...pending]);
+    setPhotos((prev) => [...prev, ...pending]);
 
-    // Ensure post exists (lazy on first upload)
     const ctx = await ensurePost();
     if (!ctx) {
-      // post creation failed; mark placeholders failed
-      setPhotos(prev => prev.map(p => pending.find(q => q.id === p.id) ? { ...p, status: "failed" } : p));
+      setPhotos((prev) =>
+        prev.map((p) => (pending.find((q) => q.id === p.id) ? { ...p, status: "failed" } : p)),
+      );
       return;
     }
 
-    // Parallel upload with concurrency cap
     let cursor = 0;
     const runOne = async () => {
       while (cursor < accept.length) {
@@ -131,31 +136,31 @@ export function FreeGeneratorClient() {
           fd.set("file", file);
           fd.set("anonId", ctx.anonId);
           fd.set("postId", ctx.postId);
-          const res = await fetch("/api/brago/anonymous/upload", { method: "POST", body: fd });
+          const res = await fetch("/api/brago/anonymous/upload", {
+            method: "POST",
+            body: fd,
+          });
           if (!res.ok) throw new Error("upload");
           const data = (await res.json()) as { photoId: string; url: string };
-          setPhotos(prev => prev.map(p =>
-            p.id === ph.id ? { ...p, id: data.photoId, remoteUrl: data.url, status: "done" } : p,
-          ));
+          setPhotos((prev) =>
+            prev.map((p) =>
+              p.id === ph.id
+                ? { ...p, id: data.photoId, remoteUrl: data.url, status: "done" }
+                : p,
+            ),
+          );
         } catch {
-          setPhotos(prev => prev.map(p =>
-            p.id === ph.id ? { ...p, status: "failed" } : p,
-          ));
+          setPhotos((prev) => prev.map((p) => (p.id === ph.id ? { ...p, status: "failed" } : p)));
         }
       }
     };
-    await Promise.all(Array.from({ length: Math.min(MAX_CONCURRENT_UPLOADS, accept.length) }, runOne));
+    await Promise.all(
+      Array.from({ length: Math.min(MAX_CONCURRENT_UPLOADS, accept.length) }, runOne),
+    );
   };
 
   const removePhoto = (id: string) => {
-    setPhotos(prev => prev.filter(p => p.id !== id));
-  };
-
-  const onIndustryChange = (next: Industry) => {
-    setIndustry(next);
-    if (!SERVICE_TYPES[next].includes(serviceType)) {
-      setServiceType(SERVICE_TYPES[next][0]);
-    }
+    setPhotos((prev) => prev.filter((p) => p.id !== id));
   };
 
   const handleGenerate = async () => {
@@ -169,22 +174,36 @@ export function FreeGeneratorClient() {
         body: JSON.stringify({ anonId }),
       });
       const analyze = aRes.ok
-        ? (await aRes.json() as { recommendation: { bestPhotoId: string | null; why: string | null } })
+        ? ((await aRes.json()) as {
+            recommendation: { bestPhotoId: string | null; why: string | null };
+          })
         : { recommendation: { bestPhotoId: photos[0]?.id ?? null, why: null } };
 
       setGenerating("caption");
 
-      // pack user note + tone into customContext for the AI
       const customContext = [
-        tone !== "friendly" ? `Use a ${tone === "professional" ? "professional" : "local-pride"} tone.` : "",
+        tone !== "friendly"
+          ? `Use a ${tone === "professional" ? "professional" : "local-pride"} tone.`
+          : "",
         note.trim(),
-      ].filter(Boolean).join(" ").trim();
+      ]
+        .filter(Boolean)
+        .join(" ")
+        .trim();
 
-      const cRes = await fetch(`/api/brago/anonymous/google-posts/${postId}/generate-caption`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ anonId, customContext: customContext || undefined }),
-      });
+      const cRes = await fetch(
+        `/api/brago/anonymous/google-posts/${postId}/generate-caption`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            anonId,
+            customContext: customContext || undefined,
+            serviceArea: location.trim(),
+            serviceType: DEFAULT_SERVICE_TYPE[industry],
+          }),
+        },
+      );
       if (!cRes.ok) {
         setGenerating("error");
         setError(t("steps.generating.failed"));
@@ -215,46 +234,70 @@ export function FreeGeneratorClient() {
 
   if (generating === "quota") {
     return (
-      <div className="mt-10 rounded-3xl border border-border bg-card p-8 text-center shadow-tactile">
-        <h2 className="font-display text-xl font-bold">{t("steps.quotaUsed.title")}</h2>
+      <div className="mt-8 rounded-3xl border border-border bg-card p-6 text-center shadow-tactile">
+        <h2 className="font-display text-lg font-bold">{t("steps.quotaUsed.title")}</h2>
         <p className="mt-2 text-sm text-muted-foreground">{t("steps.quotaUsed.body")}</p>
         <button
           onClick={() => setSignupOpen(true)}
-          className="mt-5 rounded-xl bg-brand text-brand-foreground px-6 py-3 text-base font-bold"
+          className="mt-4 rounded-xl bg-brand text-brand-foreground px-5 py-2.5 text-sm font-bold"
         >
           {t("steps.quotaUsed.cta")}
         </button>
-        <SignupModal open={signupOpen} onClose={() => setSignupOpen(false)} postId={postId} anonId={anonId} locale={locale} />
+        <SignupModal
+          open={signupOpen}
+          onClose={() => setSignupOpen(false)}
+          postId={postId}
+          anonId={anonId}
+          locale={locale}
+        />
       </div>
     );
   }
 
   if (generating === "done" && result) {
-    const bestPhoto = photos.find(p => p.id === result.bestPhotoId) ?? photos[0];
+    const bestPhoto = photos.find((p) => p.id === result.bestPhotoId) ?? photos[0];
     return (
-      <div className="mt-10 grid gap-5 rounded-3xl border border-border bg-card p-6 shadow-tactile">
-        <h2 className="font-display text-xl font-bold">{t("steps.result.title")}</h2>
+      <div className="mt-8 grid gap-4 rounded-3xl border border-border bg-card p-5 shadow-tactile">
+        <h2 className="font-display text-lg font-bold">{t("steps.result.title")}</h2>
         {bestPhoto && (
           <div className="relative overflow-hidden rounded-2xl border border-border bg-card">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={bestPhoto.previewUrl} alt="" className="aspect-[4/3] w-full object-cover" />
-            <div className="pointer-events-none absolute inset-x-0 bottom-0 flex items-center justify-between bg-gradient-to-t from-black/60 to-transparent p-4 text-white">
-              <span className="text-xs font-semibold uppercase tracking-wide opacity-80">Brago</span>
+            <img
+              src={bestPhoto.previewUrl}
+              alt=""
+              className="aspect-[4/3] w-full object-cover"
+            />
+            <div className="pointer-events-none absolute inset-x-0 bottom-0 flex items-center justify-between bg-gradient-to-t from-black/60 to-transparent p-3 text-white">
+              <span className="text-xs font-semibold uppercase tracking-wide opacity-80">
+                Brago
+              </span>
               {result.policyOk && <span className="text-xs">{t("steps.result.policyOk")}</span>}
             </div>
             {result.whyThisPhoto && (
-              <div className="border-t border-border bg-background p-4 text-sm text-muted-foreground">
-                <span className="font-semibold text-foreground">{t("steps.result.whyThisPhoto")}</span> {result.whyThisPhoto}
+              <div className="border-t border-border bg-background p-3 text-sm text-muted-foreground">
+                <span className="font-semibold text-foreground">
+                  {t("steps.result.whyThisPhoto")}
+                </span>{" "}
+                {result.whyThisPhoto}
               </div>
             )}
           </div>
         )}
-        <div className="rounded-2xl border border-border bg-card p-5">
-          <div className="mb-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">{t("steps.result.captionLabel")}</div>
-          <p className="whitespace-pre-wrap text-sm leading-relaxed text-foreground">{result.caption}</p>
+        <div className="rounded-2xl border border-border bg-card p-4">
+          <div className="mb-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+            {t("steps.result.captionLabel")}
+          </div>
+          <p className="whitespace-pre-wrap text-sm leading-relaxed text-foreground">
+            {result.caption}
+          </p>
         </div>
-        <div className="grid grid-cols-2 gap-2 md:grid-cols-4">
-          {[t("steps.result.lockedCopy"), t("steps.result.lockedDownload"), t("steps.result.lockedSpanish"), t("steps.result.lockedRegen")].map((label) => (
+        <div className="grid grid-cols-2 gap-2">
+          {[
+            t("steps.result.lockedCopy"),
+            t("steps.result.lockedDownload"),
+            t("steps.result.lockedSpanish"),
+            t("steps.result.lockedRegen"),
+          ].map((label) => (
             <button
               key={label}
               type="button"
@@ -269,20 +312,32 @@ export function FreeGeneratorClient() {
         <button
           type="button"
           onClick={() => setSignupOpen(true)}
-          className="rounded-2xl bg-brand text-brand-foreground px-6 py-4 text-base font-bold shadow-tactile transition-all hover:-translate-y-0.5"
+          className="rounded-2xl bg-brand text-brand-foreground px-5 py-4 text-base font-bold shadow-tactile transition-all hover:-translate-y-0.5"
         >
           {t("steps.result.unlockCta")}
-          <span className="ml-2 text-sm font-normal opacity-80">— {t("steps.result.unlockSubtext")}</span>
+          <div className="mt-0.5 text-xs font-normal opacity-80">
+            {t("steps.result.unlockSubtext")}
+          </div>
         </button>
-        <SignupModal open={signupOpen} onClose={() => setSignupOpen(false)} postId={postId} anonId={anonId} locale={locale} />
+        <SignupModal
+          open={signupOpen}
+          onClose={() => setSignupOpen(false)}
+          postId={postId}
+          anonId={anonId}
+          locale={locale}
+        />
       </div>
     );
   }
 
-  if (generating === "vision" || generating === "caption" || generating === "creating") {
+  if (
+    generating === "vision" ||
+    generating === "caption" ||
+    generating === "creating"
+  ) {
     return (
-      <div className="mt-10 grid place-items-center gap-4 rounded-3xl border border-border bg-card p-12 shadow-tactile">
-        <Loader2 className="h-8 w-8 animate-spin text-brand" />
+      <div className="mt-8 grid place-items-center gap-3 rounded-3xl border border-border bg-card p-10 shadow-tactile">
+        <Loader2 className="h-7 w-7 animate-spin text-brand" />
         <p className="text-sm text-muted-foreground">
           {generating === "vision" && t("steps.generating.vision")}
           {generating === "caption" && t("steps.generating.caption")}
@@ -295,31 +350,20 @@ export function FreeGeneratorClient() {
   // ---- Main form (single page) ----
 
   return (
-    <div className="mt-10 grid gap-6 rounded-3xl border border-border bg-card p-6 shadow-tactile">
+    <div className="mt-8 grid gap-5 rounded-3xl border border-border bg-card p-5 shadow-tactile">
       {/* Industry */}
-      <Section title={t("form.industry.title")}>
+      <Field title={t("form.industry.title")}>
         <PillRow>
-          {(Object.keys(SERVICE_TYPES) as Industry[]).map(i => (
-            <Pill key={i} active={industry === i} onClick={() => onIndustryChange(i)}>
+          {(["pressure_washing", "auto_detailing", "cleaning"] as Industry[]).map((i) => (
+            <Pill key={i} active={industry === i} onClick={() => setIndustry(i)}>
               {t(`form.industry.options.${i}`)}
             </Pill>
           ))}
         </PillRow>
-      </Section>
-
-      {/* Service type */}
-      <Section title={t("form.serviceType.title")}>
-        <PillRow>
-          {SERVICE_TYPES[industry].map(s => (
-            <Pill key={s} active={serviceType === s} onClick={() => setServiceType(s)}>
-              {s}
-            </Pill>
-          ))}
-        </PillRow>
-      </Section>
+      </Field>
 
       {/* Photos */}
-      <Section title={t("form.photos.title")}>
+      <Field title={t("form.photos.title")}>
         <PhotoGrid
           photos={photos}
           onPick={uploadFiles}
@@ -332,59 +376,67 @@ export function FreeGeneratorClient() {
                 : t("form.photos.hintReady")
           }
         />
-      </Section>
+      </Field>
 
       {/* Location */}
-      <Section title={t("form.location.title")}>
+      <Field title={t("form.location.title")}>
         <input
           value={location}
-          onChange={e => setLocation(e.target.value)}
+          onChange={(e) => setLocation(e.target.value)}
           placeholder={t("form.location.placeholder")}
           className="w-full rounded-xl border border-border bg-background px-4 py-3 text-base"
         />
-        <p className="mt-1.5 text-xs text-muted-foreground">{t("form.location.helper")}</p>
-      </Section>
+      </Field>
 
       {/* Note */}
-      <Section title={t("form.note.title")} subtitle={t("form.note.optional")}>
+      <Field title={t("form.note.title")} optional>
         <textarea
           value={note}
-          onChange={e => setNote(e.target.value)}
+          onChange={(e) => setNote(e.target.value)}
           placeholder={t("form.note.placeholder")}
-          rows={3}
-          className="w-full rounded-xl border border-border bg-background px-4 py-3 text-sm"
+          rows={2}
+          className="w-full resize-none rounded-xl border border-border bg-background px-4 py-3 text-sm"
         />
-        <p className="mt-1.5 text-xs text-muted-foreground">{t("form.note.helper")}</p>
-      </Section>
+      </Field>
 
-      {/* Style drawer (collapsed by default) */}
+      {/* Style drawer */}
       <div className="rounded-2xl border border-border">
         <button
           type="button"
-          onClick={() => setStyleOpen(v => !v)}
-          className="flex w-full items-center justify-between px-4 py-3 text-left text-sm"
+          onClick={() => setStyleOpen((v) => !v)}
+          className="flex w-full items-center justify-between gap-3 px-4 py-3 text-left text-sm"
         >
-          <span className="font-medium text-foreground">
-            {t("form.style.title")} · <span className="text-muted-foreground">{t(`form.style.toneOptions.${tone}`)} · {language === "en" ? "English" : "Español"}</span>
+          <span className="truncate text-foreground">
+            <span className="font-medium">{t("form.style.title")}</span>
+            <span className="text-muted-foreground">
+              {" "}
+              · {t(`form.style.toneOptions.${tone}`)} · {language === "en" ? "EN" : "ES"}
+            </span>
           </span>
-          <ChevronDown className={`h-4 w-4 transition-transform ${styleOpen ? "rotate-180" : ""}`} />
+          <ChevronDown
+            className={`h-4 w-4 shrink-0 transition-transform ${styleOpen ? "rotate-180" : ""}`}
+          />
         </button>
         {styleOpen && (
           <div className="grid gap-4 border-t border-border p-4">
             <div className="grid gap-2">
-              <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{t("form.style.toneLabel")}</span>
-              <div className="flex flex-wrap gap-2">
-                {(["friendly", "professional", "local_pride"] as Tone[]).map(tn => (
+              <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                {t("form.style.toneLabel")}
+              </span>
+              <PillRow>
+                {(["friendly", "professional", "local_pride"] as Tone[]).map((tn) => (
                   <Pill key={tn} active={tone === tn} onClick={() => setTone(tn)}>
                     {t(`form.style.toneOptions.${tn}`)}
                   </Pill>
                 ))}
-              </div>
+              </PillRow>
             </div>
             <div className="grid gap-2">
-              <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{t("form.style.languageLabel")}</span>
+              <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                {t("form.style.languageLabel")}
+              </span>
               <div className="flex gap-2">
-                {(["en", "es"] as Lang[]).map(l => (
+                {(["en", "es"] as Lang[]).map((l) => (
                   <Pill key={l} active={language === l} onClick={() => setLanguage(l)}>
                     {l === "en" ? "English" : "Español"}
                   </Pill>
@@ -396,17 +448,24 @@ export function FreeGeneratorClient() {
       </div>
 
       {/* Consent */}
-      <label className="flex items-start gap-3 text-sm text-foreground">
+      <label className="flex items-start gap-2.5 text-sm text-foreground">
         <input
           type="checkbox"
           checked={consent}
-          onChange={e => setConsent(e.target.checked)}
+          onChange={(e) => setConsent(e.target.checked)}
           className="mt-0.5 h-4 w-4 shrink-0"
         />
-        <span className="leading-relaxed">
+        <span className="leading-snug">
           {t.rich("form.consent.text", {
-            link: chunks => (
-              <a href={`/${locale === "en" ? "" : locale + "/"}privacy`.replace("//", "/")} target="_blank" rel="noreferrer" className="underline">{chunks}</a>
+            link: (chunks) => (
+              <a
+                href={`/${locale === "en" ? "" : locale + "/"}privacy`.replace("//", "/")}
+                target="_blank"
+                rel="noreferrer"
+                className="underline"
+              >
+                {chunks}
+              </a>
             ),
           })}
         </span>
@@ -414,42 +473,82 @@ export function FreeGeneratorClient() {
 
       {error && <p className="text-sm text-red-600">{error}</p>}
 
-      <Button variant="accent" disabled={!canGenerate} onClick={handleGenerate} className="w-full py-4 text-base">
+      <Button
+        variant="accent"
+        disabled={!canGenerate}
+        onClick={handleGenerate}
+        className="w-full py-3.5 text-base"
+      >
         {t("form.generateCta")}
       </Button>
 
-      <SignupModal open={signupOpen} onClose={() => setSignupOpen(false)} postId={postId} anonId={anonId} locale={locale} />
+      <SignupModal
+        open={signupOpen}
+        onClose={() => setSignupOpen(false)}
+        postId={postId}
+        anonId={anonId}
+        locale={locale}
+      />
     </div>
   );
 }
 
-function Section({ title, subtitle, children }: { title: string; subtitle?: string; children: React.ReactNode }) {
+function Field({
+  title,
+  optional,
+  children,
+}: {
+  title: string;
+  optional?: boolean;
+  children: React.ReactNode;
+}) {
   return (
-    <section className="grid gap-2.5">
+    <section className="grid gap-2">
       <div className="flex items-baseline gap-2">
-        <h2 className="font-display text-base font-bold text-foreground">{title}</h2>
-        {subtitle && <span className="text-xs uppercase tracking-wide text-muted-foreground">{subtitle}</span>}
+        <h2 className="font-display text-sm font-bold text-foreground">{title}</h2>
+        {optional && (
+          <span className="text-[10px] uppercase tracking-wide text-muted-foreground">
+            ({/* render as "(optional)" — exact word from i18n */}
+            <Optional />
+            )
+          </span>
+        )}
       </div>
       {children}
     </section>
   );
 }
 
+function Optional() {
+  const t = useTranslations("freeTrial.form");
+  return <>{t("optional")}</>;
+}
+
 function PillRow({ children }: { children: React.ReactNode }) {
   return (
-    <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+    <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-0.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
       {children}
     </div>
   );
 }
 
-function Pill({ active, onClick, children }: { active: boolean; onClick: () => void; children: React.ReactNode }) {
+function Pill({
+  active,
+  onClick,
+  children,
+}: {
+  active: boolean;
+  onClick: () => void;
+  children: React.ReactNode;
+}) {
   return (
     <button
       type="button"
       onClick={onClick}
-      className={`whitespace-nowrap rounded-2xl border px-4 py-2.5 text-sm font-medium transition-colors ${
-        active ? "border-brand bg-brand text-brand-foreground" : "border-border bg-background text-foreground hover:bg-card"
+      className={`whitespace-nowrap rounded-2xl border px-4 py-2 text-sm font-medium transition-colors ${
+        active
+          ? "border-brand bg-brand text-brand-foreground"
+          : "border-border bg-background text-foreground hover:bg-card"
       }`}
     >
       {children}
@@ -465,18 +564,27 @@ function PhotoGrid(props: {
 }) {
   return (
     <>
-      <div className="grid grid-cols-3 gap-2.5 md:grid-cols-5">
-        {props.photos.map(p => (
-          <div key={p.id} className="relative aspect-square overflow-hidden rounded-xl border border-border bg-background">
+      <div className="grid grid-cols-3 gap-2">
+        {props.photos.map((p) => (
+          <div
+            key={p.id}
+            className="relative aspect-square overflow-hidden rounded-xl border border-border bg-background"
+          >
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={p.previewUrl} alt="" className={`h-full w-full object-cover ${p.status !== "done" ? "opacity-60" : ""}`} />
+            <img
+              src={p.previewUrl}
+              alt=""
+              className={`h-full w-full object-cover ${p.status !== "done" ? "opacity-60" : ""}`}
+            />
             {p.status === "uploading" && (
               <div className="absolute inset-0 grid place-items-center">
                 <Loader2 className="h-5 w-5 animate-spin text-white drop-shadow" />
               </div>
             )}
             {p.status === "failed" && (
-              <div className="absolute inset-0 grid place-items-center bg-red-900/40 text-xs text-white">failed</div>
+              <div className="absolute inset-0 grid place-items-center bg-red-900/40 text-xs text-white">
+                failed
+              </div>
             )}
             <button
               type="button"
@@ -489,14 +597,14 @@ function PhotoGrid(props: {
           </div>
         ))}
         {props.photos.length < MAX_PHOTOS && (
-          <label className="grid aspect-square cursor-pointer place-items-center rounded-xl border-2 border-dashed border-border bg-background/40 text-3xl text-muted-foreground hover:border-foreground/40">
+          <label className="grid aspect-square cursor-pointer place-items-center rounded-xl border-2 border-dashed border-border bg-background/40 text-2xl text-muted-foreground hover:border-foreground/40">
             +
             <input
               type="file"
               accept="image/*"
               multiple
               className="hidden"
-              onChange={e => {
+              onChange={(e) => {
                 const files = Array.from(e.target.files ?? []);
                 e.target.value = "";
                 if (files.length) props.onPick(files);
@@ -505,7 +613,7 @@ function PhotoGrid(props: {
           </label>
         )}
       </div>
-      <p className="mt-2 text-xs text-muted-foreground">{props.hint}</p>
+      <p className="mt-1.5 text-xs text-muted-foreground">{props.hint}</p>
     </>
   );
 }

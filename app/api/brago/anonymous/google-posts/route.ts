@@ -16,10 +16,12 @@ export const runtime = "nodejs";
 const bodySchema = z.object({
   industry: z.string().min(1).max(32),
   serviceType: z.string().min(1).max(64),
-  serviceArea: z.string().max(200).optional(),
-  brandName: z.string().min(1).max(120),
-  brandPhone: z.string().max(40).optional(),
-  tone: z.enum(["friendly", "professional", "local_pride"]),
+  // accept null + missing so the client can lazy-create the post before the
+  // user has filled in location/brand info
+  serviceArea: z.string().max(200).nullable().optional(),
+  brandName: z.string().max(120).nullable().optional(),
+  brandPhone: z.string().max(40).nullable().optional(),
+  tone: z.enum(["friendly", "professional", "local_pride"]).optional(),
   language: z.enum(["en", "es"]),
 });
 

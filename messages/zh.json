@@ -755,6 +755,7 @@
     "title": "免费试用 Brago — 30 秒做出 Google 商家贴文",
     "subtitle": "上传你今天的活儿照片，我们帮你挑最强的成品图、写一段符合 Google 商家规范的文案，可以直接粘贴到你的商家资料。",
     "form": {
+      "optional": "选填",
       "industry": {
         "title": "做的是什么活儿？",
         "options": {
@@ -763,23 +764,19 @@
           "cleaning": "保洁"
         }
       },
-      "serviceType": { "title": "服务类型" },
       "photos": {
-        "title": "添加今天的工作照片",
-        "hintEmpty": "1–10 张都行。3 张及以上我们才能帮你挑最强的成品图。",
-        "hintMore": "再添 {count} 张可以激活帮你挑最佳照片。",
-        "hintReady": "够了 — 我们会从中挑出最强的那张成品图。"
+        "title": "工作照片",
+        "hintEmpty": "1–9 张，3 张及以上能帮你挑最强成品图。",
+        "hintMore": "再添 {count} 张激活挑图功能。",
+        "hintReady": "够了 — 我们会从中挑出最强的那张。"
       },
       "location": {
         "title": "这次工作在哪？",
-        "placeholder": "小区、街道、片区都行…",
-        "helper": "社区、城市或区域。让文案带上本地味道。"
+        "placeholder": "小区、街道、片区都行"
       },
       "note": {
-        "title": "这次有什么特别的？",
-        "optional": "选填",
-        "placeholder": "比如「这家车道 5 年没洗过」「客户下周就搬走了」「夏天积下来的霉点比平时狠」",
-        "helper": "细节、客户的故事、棘手的地方。如果就是普通工作就跳过 — 我们也能写出靠谱文案。"
+        "title": "描述这次工作",
+        "placeholder": "比如「这家车道 5 年没洗过」「客户下周就搬走了」"
       },
       "style": {
         "title": "风格",
