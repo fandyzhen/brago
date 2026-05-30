@@ -36,15 +36,17 @@ export default async function FreeGoogleGeneratorPage(props: {
 
   return (
     <div className="bg-paper-glow relative overflow-hidden">
-      <Container className="relative z-20 py-16 md:py-24 max-w-3xl">
-        <p className="mb-3 inline-flex items-center gap-2 font-display text-xs font-bold uppercase tracking-[0.18em] text-foreground">
-          <span className="h-2 w-2 rounded-full bg-brand" />
-          Free trial · No credit card
+      <Container className="relative z-20 py-8 md:py-24 max-w-3xl">
+        <p className="mb-3 inline-flex items-center gap-2 font-display text-[11px] md:text-xs font-bold uppercase tracking-[0.15em] text-foreground">
+          <span className="h-1.5 w-1.5 rounded-full bg-brand" />
+          Free trial · No card needed
         </p>
-        <h1 className="font-display text-3xl md:text-5xl font-extrabold text-foreground tracking-tight">
+        <h1 className="font-display text-2xl md:text-5xl font-extrabold text-foreground tracking-tight leading-tight">
           {t("title")}
         </h1>
-        <p className="mt-4 text-muted-foreground max-w-2xl">{t("subtitle")}</p>
+        {/* Subtitle hidden on mobile to keep the form above the fold.
+            The text remains in i18n + page metadata for SEO. */}
+        <p className="mt-3 hidden text-muted-foreground max-w-2xl md:block">{t("subtitle")}</p>
 
         <FreeGeneratorClient />
       </Container>

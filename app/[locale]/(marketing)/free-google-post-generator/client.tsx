@@ -302,10 +302,10 @@ export function FreeGeneratorClient() {
               key={label}
               type="button"
               onClick={() => setSignupOpen(true)}
-              className="flex items-center justify-center gap-1.5 rounded-xl border border-border bg-background px-3 py-2.5 text-sm text-foreground hover:bg-card"
+              className="flex min-w-0 items-center justify-center gap-1.5 rounded-xl border border-border bg-background px-2 py-2.5 text-sm text-foreground hover:bg-card"
             >
-              <Lock className="h-3.5 w-3.5" />
-              {label}
+              <Lock className="h-3.5 w-3.5 shrink-0" />
+              <span className="truncate">{label}</span>
             </button>
           ))}
         </div>
@@ -330,18 +330,17 @@ export function FreeGeneratorClient() {
     );
   }
 
-  if (
-    generating === "vision" ||
-    generating === "caption" ||
-    generating === "creating"
-  ) {
+  // NOTE: we do NOT render the loader for `creating` — it's a sub-second draft
+  // post creation that runs in parallel with file uploads. Replacing the form
+  // for that brief moment caused a confusing flash. The per-photo spinners on
+  // the placeholder thumbnails are enough feedback while uploads happen.
+  if (generating === "vision" || generating === "caption") {
     return (
       <div className="mt-8 grid place-items-center gap-3 rounded-3xl border border-border bg-card p-10 shadow-tactile">
         <Loader2 className="h-7 w-7 animate-spin text-brand" />
         <p className="text-sm text-muted-foreground">
           {generating === "vision" && t("steps.generating.vision")}
           {generating === "caption" && t("steps.generating.caption")}
-          {generating === "creating" && t("steps.generating.creating")}
         </p>
       </div>
     );

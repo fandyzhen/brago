@@ -808,12 +808,12 @@
         "whyThisPhoto": "Why this photo?",
         "captionLabel": "Caption",
         "policyOk": "GBP policy ✓",
-        "unlockCta": "Sign up free to unlock & save this post",
-        "unlockSubtext": "300 credits included. No card required.",
-        "lockedCopy": "Copy caption",
-        "lockedDownload": "Download image",
-        "lockedSpanish": "Switch to Spanish",
-        "lockedRegen": "Regenerate"
+        "unlockCta": "Sign up to unlock",
+        "unlockSubtext": "Save this post · 300 credits · no card",
+        "lockedCopy": "Copy",
+        "lockedDownload": "Download",
+        "lockedSpanish": "Spanish",
+        "lockedRegen": "Redo"
       },
       "quotaUsed": {
         "title": "Today's free trial is used",
