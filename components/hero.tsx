@@ -18,7 +18,7 @@ export const Hero = () => {
   const t = useTranslations("hero");
 
   return (
-    <section className="bg-paper-glow relative w-full overflow-hidden px-5 pt-24 pb-16 md:pt-36 md:pb-24">
+    <section className="bg-paper-glow relative w-full overflow-hidden px-5 pt-10 pb-16 md:pt-16 md:pb-24">
       {/* Thin hazard accent at the very top — job-site signature */}
       <div className="bg-hazard absolute inset-x-0 top-0 h-1.5 opacity-90" aria-hidden />
 

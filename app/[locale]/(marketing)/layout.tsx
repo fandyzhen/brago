@@ -29,9 +29,10 @@ export default function RootLayout({
   return (
     <main>
       <NavBar />
-      {/* pt-20 / md:pt-24 reserves room for the fixed top-4 nav (~60-72px tall).
-          Pages should not add their own top padding to clear the nav. */}
-      <div className="pt-20 md:pt-24">{children}</div>
+      {/* Minimum safe clearance for the fixed top-4 nav: mobile nav bottom ≈ 56px
+          (pt-16 = 64), desktop nav bottom ≈ 66px (pt-20 = 80). Tight enough to
+          avoid noticeable empty space above hero content. */}
+      <div className="pt-16 md:pt-20">{children}</div>
       <Footer />
     </main>
   );

@@ -29,8 +29,8 @@ export default async function ProtectedLayout(
     <EmailVerifiedGuard requireEmailVerification={true}>
       <main className="min-h-screen">
         <NavBar />
-        {/* Reserve space for the fixed top-4 nav */}
-        <div className="pt-20 md:pt-24">{children}</div>
+        {/* Reserve space for the fixed top-4 nav (mobile ~56px, desktop ~66px) */}
+        <div className="pt-16 md:pt-20">{children}</div>
       </main>
     </EmailVerifiedGuard>
   );
