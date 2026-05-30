@@ -757,36 +757,54 @@
   "freeTrial": {
     "title": "Try Brago free — Google posts in 30 seconds",
     "subtitle": "Upload your job photos. We pick the strongest after shot and write a Google-safe caption you can paste straight into your Business Profile.",
-    "steps": {
-      "upload": {
-        "title": "Add 3–10 job photos",
-        "hint": "Drag photos here or click to browse. JPEG/PNG/HEIC, up to 10MB each.",
-        "next": "Continue"
+    "form": {
+      "industry": {
+        "title": "What kind of work?",
+        "options": {
+          "pressure_washing": "Pressure washing",
+          "auto_detailing": "Auto detailing",
+          "cleaning": "Cleaning"
+        }
       },
-      "brand": {
-        "title": "Tell us about the job",
-        "serviceTypeLabel": "Service type",
-        "cityLabel": "City or neighborhood",
-        "cityPlaceholder": "South Austin",
-        "brandNameLabel": "Business name",
-        "brandNamePlaceholder": "SparkleHome Cleaning",
-        "phoneLabel": "Phone (optional, never shown in caption)",
-        "next": "Continue"
+      "serviceType": { "title": "Service" },
+      "photos": {
+        "title": "Drop your job photos",
+        "hintEmpty": "Add 1–10 photos. We'll pick the strongest after shot when you give us at least 3.",
+        "hintMore": "Add {count} more to unlock Best Shot picking.",
+        "hintReady": "Nice — we'll pick the strongest after shot from this set."
       },
-      "tone": {
-        "title": "Voice & language",
+      "location": {
+        "title": "Where was the job?",
+        "placeholder": "Park Slope, South Austin, downtown…",
+        "helper": "Neighborhood, town, or area. Helps the caption feel local."
+      },
+      "note": {
+        "title": "Anything stand out about this job?",
+        "optional": "Optional",
+        "placeholder": "e.g. \"first wash in 5 years\", \"customer was moving out the next day\", \"pollen had baked in all summer\"",
+        "helper": "A detail, a customer story, what was tricky. Skip if it was routine — we'll write something solid anyway."
+      },
+      "style": {
+        "title": "Style",
         "toneLabel": "Tone",
         "toneOptions": {
           "friendly": "Friendly local",
           "professional": "Professional",
           "local_pride": "Local pride"
         },
-        "languageLabel": "Language",
-        "generate": "Draft my Google post"
+        "languageLabel": "Language"
       },
+      "consent": {
+        "text": "I agree to Brago's <link>Privacy Policy</link> and consent to processing my uploaded photos for caption generation."
+      },
+      "generateCta": "Generate my Google post"
+    },
+    "steps": {
       "generating": {
+        "creating": "Setting up your trial…",
         "vision": "Picking the strongest after shot…",
-        "caption": "Writing a Google-safe caption…"
+        "caption": "Writing a Google-safe caption…",
+        "failed": "Generation failed. Please try again."
       },
       "result": {
         "title": "Your Google Business post is ready",
