@@ -792,7 +792,7 @@
         "languageLabel": "Language"
       },
       "consent": {
-        "text": "I agree to Brago's <link>Privacy Policy</link> and consent to processing my uploaded photos for caption generation."
+        "text": "I agree to the <link>Privacy Policy</link> & photo processing."
       },
       "generateCta": "Generate my Google post"
     },
