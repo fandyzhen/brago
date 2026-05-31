@@ -9,29 +9,25 @@ export default function robots(): MetadataRoute.Robots {
         userAgent: '*',
         allow: '/',
         disallow: [
-          // Protected user pages (both default-locale and /zh/ locale)
+          // Protected user pages
           '/dashboard',
-          '/zh/dashboard',
           '/create',
-          '/zh/create',
           '/history',
-          '/zh/history',
           '/credits',
-          '/zh/credits',
           '/profile',
-          '/zh/profile',
           '/settings',
-          '/zh/settings',
+          '/posts',
+          '/google-posts',
+          '/reminders',
           // Admin
           '/admin',
-          '/zh/admin',
           // Auth flows (not useful to index)
           '/check-email',
-          '/zh/check-email',
           '/verify-email',
-          '/zh/verify-email',
           '/reset-password',
-          '/zh/reset-password',
+          '/forgot-password',
+          // Demo / starter routes (not part of product surface)
+          '/demo',
           // API routes
           '/api/',
         ],
