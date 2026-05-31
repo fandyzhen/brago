@@ -3,7 +3,7 @@ import { scoreOutput } from "@/lib/brago/quality/score";
 
 describe("scoreOutput", () => {
   const goodCaption =
-    "Park Slope driveway came up clean\n\nCleaned a concrete driveway in Park Slope this morning. Pollen stains came right off. Book today.";
+    "Park Slope driveway came up clean\n\nCleaned a concrete driveway in Park Slope this morning. The pollen stains came right off after a soft-wash pass. Book today.";
 
   it("returns 0 when any must-pass gate fails", () => {
     const r = scoreOutput({

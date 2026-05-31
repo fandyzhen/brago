@@ -81,9 +81,7 @@ export function scoreOutput(input: ScoreInput): ScoreResult {
     must.push("caption_has_title_proper_case");
   }
   if (struct.issues.includes("title_all_caps")) must.push("no_all_caps_in_title");
-  // spec §3.1：长度门控基于整个 caption（含标题），100-300 字符
-  const captionLen = caption.trim().length;
-  if (captionLen < 100 || captionLen > 300) {
+  if (struct.issues.includes("length_out_of_range")) {
     must.push("caption_100_to_300_chars");
   }
   if (struct.issues.includes("value_prop_missing")) {
