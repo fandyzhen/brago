@@ -40,7 +40,7 @@ export function RecentGooglePosts() {
       <div className="rounded-xl border border-dashed border-border p-6 text-center text-sm text-muted-foreground">
         <p>No Google posts yet.</p>
         <Link
-          href="/create"
+          href="/free-google-post-generator"
           className="mt-3 inline-block text-sm underline text-foreground"
         >
           Upload today&apos;s job

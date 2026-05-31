@@ -43,7 +43,7 @@ export default async function PostsPage() {
             </p>
           </div>
           <Link
-            href="/create"
+            href="/free-google-post-generator"
             className="rounded-xl bg-brand text-brand-foreground px-4 py-2 text-sm font-bold shadow-tactile transition-all hover:-translate-y-0.5"
           >
             New post
@@ -54,7 +54,7 @@ export default async function PostsPage() {
           <div className="rounded-xl border border-dashed border-border py-16 text-center text-muted-foreground">
             <p>No posts yet.</p>
             <Link
-              href="/create"
+              href="/free-google-post-generator"
               className="mt-3 inline-block text-sm underline hover:text-foreground"
             >
               Create your first post

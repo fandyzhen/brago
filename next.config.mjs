@@ -41,6 +41,19 @@ const nextConfig = {
         destination: "/industries/auto-detailing-marketing",
         permanent: true,
       },
+      // `/create` retired — unified funnel lives at /free-google-post-generator.
+      // (Old bookmarks + external links land on the new page without going
+      //  through the login wall first.)
+      {
+        source: "/create",
+        destination: "/free-google-post-generator",
+        permanent: true,
+      },
+      {
+        source: "/:locale(en)/create",
+        destination: "/:locale/free-google-post-generator",
+        permanent: true,
+      },
     ];
   },
 };

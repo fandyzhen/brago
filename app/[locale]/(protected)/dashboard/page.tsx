@@ -127,7 +127,7 @@ export default function DashboardPage() {
           <div className="flex flex-wrap gap-3 mb-12">
             <Button
               variant="accent"
-              onClick={() => router.push(`/${locale}/create`)}
+              onClick={() => router.push(`/${locale}/free-google-post-generator`)}
             >
               Upload job photos
             </Button>

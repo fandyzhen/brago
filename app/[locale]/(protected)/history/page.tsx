@@ -42,7 +42,7 @@ function timeAgo(isoString: string): string {
 // ── PosterCard ─────────────────────────────────────────────────────────────
 
 function PosterCard({ item, locale }: { item: HistoryItem; locale: string }) {
-  const regenHref = `/${locale}/create?templateId=${encodeURIComponent(item.templateId ?? "")}&headline=${encodeURIComponent(item.headline)}`;
+  const regenHref = `/${locale}/free-google-post-generator?templateId=${encodeURIComponent(item.templateId ?? "")}&headline=${encodeURIComponent(item.headline)}`;
 
   return (
     <div className="rounded-xl border border-border overflow-hidden bg-card flex flex-col">
@@ -174,7 +174,7 @@ export default function HistoryPage() {
                 Your previously generated social posts.
               </p>
             </div>
-            <Link href={`/${locale}/create`}>
+            <Link href={`/${locale}/free-google-post-generator`}>
               <Button>Create new</Button>
             </Link>
           </div>
@@ -204,7 +204,7 @@ export default function HistoryPage() {
               <p className="text-muted-foreground text-sm mb-4">
                 No posts yet. Generate your first social post!
               </p>
-              <Link href={`/${locale}/create`}>
+              <Link href={`/${locale}/free-google-post-generator`}>
                 <Button>Create your first post</Button>
               </Link>
             </div>
