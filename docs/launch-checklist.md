@@ -211,6 +211,13 @@
 - [ ] `NEXT_PUBLIC_CLARITY_PROJECT_ID` 配置
 - [ ] Sentry / 日志告警接入
 
+### P2-4 Quality score 分布采集（spec 2026-05-31-output-quality-standard.md OQ #4）
+> 现在 caption 生成路由响应里附带了 `quality.score`（0-100）+ `quality.mustPassFailures`。**未上 hard gate**——先采集 prod 真实分布再决定阈值。
+- [ ] 在分析事件里上报 `quality.score` 与 `quality.mustPassFailures`（PostHog 事件 `brago_caption_generated`）
+- [ ] 至少采集 1000 条真实输出后，画分布图 → 决定 gate 阈值
+- [ ] 决定后在 `app/api/brago/google-posts/[postId]/generate-caption/route.ts` 与匿名版加 `quality.score < threshold` 拒绝逻辑
+- [ ] eval 集从 5 个扩到 50 个（`tests/brago/quality/eval-set.json`，spec §3.3）
+
 ### P2-3 Demo 路由清理验证
 - [ ] 确认 `/demo` `/demo/chat` `/demo/image` `/demo/video` 在生产环境返回 404 或被 `NEXT_PUBLIC_SHOW_SISTINE_DEMOS` 控制隐藏
 - [ ] sitemap.xml 不暴露 demo 路由
@@ -251,6 +258,6 @@
 
 ---
 
-**最后更新**：2026-05-30（AI 改用 OpenRouter + R2 实测 + Resend key 已填 + UI 全站 Job-Site Bold 改造）  
+**最后更新**：2026-05-31（输出质量标准 spec 落地 — caption 硬化 + 1200×900 图片合成器 + quality 评分观察 + eval 脚手架）  
 **文件路径**：`docs/launch-checklist.md`  
 **触发关键词**：用户说"准备上线"/"上线前检查"/"现在能上吗"/"check launch" → Claude 读此文件
