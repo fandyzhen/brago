@@ -4,6 +4,7 @@ import { db } from "@/lib/db";
 import { googlePost } from "@/lib/db/schema";
 import { generateCaption } from "@/lib/brago/caption/generate";
 import type { CaptionLanguage, Industry } from "@/lib/brago/types";
+import { scoreOutput } from "@/lib/brago/quality/score";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -69,5 +70,17 @@ export async function POST(
     })
     .where(and(eq(googlePost.id, postId), eq(googlePost.anonId, anonId)));
 
-  return NextResponse.json({ caption: out.caption, policy: out.policy, source: out.source });
+  const quality = scoreOutput({
+    caption: out.caption,
+    language: post.language as CaptionLanguage,
+    ctx: { serviceType: effectiveServiceType, serviceArea: effectiveServiceArea },
+    recentCaptions: [],
+    image: {
+      isAiGenerated: false,
+      hasBragoWatermark: false,
+      overlayText: "",
+    },
+  });
+
+  return NextResponse.json({ caption: out.caption, policy: out.policy, source: out.source, quality });
 }

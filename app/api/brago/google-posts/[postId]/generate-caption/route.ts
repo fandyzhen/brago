@@ -7,6 +7,7 @@ import { generateCaption } from "@/lib/brago/caption/generate";
 import { canUserAfford, deductCredits } from "@/lib/credits";
 import type { CaptionLanguage, Industry } from "@/lib/brago/types";
 import { isAiTextAvailable } from "@/lib/brago/caption/text-provider";
+import { scoreOutput } from "@/lib/brago/quality/score";
 
 export const runtime = "nodejs";
 
@@ -90,9 +91,22 @@ export async function POST(
     })
     .where(eq(googlePost.id, postId));
 
+  const quality = scoreOutput({
+    caption: out.caption,
+    language,
+    ctx: { serviceType: post.serviceType, serviceArea: post.serviceArea },
+    recentCaptions: [], // 路由层不重复查 history；scoring 仍计 must-pass
+    image: {
+      isAiGenerated: false,
+      hasBragoWatermark: false,
+      overlayText: "", // 渲染阶段才有 overlay；此处不阻塞
+    },
+  });
+
   return NextResponse.json({
     caption: out.caption,
     source: out.source,
     policy: out.policy,
+    quality,
   });
 }
