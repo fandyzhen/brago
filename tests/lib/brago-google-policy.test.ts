@@ -24,8 +24,9 @@ describe("checkGooglePolicy", () => {
   });
 
   it("flags ALL-CAPS shouting", () => {
+    // spec §2.6 + plan Task 1.6: requires 3+ consecutive 4-char caps words.
     expect(
-      checkGooglePolicy("BEST DEAL IN TOWN GUARANTEED").issues,
+      checkGooglePolicy("BIGGEST CLEANEST DEEPEST POWERWASH").issues,
     ).toContain("shouting_text");
   });
 
