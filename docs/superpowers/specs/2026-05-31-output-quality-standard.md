@@ -248,11 +248,33 @@ CTA 文案不能与正文矛盾（不允许"教育型 caption 接 Call now"）�
 - emoji 数量：>2 个 → 警告（Sterling Sky 数据：1-2 个 emoji 比 0 个高 2× 点击，>2 反而开始 spam-y）
 - 结构相似度（与 2.4 联动）
 
-### 2.7 多语言
+### 2.7 多语言（en + es，**不含中文**）
 
-- 中英文翻译时**保持**所有上述结构规则
-- 中文 caption 字数上限按字符计算：标题 ≤ 25 字，正文 ≤ 90 字
-- 中文不必带 emoji（中文 GBP 用户场景少）
+**重要术语区分**：
+- **网站 UI 语言**（i18n / next-intl）：`en` + `zh`——给开发者 / 管理端用，跟本 spec 无关
+- **caption 输出语言**（本 spec 涵盖）：**仅** `en` 和 `es`（西班牙语）
+
+**为什么 caption 没有中文**：
+- 目标市场是美国本地服务业
+- Google 不在中国运营 GBP
+- 中文 caption 不解决任何真实用户问题——明确**不**支持
+
+**为什么必须有西班牙语**：
+- ~6200 万西语裔美国人，是服务业核心客群（Miami / LA / Houston / NYC / Chicago / Tampa 等市场尤甚）
+- **双语发文（en + es 各一条）是服务业 GBP 的真实差异化**——前面真实案例 Huracán Nero Auto Spa (Austin) 同时服务英 / 西客户
+- 西语 caption **不是**英文机翻——必须用 native Spanish 写（"limpieza profunda" 比 "deep cleaning" 直译更地道）
+
+**西班牙语 caption 硬规则**：
+- 所有 2.1-2.6 的结构规则**全部适用**（长度 / 标题 / 反模板 / 反重复 / CTA / policy）
+- 措辞必须为**美式西语**（不是西班牙的卡斯蒂利亚西语）——"carro" 而非 "coche"，"cuadra" 而非 "manzana"
+- 黑名单同步翻译："experto / profesional / confiable / mejor en [ciudad]" 也禁
+- emoji 规则同英文（1-2 个，不超过 2 个）
+- 同一商家可同时生成 en + es 两条 post（不算"30 天内重复"——它们是同一内容的不同语言版本）
+
+**实现**：
+- 已有 `language: CaptionLanguage = "en" | "es"` 类型完全够用
+- 不要新增 `"zh"` 选项到 caption 路径
+- 用户可在 result 页选"再生成西班牙语版"（已是 Brago 计划中的解锁功能之一）
 
 ---
 
