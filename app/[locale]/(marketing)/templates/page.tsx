@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { Container } from "@/components/container";
 
@@ -50,27 +51,84 @@ export default function TemplatesPage() {
   return (
     <Container className="py-20 md:py-32">
       {/* Header */}
-      <div className="max-w-2xl">
-        <p className="text-sm font-medium text-muted-foreground uppercase tracking-widest mb-4">
-          Templates
-        </p>
-        <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-foreground">
-          Before/after post templates
-        </h1>
-        <p className="mt-4 text-lg text-muted-foreground">
-          Brago templates are built for specific channels and industries. You pick where you&apos;re posting
-          — Brago picks the right format, tone, and information density automatically.
-        </p>
+      <div className="grid items-center gap-10 lg:grid-cols-[28rem_20rem] lg:justify-center lg:gap-16">
+        <div>
+          <p className="text-sm font-medium text-muted-foreground uppercase tracking-widest mb-4">
+            Templates
+          </p>
+          <h1 className="text-4xl font-bold tracking-tight text-foreground md:text-5xl">
+            Before/after post templates
+          </h1>
+          <p className="mt-4 text-lg text-muted-foreground">
+            Built for specific channels and industries. You pick where you&apos;re posting — Brago picks the
+            right format, tone, and information density.
+          </p>
+        </div>
+        {/* Visual proof — a real Brago-rendered template output */}
+        <div className="relative mx-auto w-full max-w-sm lg:mx-0 lg:max-w-none">
+          <div className="rounded-[28px] border border-border bg-card p-2.5 shadow-tactile">
+            <div className="overflow-hidden rounded-[20px] border border-border">
+              <div className="relative aspect-square">
+                <Image
+                  src="/hero/cases/park-slope-kitchen.jpg"
+                  alt="Example Brago-rendered Google Business Profile post template output."
+                  fill
+                  sizes="(max-width: 1024px) 24rem, 20rem"
+                  className="object-cover"
+                />
+              </div>
+              <div className="border-t border-border px-4 py-3">
+                <p className="font-display text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                  Template output
+                </p>
+                <p className="mt-1 text-sm font-semibold text-foreground">
+                  Google Business Profile · 1080 × 1080
+                </p>
+              </div>
+            </div>
+          </div>
+          <span className="absolute -left-3 -top-3 rounded-full border border-brand/40 bg-card px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-foreground shadow-sm">
+            Real render
+          </span>
+        </div>
       </div>
 
       {/* How templates work */}
-      <div className="mt-14 rounded-2xl border border-border bg-secondary/40 p-6 md:p-8 max-w-2xl">
-        <h2 className="font-semibold text-foreground">How Brago templates work</h2>
-        <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
-          You don&apos;t browse and pick a template. You answer two questions — where are you posting, and
-          how many before/after areas — and Brago selects the right template automatically. Every template
-          outputs a 1080 × 1080 PNG ready to post.
-        </p>
+      <div className="mt-16 rounded-2xl border border-border bg-secondary/40 p-6 md:p-10">
+        <div className="grid gap-8 lg:grid-cols-[minmax(0,18rem)_minmax(0,1fr)] lg:gap-12">
+          <div>
+            <h2 className="text-xl font-semibold text-foreground">
+              How Brago templates work
+            </h2>
+            <p className="mt-3 text-sm text-muted-foreground leading-relaxed">
+              You don&apos;t browse and pick a template. You answer two questions — where are you posting, and
+              how many before/after areas — and Brago selects the right one automatically. Every template
+              outputs a 1080 × 1080 PNG ready to post.
+            </p>
+          </div>
+          <ol className="grid gap-3 sm:grid-cols-3">
+            {[
+              { n: "1", t: "Pick the channel", d: "Google, Facebook/Nextdoor, or Instagram." },
+              { n: "2", t: "Brago picks the layout", d: "Based on photo count and information density." },
+              { n: "3", t: "Download the PNG", d: "1080 × 1080, ready to post — no editing needed." },
+            ].map((s) => (
+              <li
+                key={s.n}
+                className="flex flex-col rounded-xl border border-border bg-card p-4"
+              >
+                <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-brand font-display text-sm font-bold text-brand-foreground">
+                  {s.n}
+                </span>
+                <p className="mt-3 text-sm font-semibold leading-tight text-foreground">
+                  {s.t}
+                </p>
+                <p className="mt-1 text-xs text-muted-foreground leading-relaxed">
+                  {s.d}
+                </p>
+              </li>
+            ))}
+          </ol>
+        </div>
       </div>
 
       {/* Channel templates */}

@@ -233,16 +233,33 @@ export default function AutoDetailingMarketingPage() {
 
       {/* FAQ */}
       <Container className="py-16 md:py-24">
-        <h2 className="text-2xl md:text-3xl font-display font-extrabold text-foreground">
-          Frequently asked questions
-        </h2>
-        <div className="mt-8 space-y-5 max-w-2xl">
-          {FAQS.map((faq) => (
-            <div key={faq.q} className="rounded-2xl border border-border p-6">
-              <p className="font-semibold text-foreground text-sm">{faq.q}</p>
-              <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{faq.a}</p>
-            </div>
-          ))}
+        <div className="grid gap-10 lg:grid-cols-[minmax(0,18rem)_minmax(0,1fr)] lg:gap-14">
+          <div className="lg:sticky lg:top-24 lg:self-start">
+            <p className="font-display text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+              FAQ
+            </p>
+            <h2 className="mt-3 text-2xl md:text-3xl font-display font-extrabold text-foreground">
+              Frequently asked questions
+            </h2>
+            <p className="mt-4 text-sm text-muted-foreground leading-relaxed">
+              Real questions detailers asked us before signing up. Don&apos;t see yours?{" "}
+              <Link
+                href="/contact"
+                className="font-medium text-foreground underline underline-offset-4 hover:text-brand"
+              >
+                Ask us directly
+              </Link>
+              .
+            </p>
+          </div>
+          <div className="grid gap-4 sm:grid-cols-2">
+            {FAQS.map((faq) => (
+              <div key={faq.q} className="rounded-2xl border border-border p-6">
+                <p className="font-semibold text-foreground text-sm">{faq.q}</p>
+                <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{faq.a}</p>
+              </div>
+            ))}
+          </div>
         </div>
       </Container>
 
