@@ -19,7 +19,7 @@ const URL_RE =
   /(?:https?:\/\/|www\.|[\w-]{2,}\.(?:com|net|org|co|io|us|biz|info|app|shop)\b)/i;
 const EM_DASH_RE = /—/;
 // 2个以上连续 4+ 字大写词视为 shouting
-const ALL_CAPS_RUN = /\b[A-Z]{4,}\b(?:\s+\b[A-Z]{4,}\b){1,}/;
+const ALL_CAPS_RUN = /\b[A-Z]{4,}\b(?:\s+\b[A-Z]{4,}\b){2,}/;
 
 const AI_CLICHES: RegExp[] = [
   /\blooking to\b/i,
