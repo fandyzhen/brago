@@ -27,6 +27,10 @@ export const marketingNavigationKeys: NavigationKeyItem[] = [
         key: "autoDetailing",
         href: "/industries/auto-detailing-marketing",
       },
+      {
+        key: "cleaning",
+        href: "/industries/cleaning-marketing",
+      },
     ],
   },
   {

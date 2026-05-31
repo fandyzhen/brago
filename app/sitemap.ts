@@ -18,6 +18,7 @@ const PUBLIC_ROUTES: RouteConfig[] = [
   { path: '/industries',                                changeFrequency: 'weekly',  priority: 0.9 },
   { path: '/industries/pressure-washing-marketing',    changeFrequency: 'weekly',  priority: 0.9 },
   { path: '/industries/auto-detailing-marketing',      changeFrequency: 'weekly',  priority: 0.9 },
+  { path: '/industries/cleaning-marketing',            changeFrequency: 'weekly',  priority: 0.9 },
   // Template pages
   { path: '/templates',                                 changeFrequency: 'weekly',  priority: 0.8 },
   { path: '/templates/google-business-profile-posts',  changeFrequency: 'weekly',  priority: 0.8 },
