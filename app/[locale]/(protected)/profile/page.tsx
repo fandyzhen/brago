@@ -61,7 +61,7 @@ export default function ProfilePage() {
     if (!displayUser?.createdAt) return tDashboard('cards.statistics.labels.today');
     const date = new Date(displayUser.createdAt);
     // Use locale for date formatting
-    return date.toLocaleDateString(locale === 'zh' ? 'zh-CN' : 'en-US', { 
+    return date.toLocaleDateString('en-US', {
       year: 'numeric', 
       month: 'long', 
       day: 'numeric' 

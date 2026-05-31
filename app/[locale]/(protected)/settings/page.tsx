@@ -140,7 +140,7 @@ export default function SettingsPage() {
   );
   const memberSince = displayUser?.createdAt
     ? new Date(displayUser.createdAt).toLocaleDateString(
-        locale === "zh" ? "zh-CN" : "en-US",
+        "en-US",
         {
           year: "numeric",
           month: "long",
@@ -150,7 +150,7 @@ export default function SettingsPage() {
     : tDashboard("cards.statistics.labels.today");
   const renewalDate = userProfile?.subscription?.currentPeriodEnd
     ? new Date(userProfile.subscription.currentPeriodEnd).toLocaleDateString(
-        locale === "zh" ? "zh-CN" : "en-US",
+        "en-US",
         {
           year: "numeric",
           month: "long",

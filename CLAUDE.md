@@ -11,7 +11,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - ✅ 基于积分的计费系统 + 订阅管理 (Creem 支付集成)
 - ✅ AI 功能: 对话、图像生成、视频生成 (火山引擎/豆包 API)
 - ✅ 管理后台 (用户管理、订阅管理、积分调整)
-- ✅ 国际化支持 (中文/英文)
+- ✅ 国际化支持 (仅英文；caption 输出额外支持西班牙语)
 - ✅ 邮件系统 (Resend 集成,支持交易邮件和 Newsletter)
 - ✅ 营销页面 (首页、定价、博客、隐私政策、退款政策等)
 - ✅ 分析工具集成 (PostHog、Google Analytics、Microsoft Clarity)
@@ -302,19 +302,21 @@ newsletterSubscription (id, email, status, ...)
 ## 国际化 (i18n)
 
 - 框架: `next-intl`
-- 支持语言: 英文 (`en`), 中文 (`zh`)
-- 翻译文件: `messages/en.json`, `messages/zh.json`, `messages/seo.en.json`, `messages/seo.zh.json`
-- 路由格式: 默认语言采用 `as-needed`，因此常见路径是 `/docs`、`/pricing`、`/login`，中文为 `/zh/docs`、`/zh/pricing`、`/zh/login`
+- **当前仅支持英文** (`en`)——`/zh` 已于 2026-05-31 整体移除（用户决策；中文文件、路由、locale 分支已清理）
+- 翻译文件: `messages/en.json`, `messages/seo.en.json`
+- 路由格式: 默认语言采用 `as-needed`，所有面向用户的页面都是无前缀（`/`, `/pricing`, `/docs`, `/login` …）；非英文 URL（如 `/zh/...`）会 404
 - 路由拦截: `proxy.ts`
+- 注意 caption 输出语言 *是* 双语 (en + es)，但**网站 UI 仅英文**——两者不要混淆
 
-**添加新语言**:
-1. 复制 `messages/en.json` / `messages/seo.en.json` 为新的语言版本
-2. 翻译所有 JSON 文案
-3. 更新 `i18n.config.ts`、`proxy.ts` 和 docs i18n 配置
+**重新加上某种语言**（如果未来又要加）:
+1. 在 `i18n.config.ts` 的 `locales` 与 `localeNames` 中追加新代码
+2. 复制 `messages/en.json` / `messages/seo.en.json` 为新版本并翻译
+3. 复制 `content/docs/*.mdx` 为 `*.<locale>.mdx` 并翻译
+4. 视情况在 `lib/docs-ui.ts`、`lib/docs-metadata.ts`、`lib/docs-page-tree.ts` 加分支
 
 ## 文档系统
 
-- 文档站点由 Fumadocs 驱动，入口为 `/docs`（英文）和 `/zh/docs`（中文）
+- 文档站点由 Fumadocs 驱动，入口为 `/docs`（仅英文）
 - MDX 源文件放在 `content/docs/`
 - `lib/source.ts` 读取 `fumadocs-mdx` 生成的 `.source/*`
 - `public/fumadocs-style.css` 是通过 `pnpm run sync:fumadocs-style` 生成的派生文件，不要手写编辑

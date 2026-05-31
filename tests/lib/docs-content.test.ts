@@ -21,16 +21,11 @@ function collectDocFiles(dir: string, prefix = ""): string[] {
 }
 
 describe("docs content", () => {
-  it("keeps English and Chinese doc pages in parity", () => {
+  it("ships English-only docs (no leftover .zh.mdx files)", () => {
     const files = collectDocFiles(docsRoot);
-    const englishFiles = files.filter((file) => !file.endsWith(".zh.mdx")).sort();
-    const chineseFiles = files
-      .filter((file) => file.endsWith(".zh.mdx"))
-      .map((file) => file.replace(/\.zh\.mdx$/, ".mdx"))
-      .sort();
-
-    expect(englishFiles.length).toBeGreaterThan(0);
-    expect(chineseFiles).toEqual(englishFiles);
+    const chineseFiles = files.filter((file) => file.endsWith(".zh.mdx"));
+    expect(chineseFiles).toEqual([]);
+    expect(files.length).toBeGreaterThan(0);
   });
 
   it("keeps the root docs navigation aligned with the shipped guides", () => {
@@ -56,14 +51,10 @@ describe("docs content", () => {
     ]);
   });
 
-  it("ships localized docs landing pages", () => {
+  it("ships an English docs landing page", () => {
     const englishIndex = readFileSync(path.join(docsRoot, "index.mdx"), "utf8");
-    const chineseIndex = readFileSync(path.join(docsRoot, "index.zh.mdx"), "utf8");
-
     expect(englishIndex).toContain("title: Introduction");
     expect(englishIndex).toContain("[Quickstart](./quickstart)");
-    expect(chineseIndex).toContain("title: 简介");
-    expect(chineseIndex).toContain("[快速开始](./quickstart)");
   });
 
   it("uses locale-safe relative links for internal docs references", () => {

@@ -46,7 +46,7 @@ export function generatePageMetadata({
           alt: title,
         },
       ],
-      locale: locale === 'zh' ? 'zh_CN' : 'en_US',
+      locale: 'en_US',
       type: 'website',
     },
     twitter: {

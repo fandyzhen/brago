@@ -48,7 +48,7 @@ export function FreeGeneratorClient() {
   const [note, setNote] = useState("");
   const [styleOpen, setStyleOpen] = useState(false);
   const [tone, setTone] = useState<Tone>("friendly");
-  const [language, setLanguage] = useState<Lang>(locale === "zh" ? "en" : (locale as Lang));
+  const [language, setLanguage] = useState<Lang>(locale as Lang);
   const [consent, setConsent] = useState(false);
 
   const [postId, setPostId] = useState<string | null>(null);

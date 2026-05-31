@@ -4,7 +4,6 @@ import { websiteConfig } from "@/constants/website";
 
 const ogLocaleByLocale: Record<Locale, string> = {
   en: "en_US",
-  zh: "zh_CN",
 };
 
 export function getDocsPath(locale: string, slug: string[] = []) {
@@ -18,7 +17,7 @@ export function getDocsPath(locale: string, slug: string[] = []) {
 }
 
 export function getDocsDescription(
-  locale: string,
+  _locale: string,
   title: string,
   description?: string | null,
 ) {
@@ -26,10 +25,6 @@ export function getDocsDescription(
 
   if (normalizedDescription) {
     return normalizedDescription;
-  }
-
-  if (locale === "zh") {
-    return `${title} 的使用文档，来自 ${websiteConfig.docsName}。`;
   }
 
   return `${title} documentation from ${websiteConfig.docsName}.`;

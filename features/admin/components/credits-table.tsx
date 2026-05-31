@@ -313,14 +313,14 @@ export function CreditsTable({ transactions: initialTransactions, stats, topUser
                       </td>
                       <td className="px-6 py-4">
                         <div className="text-sm text-muted-foreground">
-                          {new Date(transaction.createdAt).toLocaleString(locale === 'zh' ? 'zh-CN' : 'en-US', {
+                          {new Date(transaction.createdAt).toLocaleString('en-US', {
                             year: 'numeric',
                             month: '2-digit',
                             day: '2-digit',
                             hour: '2-digit',
                             minute: '2-digit',
                             second: '2-digit',
-                            hour12: locale !== 'zh'
+                            hour12: true
                           })}
                         </div>
                       </td>

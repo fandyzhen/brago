@@ -1,40 +1,38 @@
 import { getDocsDescription, getDocsMetadata, getDocsPath } from "@/lib/docs-metadata";
 
 describe("docs metadata helpers", () => {
-  it("builds locale-aware docs paths with as-needed default locale urls", () => {
+  it("builds default-locale docs paths without a locale prefix", () => {
     expect(getDocsPath("en")).toBe("/docs");
-    expect(getDocsPath("zh")).toBe("/zh/docs");
     expect(getDocsPath("en", ["quickstart"])).toBe("/docs/quickstart");
-    expect(getDocsPath("zh", ["quickstart"])).toBe("/zh/docs/quickstart");
   });
 
-  it("falls back to a localized description when a page omits one", () => {
+  it("falls back to a generic English description when a page omits one", () => {
     expect(getDocsDescription("en", "Quickstart")).toBe(
       "Quickstart documentation from Brago Docs.",
     );
-    expect(getDocsDescription("zh", "快速开始")).toBe(
-      "快速开始 的使用文档，来自 Brago Docs。",
-    );
   });
 
-  it("returns canonical and alternate metadata for localized docs pages", () => {
+  it("returns canonical metadata for English docs pages", () => {
     const metadata = getDocsMetadata({
-      locale: "zh",
+      locale: "en",
       slug: ["quickstart"],
-      title: "快速开始",
+      title: "Quickstart",
     });
 
-    expect(metadata.title).toBe("快速开始 | Brago Docs");
-    expect(metadata.description).toBe("快速开始 的使用文档，来自 Brago Docs。");
-    expect(metadata.alternates?.canonical).toBe("http://localhost:3000/zh/docs/quickstart");
+    expect(metadata.title).toBe("Quickstart | Brago Docs");
+    expect(metadata.description).toBe(
+      "Quickstart documentation from Brago Docs.",
+    );
+    expect(metadata.alternates?.canonical).toBe(
+      "http://localhost:3000/docs/quickstart",
+    );
     expect(metadata.alternates?.languages).toEqual({
       en: "http://localhost:3000/docs/quickstart",
-      zh: "http://localhost:3000/zh/docs/quickstart",
     });
     expect(metadata.openGraph).toMatchObject({
-      title: "快速开始 | Brago Docs",
-      locale: "zh_CN",
-      url: "http://localhost:3000/zh/docs/quickstart",
+      title: "Quickstart | Brago Docs",
+      locale: "en_US",
+      url: "http://localhost:3000/docs/quickstart",
     });
   });
 });
