@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { motion } from "framer-motion";
 import { Button } from "./button";
 import { HiArrowRight } from "react-icons/hi2";
@@ -129,7 +130,10 @@ export const Hero = () => {
           ))}
         </motion.ol>
 
-        {/* Before/after visual mockup */}
+        {/* Real Brago output: a 1200×900 main-after + corner-before proof image
+            (rendered by the project's own composeProofImage pipeline, see
+            scripts/generate-homepage-hero.ts) paired with a spec-compliant
+            caption (title + value-prop body + Google Call-button CTA). */}
         <motion.div
           initial={{ y: 48, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
@@ -138,37 +142,21 @@ export const Hero = () => {
         >
           <div className="rounded-[28px] border border-border bg-card p-2.5 shadow-tactile">
             <div className="overflow-hidden rounded-[20px] border border-border">
-              {/* Before / After split */}
-              <div className="relative aspect-square">
-                <div className="absolute inset-0 flex">
-                  {/* Before */}
-                  <div className="relative flex flex-1 items-center justify-center bg-stone-300">
-                    <span className="absolute left-3 top-3 rounded-md bg-foreground/80 px-2 py-0.5 font-display text-[10px] font-bold uppercase tracking-widest text-background">
-                      Before
-                    </span>
-                    <div className="flex flex-col items-center text-stone-500">
-                      <div className="mb-2 h-14 w-14 rounded-xl bg-stone-400/40" />
-                      <span className="text-xs font-medium">Dull driveway</span>
-                    </div>
-                  </div>
-                  {/* Seam */}
-                  <div className="w-1 bg-brand" />
-                  {/* After */}
-                  <div className="relative flex flex-1 items-center justify-center bg-sky-50">
-                    <span className="absolute right-3 top-3 rounded-md bg-brand px-2 py-0.5 font-display text-[10px] font-bold uppercase tracking-widest text-brand-foreground">
-                      After
-                    </span>
-                    <div className="flex flex-col items-center text-sky-600/70">
-                      <div className="mb-2 h-14 w-14 rounded-xl bg-sky-200" />
-                      <span className="text-xs font-medium">Bright &amp; clean</span>
-                    </div>
-                  </div>
-                </div>
-                {/* Google-ready strip */}
+              {/* Proof image (4:3) */}
+              <div className="relative aspect-[4/3]">
+                <Image
+                  src="/hero/proof.jpg"
+                  alt="A Brago-rendered before/after proof image of a gas stovetop deep clean in Park Slope, with the main 'after' shot showing the spotless burners and a small inset of the greasy 'before' state in the bottom-right corner."
+                  fill
+                  priority
+                  sizes="(max-width: 768px) 100vw, 28rem"
+                  className="object-cover"
+                />
+                {/* Google-ready strip — overlays the bottom of the proof image */}
                 <div className="absolute inset-x-0 bottom-0 flex items-center justify-between bg-foreground/90 px-4 py-2.5 backdrop-blur">
                   <div>
                     <p className="text-xs font-semibold text-background">Google-ready photo</p>
-                    <p className="text-[10px] text-background/60">1080×1080 · cropped to the result</p>
+                    <p className="text-[10px] text-background/60">1200×900 · 4:3 · main + corner before</p>
                   </div>
                   <div className="text-right">
                     <p className="text-xs leading-none text-brand">★★★★★</p>
@@ -176,15 +164,18 @@ export const Hero = () => {
                   </div>
                 </div>
               </div>
-              {/* Caption preview */}
+              {/* Caption preview — title + body, mirrors Brago's actual output structure */}
               <div className="border-t border-border px-5 py-4 text-left">
                 <p className="font-display text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
                   Google caption
                 </p>
-                <p className="mt-1.5 text-sm leading-relaxed text-foreground">
-                  Knocked out a driveway in South Austin today — pulled years of grime off the
-                  concrete. If yours could use the same, the Call button on our Google profile is
-                  the easiest way to reach us.
+                <p className="mt-1.5 text-sm font-semibold leading-snug text-foreground">
+                  Park Slope kitchen, fresh by lunch
+                </p>
+                <p className="mt-2 text-sm leading-relaxed text-foreground/85">
+                  Deep cleaned a gas stovetop in Park Slope this morning. Months of
+                  grease off the grates and burners in under an hour. Tap the Call
+                  button on our Google profile to book.
                 </p>
               </div>
             </div>
