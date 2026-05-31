@@ -2,7 +2,7 @@ import { Background } from "@/components/background";
 import { Metadata } from "next";
 import { HorizontalGradient } from "@/components/horizontal-gradient";
 import { ContactForm } from "@/features/marketing/components/contact-form";
-import { ContactTestimonials } from "@/features/marketing/components/contact-testimonials";
+import { TestimonialPanel } from "@/components/testimonial-panel";
 import { getTranslations } from 'next-intl/server';
 import type { Locale } from "@/i18n.config";
 import { generatePageMetadata } from "@/lib/metadata";
@@ -36,7 +36,7 @@ export default async function ContactPage(
         <Background />
         <ContactForm />
         <div className="relative w-full z-20 hidden md:flex border-l border-border overflow-hidden bg-background items-center justify-center">
-          <ContactTestimonials />
+          <TestimonialPanel />
           <HorizontalGradient className="top-20" />
           <HorizontalGradient className="bottom-20" />
           <HorizontalGradient className="-right-80 transform rotate-90 inset-y-0 h-full scale-x-150" />
