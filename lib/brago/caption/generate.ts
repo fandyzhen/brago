@@ -27,6 +27,7 @@ export type GenerateCaptionOutput = {
   source: "ai" | "fallback-template";
   policy: ReturnType<typeof checkGooglePolicy>;
   usedTemplateIds: string[];
+  recentCaptions: string[];
 };
 
 export async function generateCaption(
@@ -151,6 +152,7 @@ export async function generateCaption(
     source: usedSource,
     policy: finalPolicy,
     usedTemplateIds: templates.map((t) => t.id),
+    recentCaptions: history.map((h) => h.captionText),
   };
 }
 

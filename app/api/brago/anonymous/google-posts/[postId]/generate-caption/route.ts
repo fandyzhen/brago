@@ -74,7 +74,7 @@ export async function POST(
     caption: out.caption,
     language: post.language as CaptionLanguage,
     ctx: { serviceType: effectiveServiceType, serviceArea: effectiveServiceArea },
-    recentCaptions: [],
+    recentCaptions: out.recentCaptions,
     image: {
       isAiGenerated: false,
       hasBragoWatermark: false,

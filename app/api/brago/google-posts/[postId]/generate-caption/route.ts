@@ -95,7 +95,7 @@ export async function POST(
     caption: out.caption,
     language,
     ctx: { serviceType: post.serviceType, serviceArea: post.serviceArea },
-    recentCaptions: [], // 路由层不重复查 history；scoring 仍计 must-pass
+    recentCaptions: out.recentCaptions,
     image: {
       isAiGenerated: false,
       hasBragoWatermark: false,
