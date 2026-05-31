@@ -92,7 +92,14 @@ export type GbpPolicyIssue =
   | "shouting_text"
   | "unverified_claim"
   | "ai_cliche"
-  | "em_dash_detected";
+  | "em_dash_detected"
+  | "missing_title"
+  | "title_all_caps"
+  | "length_out_of_range"
+  | "value_prop_missing"
+  | "blacklisted_phrase"
+  | "cta_misaligned"
+  | "similar_to_recent";
 
 export type PolicyCheckResult = {
   valid: boolean;
