@@ -3,9 +3,10 @@ import { randomUUID } from "crypto";
 import { and, eq } from "drizzle-orm";
 import { getActiveSessionUser } from "@/lib/auth/session";
 import { db } from "@/lib/db";
-import { googlePost, googlePostPhoto } from "@/lib/db/schema";
-import { renderGoogleCrop, type CropPct } from "@/lib/brago/image-processing";
-import { composeBeforeAfterProof } from "@/lib/brago/image-compose";
+import { brandProfile, googlePost, googlePostPhoto } from "@/lib/db/schema";
+import { composeProofImage } from "@/lib/brago/compose/proof-image";
+import { validateOutputImage } from "@/lib/brago/compose/gates";
+import { buildOverlayText } from "@/lib/brago/compose/overlay";
 import {
   buildGooglePostKey,
   bufferToDataUrl,
@@ -16,13 +17,6 @@ import {
 export const runtime = "nodejs";
 export const maxDuration = 60;
 
-const DEFAULT_CROP: CropPct = {
-  xPct: 5,
-  yPct: 5,
-  widthPct: 90,
-  heightPct: 90,
-};
-
 async function fetchBuffer(url: string): Promise<Buffer> {
   if (url.startsWith("data:")) {
     const base64 = url.split(",")[1] ?? "";
@@ -31,6 +25,28 @@ async function fetchBuffer(url: string): Promise<Buffer> {
   const r = await fetch(url, { cache: "no-store" });
   if (!r.ok) throw new Error(`fetch image failed: ${r.status}`);
   return Buffer.from(await r.arrayBuffer());
+}
+
+async function loadBrand(userId: string): Promise<{
+  logo: Buffer | null;
+  businessName: string | null;
+}> {
+  const rows = await db
+    .select()
+    .from(brandProfile)
+    .where(eq(brandProfile.userId, userId))
+    .limit(1);
+  const bp = rows[0];
+  if (!bp) return { logo: null, businessName: null };
+  let logo: Buffer | null = null;
+  if (bp.logoUrl) {
+    try {
+      logo = await fetchBuffer(bp.logoUrl);
+    } catch {
+      logo = null;
+    }
+  }
+  return { logo, businessName: bp.businessName ?? null };
 }
 
 export async function POST(
@@ -68,7 +84,15 @@ export async function POST(
   const beforeIdOverride = body.beforePhotoId as string | undefined;
   const afterIdOverride = body.afterPhotoId as string | undefined;
 
+  const brand = await loadBrand(access.user.id);
+  const overlayText = buildOverlayText(post.serviceArea, post.serviceType);
+
   try {
+    let composed: Buffer;
+    let bestPhotoId: string | null = null;
+    let usedBeforeId: string | null = null;
+    let usedAfterId: string | null = null;
+
     if (mode === "single_after") {
       const photoId = photoIdOverride ?? post.bestPhotoId;
       if (!photoId) {
@@ -92,74 +116,62 @@ export async function POST(
       if (!photo) {
         return NextResponse.json({ error: "Photo not found" }, { status: 404 });
       }
-      const src = await fetchBuffer(photo.processedUrl ?? photo.originalUrl);
-      let crop = DEFAULT_CROP;
-      if (photo.cropHintJson) {
-        try {
-          const parsed = JSON.parse(photo.cropHintJson) as Partial<CropPct>;
-          crop = {
-            xPct: parsed.xPct ?? DEFAULT_CROP.xPct,
-            yPct: parsed.yPct ?? DEFAULT_CROP.yPct,
-            widthPct: parsed.widthPct ?? DEFAULT_CROP.widthPct,
-            heightPct: parsed.heightPct ?? DEFAULT_CROP.heightPct,
-          };
-        } catch {
-          crop = DEFAULT_CROP;
-        }
+      const afterBuf = await fetchBuffer(photo.processedUrl ?? photo.originalUrl);
+      composed = await composeProofImage({
+        mode: "single_after",
+        after: afterBuf,
+        overlayText,
+        watermark: brand,
+      });
+      bestPhotoId = photoId;
+      usedAfterId = photoId;
+    } else {
+      const beforeId = beforeIdOverride ?? post.beforePhotoId;
+      const afterId = afterIdOverride ?? post.afterPhotoId ?? post.bestPhotoId;
+      if (!beforeId || !afterId) {
+        return NextResponse.json(
+          { error: "Need both a before and an after photo for the proof image." },
+          { status: 400 },
+        );
       }
-      const rendered = await renderGoogleCrop(src, crop, { outputEdge: 1080 });
-      const key = buildGooglePostKey(
-        access.user.id,
-        postId,
-        "final",
-        `single_${randomUUID()}.jpg`,
-      );
-      const finalUrl = isR2Ready()
-        ? await uploadBuffer({
-            key,
-            body: rendered,
-            contentType: "image/jpeg",
-          })
-        : bufferToDataUrl(rendered, "image/jpeg");
-      await db
-        .update(googlePost)
-        .set({
-          bestPhotoId: photoId,
-          imageMode: "single_after",
-          finalImageUrl: finalUrl,
-        })
-        .where(eq(googlePost.id, postId));
-      return NextResponse.json({ finalUrl, mode });
+      const photos = await db
+        .select()
+        .from(googlePostPhoto)
+        .where(eq(googlePostPhoto.googlePostId, postId));
+      const before = photos.find((p) => p.id === beforeId);
+      const after = photos.find((p) => p.id === afterId);
+      if (!before || !after) {
+        return NextResponse.json({ error: "Photo not found" }, { status: 404 });
+      }
+      const [beforeBuf, afterBuf] = await Promise.all([
+        fetchBuffer(before.processedUrl ?? before.originalUrl),
+        fetchBuffer(after.processedUrl ?? after.originalUrl),
+      ]);
+      composed = await composeProofImage({
+        mode: "before_after",
+        after: afterBuf,
+        before: beforeBuf,
+        overlayText,
+        watermark: brand,
+      });
+      bestPhotoId = afterId;
+      usedBeforeId = beforeId;
+      usedAfterId = afterId;
     }
 
-    // before_after_proof
-    const beforeId = beforeIdOverride ?? post.beforePhotoId;
-    const afterId = afterIdOverride ?? post.afterPhotoId ?? post.bestPhotoId;
-    if (!beforeId || !afterId) {
+    const gate = await validateOutputImage(composed, { overlayText });
+    if (!gate.ok) {
       return NextResponse.json(
-        { error: "Need both a before and an after photo for the proof image." },
-        { status: 400 },
+        { error: "image_gate_failed", issues: gate.issues },
+        { status: 422 },
       );
     }
-    const photos = await db
-      .select()
-      .from(googlePostPhoto)
-      .where(eq(googlePostPhoto.googlePostId, postId));
-    const before = photos.find((p) => p.id === beforeId);
-    const after = photos.find((p) => p.id === afterId);
-    if (!before || !after) {
-      return NextResponse.json({ error: "Photo not found" }, { status: 404 });
-    }
-    const [beforeBuf, afterBuf] = await Promise.all([
-      fetchBuffer(before.processedUrl ?? before.originalUrl),
-      fetchBuffer(after.processedUrl ?? after.originalUrl),
-    ]);
-    const composed = await composeBeforeAfterProof(beforeBuf, afterBuf);
+
     const key = buildGooglePostKey(
       access.user.id,
       postId,
       "final",
-      `proof_${randomUUID()}.jpg`,
+      `${mode === "single_after" ? "single" : "proof"}_${randomUUID()}.jpg`,
     );
     const finalUrl = isR2Ready()
       ? await uploadBuffer({
@@ -172,20 +184,19 @@ export async function POST(
     await db
       .update(googlePost)
       .set({
-        bestPhotoId: afterId,
-        imageMode: "before_after_proof",
-        beforePhotoId: beforeId,
-        afterPhotoId: afterId,
+        bestPhotoId,
+        imageMode: mode,
+        beforePhotoId: usedBeforeId ?? post.beforePhotoId,
+        afterPhotoId: usedAfterId ?? post.afterPhotoId,
         finalImageUrl: finalUrl,
       })
       .where(eq(googlePost.id, postId));
-    return NextResponse.json({ finalUrl, mode });
+
+    return NextResponse.json({ finalUrl, mode, overlayText });
   } catch (err) {
     console.error("[brago render-photo]", err);
     return NextResponse.json(
-      {
-        error: err instanceof Error ? err.message : "Render failed",
-      },
+      { error: err instanceof Error ? err.message : "Render failed" },
       { status: 500 },
     );
   }
