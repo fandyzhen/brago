@@ -102,7 +102,7 @@ vision provider 已返回 `proofRecommendation: { mode, beforePhotoId, afterPhot
 
 **必须出现的 overlay 文字**：
 - 内容：`[CITY] · [SERVICE]` 例如 `PARK SLOPE · DRIVEWAY` 或 `AUSTIN · CERAMIC COATING`
-- 字数：3-5 个英文词（中文场景 4-8 个汉字）
+- 字数：3-5 个英文词（西语场景同样 3-5 个词，如 `PARK SLOPE · LIMPIEZA`）
 - 字体：粗体 sans-serif（推荐 Inter Black / Bebas Neue / 思源黑体 Heavy）
 - 字号：canvas 高度的 6-8%（在 1200×900 上即 54-72px）
 - 颜色：白字 + 黑色描边 2px（保证任何背景可读）
@@ -353,7 +353,7 @@ eval 集放在 `tests/brago/quality/eval-set.json`（spec 不规定具体测试�
 - ❌ 30 天内 n-gram 相似度 > 70% 的 caption
 - ❌ 教育 / 季节型 caption 接 "Call now" CTA
 - ❌ 任何 "✨🎉🔥" 之类 > 2 个 emoji
-- ❌ 中文场景 caption 中机器翻译腔（"我们的专业团队致力于为您提供…"）
+- ❌ 西语 caption 中英文机翻腔（"Nuestro equipo profesional se dedica a brindar..."）→ 必须 native US Spanish
 
 ---
 
