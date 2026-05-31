@@ -858,28 +858,28 @@
   "featuredTestimonials": {
     "people": [
       {
-        "name": "John Doe",
-        "designation": "Software Engineer"
+        "name": "Hank Reyes",
+        "designation": "Pressure Washing Owner · Austin"
       },
       {
-        "name": "Robert Johnson",
-        "designation": "Product Manager"
+        "name": "Marisol Vega",
+        "designation": "Auto Detailing Owner · Miami"
       },
       {
-        "name": "Jane Smith",
-        "designation": "Data Scientist"
+        "name": "Priya Sundaresan",
+        "designation": "Cleaning Crew Lead · Houston"
       },
       {
-        "name": "Emily Davis",
-        "designation": "UX Designer"
+        "name": "Dwayne Harper",
+        "designation": "Driveway Pro · Brooklyn"
       },
       {
-        "name": "Taylor Brooks",
-        "designation": "Full-Stack Developer"
+        "name": "Caleb Whitmer",
+        "designation": "Ceramic Coating Pro · Austin"
       },
       {
-        "name": "Dora",
-        "designation": "The Explorer"
+        "name": "Esmeralda Ruiz",
+        "designation": "Maids Co. Owner · Tampa"
       }
     ]
   },
