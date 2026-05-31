@@ -1,11 +1,11 @@
 "use client";
 
-import Image from "next/image";
 import { motion } from "framer-motion";
 import { Button } from "./button";
 import { HiArrowRight } from "react-icons/hi2";
 import { LocaleLink } from "@/components/locale-link";
 import { useTranslations } from "next-intl";
+import { HeroCaseShowcase } from "./hero-case-showcase";
 
 const STEPS = [
   { label: "Upload job photos", hint: "1–10 from today's job" },
@@ -130,57 +130,7 @@ export const Hero = () => {
           ))}
         </motion.ol>
 
-        {/* Real Brago output: a 1200×900 main-after + corner-before proof image
-            (rendered by the project's own composeProofImage pipeline, see
-            scripts/generate-homepage-hero.ts) paired with a spec-compliant
-            caption (title + value-prop body + Google Call-button CTA). */}
-        <motion.div
-          initial={{ y: 48, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ ease, duration: 0.65, delay: 0.5 }}
-          className="relative mt-14 w-full max-w-md"
-        >
-          <div className="rounded-[28px] border border-border bg-card p-2.5 shadow-tactile">
-            <div className="overflow-hidden rounded-[20px] border border-border">
-              {/* Proof image (4:3) */}
-              <div className="relative aspect-[4/3]">
-                <Image
-                  src="/hero/proof.jpg"
-                  alt="A Brago-rendered before/after proof image of a gas stovetop deep clean in Park Slope, with the main 'after' shot showing the spotless burners and a small inset of the greasy 'before' state in the bottom-right corner."
-                  fill
-                  priority
-                  sizes="(max-width: 768px) 100vw, 28rem"
-                  className="object-cover"
-                />
-                {/* Google-ready strip — overlays the bottom of the proof image */}
-                <div className="absolute inset-x-0 bottom-0 flex items-center justify-between bg-foreground/90 px-4 py-2.5 backdrop-blur">
-                  <div>
-                    <p className="text-xs font-semibold text-background">Google-ready photo</p>
-                    <p className="text-[10px] text-background/60">1200×900 · 4:3 · main + corner before</p>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-xs leading-none text-brand">★★★★★</p>
-                    <p className="text-[9px] text-background/50">Business Profile</p>
-                  </div>
-                </div>
-              </div>
-              {/* Caption preview — title + body, mirrors Brago's actual output structure */}
-              <div className="border-t border-border px-5 py-4 text-left">
-                <p className="font-display text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-                  Google caption
-                </p>
-                <p className="mt-1.5 text-sm font-semibold leading-snug text-foreground">
-                  Park Slope kitchen, fresh by lunch
-                </p>
-                <p className="mt-2 text-sm leading-relaxed text-foreground/85">
-                  Deep cleaned a gas stovetop in Park Slope this morning. Months of
-                  grease off the grates and burners in under an hour. Tap the Call
-                  button on our Google profile to book.
-                </p>
-              </div>
-            </div>
-          </div>
-        </motion.div>
+        <HeroCaseShowcase />
       </div>
     </section>
   );
