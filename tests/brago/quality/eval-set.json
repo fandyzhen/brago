@@ -1,0 +1,57 @@
+{
+  "$schema_note": "spec §3.3 — expand to 50 cases over time. Each row: input → expected min score.",
+  "cases": [
+    {
+      "id": "pw-park-slope-driveway",
+      "industry": "pressure_washing",
+      "serviceType": "driveway",
+      "serviceArea": "Park Slope",
+      "language": "en",
+      "candidate": "Park Slope driveway came up clean\n\nCleaned a concrete driveway in Park Slope this morning. The pollen stains came right off after a soft-wash pass. Book today.",
+      "image": { "isAiGenerated": false, "hasBragoWatermark": false, "overlayText": "PARK SLOPE · DRIVEWAY" },
+      "minScore": 70
+    },
+    {
+      "id": "ad-austin-ceramic-en",
+      "industry": "auto_detailing",
+      "serviceType": "ceramic coating",
+      "serviceArea": "Austin",
+      "language": "en",
+      "candidate": "Austin ceramic coat day\n\nFinished a ceramic coating on a black sedan in Austin today. The paint depth looks wild after two cure cycles in the heated booth. Call now.",
+      "image": { "isAiGenerated": false, "hasBragoWatermark": false, "overlayText": "AUSTIN · CERAMIC COATING" },
+      "minScore": 70
+    },
+    {
+      "id": "cleaning-miami-deep-es",
+      "industry": "cleaning",
+      "serviceType": "limpieza profunda",
+      "serviceArea": "Miami",
+      "language": "es",
+      "candidate": "Limpieza profunda en Miami\n\nLimpieza profunda de un apartamento en Miami esta mañana. La cocina quedó como nueva después de cuatro horas de detalle. Llama hoy.",
+      "image": { "isAiGenerated": false, "hasBragoWatermark": false, "overlayText": "MIAMI · LIMPIEZA PROFUNDA" },
+      "minScore": 70
+    },
+    {
+      "id": "anti-american-dream",
+      "industry": "pressure_washing",
+      "serviceType": "driveway",
+      "serviceArea": "Austin",
+      "language": "en",
+      "candidate": "Best pressure washing in Austin\n\nTrusted by Austin homeowners for years, we offer professional and reliable pressure washing in Austin. Your local expert. Call now.",
+      "image": { "isAiGenerated": false, "hasBragoWatermark": false, "overlayText": "AUSTIN · DRIVEWAY" },
+      "minScore": 0,
+      "expectMustPassFailure": true
+    },
+    {
+      "id": "anti-brago-watermark",
+      "industry": "cleaning",
+      "serviceType": "carpet cleaning",
+      "serviceArea": "Houston",
+      "language": "en",
+      "candidate": "Houston carpet refresh\n\nDeep cleaned wall-to-wall carpet in a Houston home today after a long pet-stain treatment cycle. Bookings tightening up. Book today.",
+      "image": { "isAiGenerated": false, "hasBragoWatermark": true, "overlayText": "HOUSTON · CARPET" },
+      "minScore": 0,
+      "expectMustPassFailure": true
+    }
+  ]
+}
