@@ -72,3 +72,15 @@ public/fumadocs-style.css
 brago-*.png
 redesign-*.png
 prot-*.png
+
+# Research source photos — third-party content, copyright handled manually;
+# do not commit the binaries. The README.md index IS tracked.
+/research/source-photos/**/*.jpg
+/research/source-photos/**/*.jpeg
+/research/source-photos/**/*.png
+/research/source-photos/**/*.webp
+
+# Hero-source raw photos (same reasoning)
+/scripts/_hero-source/*.jpg
+/scripts/_hero-source/*.jpeg
+/scripts/_hero-source/*.png
