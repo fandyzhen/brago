@@ -23,10 +23,10 @@ export const VerificationEmail = ({
   return (
     <Html>
       <Head />
-      <Preview>Verify your email address for Sistine AI</Preview>
+      <Preview>Verify your email address for Brago</Preview>
       <Body style={main}>
         <Container style={container}>
-          <Heading style={h1}>Welcome to Sistine AI!</Heading>
+          <Heading style={h1}>Welcome to Brago!</Heading>
           
           <Text style={text}>
             Thanks for signing up! Please verify your email address to get started.
@@ -47,7 +47,7 @@ export const VerificationEmail = ({
           </Link>
 
           <Text style={footer}>
-            If you didn&apos;t sign up for Sistine AI, you can safely ignore this email.
+            If you didn&apos;t sign up for Brago, you can safely ignore this email.
           </Text>
         </Container>
       </Body>

@@ -1,20 +1,21 @@
-# robots.txt for SISTINE AI
-# TODO: Replace 'your-domain.com' with your actual domain before deploying
+# robots.txt for Brago
 
 User-agent: *
 Allow: /
 
-# Disallow admin and API pages
+# Disallow admin, account, and API surfaces
 Disallow: /admin/
 Disallow: /api/
+Disallow: /dashboard/
+Disallow: /profile/
+Disallow: /settings/
+Disallow: /history/
+Disallow: /posts/
+Disallow: /credits/
+Disallow: /google-posts/
 
-# Disallow authentication pages (optional, uncomment to hide from search engines)
-# Disallow: /*/signup
-# Disallow: /*/login
-# Disallow: /*/check-email
+# Disallow demo / starter routes — not part of the product surface
+Disallow: /demo/
 
-# Disallow demo pages (optional)
-# Disallow: /*/demo
-
-# Sitemap location (update domain before deployment)
-Sitemap: https://your-domain.com/sitemap.xml
+# Sitemap
+Sitemap: https://brago.ai/sitemap.xml

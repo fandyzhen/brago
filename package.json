@@ -1,23 +1,17 @@
 {
-  "name": "sistine-starter-vibe-to-production",
+  "name": "brago",
   "version": "0.1.0",
-  "description": "The first AI SaaS starter built for vibe coding. Ship production-ready AI SaaS using Cursor, Claude Code, or Windsurf.",
+  "description": "Brago — turn before/after job photos into Google Business Profile posts for pressure washing, auto detailing, cleaning, and other local service businesses.",
   "private": true,
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/Idea-To-Business/sistine-starter-vibe-to-production.git"
-  },
   "keywords": [
-    "vibe-coding",
-    "ai-saas",
-    "nextjs",
-    "starter",
-    "cursor",
-    "claude-code",
-    "windsurf"
+    "google-business-profile",
+    "before-after",
+    "local-services",
+    "pressure-washing",
+    "auto-detailing",
+    "service-business-marketing"
   ],
-  "author": "Sistine AI & Sistine Labs",
-  "license": "MIT",
+  "license": "UNLICENSED",
   "scripts": {
     "predev": "pnpm run sync:fumadocs-style",
     "dev": "node scripts/run-dev.mjs",

@@ -73,6 +73,17 @@ brago-*.png
 redesign-*.png
 prot-*.png
 
+# Loose competitor / research screenshots that occasionally land at the repo
+# root during product research — never code, never shipped.
+/case-*.jpeg
+/case-*.png
+/brightside-*.png
+/molly-*.png
+/molly-*.jpeg
+/fb-*.png
+/mobile-before-*.jpeg
+/mobile-after-*.jpeg
+
 # Research source photos — third-party content, copyright handled manually;
 # do not commit the binaries. The README.md index IS tracked.
 /research/source-photos/**/*.jpg

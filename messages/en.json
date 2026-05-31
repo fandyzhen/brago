@@ -109,8 +109,8 @@
     }
   },
   "companies": {
-    "title": "Built with Industry-Leading Technologies",
-    "subtitle": "Built on modern stack trusted by the world's best teams"
+    "title": "Built for the channels you actually post on",
+    "subtitle": "Google Business Profile, Facebook, Nextdoor, Instagram — Brago tailors the post to each."
   },
   "auth": {
     "login": {
@@ -721,8 +721,8 @@
       "namePlaceholder": "John Doe",
       "emailLabel": "Email address",
       "emailPlaceholder": "hello@johndoe.com",
-      "companyLabel": "Company",
-      "companyPlaceholder": "Your Company",
+      "companyLabel": "Business name",
+      "companyPlaceholder": "e.g., Austin Driveway Pros",
       "messageLabel": "Message",
       "messagePlaceholder": "Enter your message here",
       "submitButton": "Submit",
@@ -792,7 +792,9 @@
         "lockedCopy": "Copy",
         "lockedDownload": "Download",
         "lockedSpanish": "Spanish",
-        "lockedRegen": "Redo"
+        "lockedRegen": "Redo",
+        "copiedLabel": "Copied",
+        "englishLabel": "English"
       },
       "quotaUsed": {
         "title": "Today's free trial is used",
@@ -863,7 +865,7 @@
     ]
   },
   "footer": {
-    "tagline": "Transform your SaaS ideas into reality with the power of AI.",
+    "tagline": "Turn finished job photos into Google-ready posts. Built for local service crews.",
     "product": {
       "title": "Product",
       "features": "Features",

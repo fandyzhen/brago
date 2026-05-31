@@ -101,14 +101,19 @@ export default function PrivacyPage() {
           <p>We may share your information in the following situations:</p>
           
           <h3 className="text-xl font-semibold mb-3">With Service Providers</h3>
-          <p>We share information with third-party vendors who perform services on our behalf, such as:</p>
+          <p>We share information with third-party vendors who perform services on our behalf:</p>
           <ul className="list-disc pl-6 space-y-2">
-            <li>Payment processors (Creem, PayPal)</li>
-            <li>Cloud hosting providers</li>
-            <li>Analytics services</li>
-            <li>Customer support tools</li>
-            <li>Email service providers</li>
+            <li>Authentication and account management (Better Auth, with optional Google OAuth)</li>
+            <li>Payment processing (Creem)</li>
+            <li>Email delivery for account and transactional messages (Resend)</li>
+            <li>AI processing for caption generation and photo analysis (Volc Engine / Doubao)</li>
+            <li>Object storage for your uploaded photos and rendered post images (Cloudflare R2)</li>
+            <li>Cloud hosting and edge delivery (Vercel)</li>
+            <li>Product analytics (PostHog, Google Analytics, Microsoft Clarity — only when enabled)</li>
           </ul>
+          <p className="mt-3 text-sm text-muted-foreground">
+            Each provider only receives the data it needs to do its job. We do not sell your personal data or your uploaded photos to any third party.
+          </p>
 
           <h3 className="text-xl font-semibold mb-3 mt-4">For Legal Purposes</h3>
           <p>We may disclose your information when required by law or to:</p>
