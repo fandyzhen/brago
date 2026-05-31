@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from "vitest";
 
 const handles = vi.hoisted(() => ({
   generate: vi.fn(),
-  history: vi.fn(async () => []),
+  history: vi.fn(async () => [] as Array<{ openingPhrase: string | null; keyPhrasesJson: string | null; captionText: string }>),
   record: vi.fn(async () => "h1"),
   brandVoice: {
     speaker: "local_owner",
@@ -40,7 +40,7 @@ describe("generateCaption", () => {
   it("returns a policy-clean caption when the provider succeeds", async () => {
     handles.generate.mockResolvedValueOnce({
       caption:
-        "Cleaned up a driveway in Austin today. Concrete looks fresh again.",
+        "Austin driveway cleaned up today\n\nCleaned up a driveway in Austin this morning. Concrete looks fresh again. Good start to the week. Book now.",
       language: "en",
       source: "ai",
     });
@@ -65,7 +65,7 @@ describe("generateCaption", () => {
       })
       .mockResolvedValueOnce({
         caption:
-          "Patio cleaning in Austin today. Looks great after the deep clean.",
+          "Austin patio looks great today\n\nPatio cleaning in Austin this morning. Looks great after the deep clean. Residents are happy. Book now.",
         language: "en",
         source: "ai",
       });

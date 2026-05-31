@@ -1,14 +1,24 @@
-import type { GbpPolicyIssue, PolicyCheckResult } from "@/lib/brago/types";
+import type {
+  CaptionLanguage,
+  GbpPolicyIssue,
+  PolicyCheckResult,
+} from "@/lib/brago/types";
+import { containsBlacklistedPhrase } from "./blacklist";
+import {
+  checkCaptionStructure,
+  parseCaptionParts,
+  type StructureContext,
+} from "./structure";
+import { isTooSimilar } from "./similarity";
+import { classifyPostKind, isCtaAligned } from "./cta-alignment";
 
-// Matches things like 512-555-1234, (512) 555-1234, 5125551234, +1 512 555 1234
-const PHONE_RE = /(?:\+?\d{1,2}[\s.-]?)?(?:\(\d{3}\)|\d{3})[\s.-]\d{3}[\s.-]\d{4}\b/;
-
-// Matches absolute URLs and bare .com/.net/etc. (loose but cheap)
-const URL_RE = /(?:https?:\/\/|www\.|[\w-]{2,}\.(?:com|net|org|co|io|us|biz|info|app|shop)\b)/i;
-
+// 旧 gate（spec §2.6 保留 + 强化）
+const PHONE_RE =
+  /(?:\+?\d{1,2}[\s.-]?)?(?:\(\d{3}\)|\d{3})[\s.-]\d{3}[\s.-]\d{4}\b/;
+const URL_RE =
+  /(?:https?:\/\/|www\.|[\w-]{2,}\.(?:com|net|org|co|io|us|biz|info|app|shop)\b)/i;
 const EM_DASH_RE = /—/;
-
-// Two-plus consecutive all-caps words of 4+ letters each.
+// 2个以上连续 4+ 字大写词视为 shouting
 const ALL_CAPS_RUN = /\b[A-Z]{4,}\b(?:\s+\b[A-Z]{4,}\b){1,}/;
 
 const AI_CLICHES: RegExp[] = [
@@ -23,17 +33,16 @@ const AI_CLICHES: RegExp[] = [
   /\bsatisfying result\b/i,
 ];
 
-// Verified-claim probe: spec 18 says we must not assert credentials we have not verified.
-// This regex catches naked claims; the caption engine will only emit these when the brand
-// voice flag is on.
-const UNVERIFIED_CLAIM_RE = /\b(licensed and insured|fully insured|licensed\s+(?:in|and))\b/i;
+const UNVERIFIED_CLAIM_RE =
+  /\b(licensed and insured|fully insured|licensed\s+(?:in|and))\b/i;
 
 const EMOJI_RE = /[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/gu;
 
 export type PolicyCheckOptions = {
-  // Set true when the brand voice has confirmed the relevant claim — that
-  // means an "unverified_claim" hit is OK and should be skipped.
   allowVerifiedClaims?: boolean;
+  language?: CaptionLanguage;
+  ctx?: StructureContext;
+  recentCaptions?: string[];
 };
 
 export function checkGooglePolicy(
@@ -42,6 +51,9 @@ export function checkGooglePolicy(
 ): PolicyCheckResult {
   const issues: GbpPolicyIssue[] = [];
   const trimmed = (text ?? "").trim();
+  const language = options.language ?? "en";
+
+  // 原有 gate
   if (trimmed.length > 1500) issues.push("too_long");
   if (PHONE_RE.test(trimmed)) issues.push("phone_number_detected");
   if (URL_RE.test(trimmed)) issues.push("url_detected");
@@ -53,6 +65,33 @@ export function checkGooglePolicy(
   }
   const emojiCount = (trimmed.match(EMOJI_RE) ?? []).length;
   if (emojiCount > 2) issues.push("too_many_emojis");
+
+  // 新 gate
+  if (containsBlacklistedPhrase(trimmed, language)) {
+    issues.push("blacklisted_phrase");
+  }
+
+  if (options.ctx) {
+    const struct = checkCaptionStructure(trimmed, options.ctx);
+    for (const issue of struct.issues) {
+      if (!issues.includes(issue)) issues.push(issue);
+    }
+    // CTA 对齐（用 structure 解析出来的 body）
+    const kind = classifyPostKind(struct.body);
+    if (!isCtaAligned(kind, struct.body)) issues.push("cta_misaligned");
+  } else {
+    // 即使没有 ctx 也要至少解析出 body 做 CTA 对齐
+    const { body } = parseCaptionParts(trimmed);
+    const kind = classifyPostKind(body);
+    if (!isCtaAligned(kind, body)) issues.push("cta_misaligned");
+  }
+
+  if (options.recentCaptions && options.recentCaptions.length > 0) {
+    if (isTooSimilar(trimmed, options.recentCaptions)) {
+      issues.push("similar_to_recent");
+    }
+  }
+
   return { valid: issues.length === 0, issues };
 }
 
@@ -74,5 +113,19 @@ export function policyIssueLabel(issue: GbpPolicyIssue): string {
       return "Sounds AI-generated — make it more specific.";
     case "em_dash_detected":
       return "Avoid em dashes.";
+    case "missing_title":
+      return "Add a one-line title separated from the body by a blank line.";
+    case "title_all_caps":
+      return "Title should be in normal case, not ALL CAPS.";
+    case "length_out_of_range":
+      return "Body should be 100-300 characters.";
+    case "value_prop_missing":
+      return "First 100 chars must include the service, the area, or a time anchor.";
+    case "blacklisted_phrase":
+      return "Sounds like a template — avoid 'trusted/expert/best in [city]' phrasing.";
+    case "cta_misaligned":
+      return "CTA doesn't match the post intent (e.g. don't use 'Call now' on a how-to post).";
+    case "similar_to_recent":
+      return "Too similar to a recent caption — Google may flag template farming.";
   }
 }

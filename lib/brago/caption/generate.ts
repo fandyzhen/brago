@@ -89,7 +89,15 @@ export async function generateCaption(
             ? `Previous attempt violated: ${lastIssues.join(", ")}. Fix those issues.`
             : input.customInstruction,
       });
-      const policy = checkGooglePolicy(res.caption, { allowVerifiedClaims });
+      const policy = checkGooglePolicy(res.caption, {
+        allowVerifiedClaims,
+        language: input.language,
+        ctx: {
+          serviceType: input.serviceType,
+          serviceArea: input.serviceArea,
+        },
+        recentCaptions: history.map((h) => h.captionText),
+      });
       if (policy.valid) {
         caption = res.caption;
         usedSource = res.source;
@@ -129,7 +137,15 @@ export async function generateCaption(
     console.error("[brago caption] failed to record history", err);
   }
 
-  const finalPolicy = checkGooglePolicy(caption, { allowVerifiedClaims });
+  const finalPolicy = checkGooglePolicy(caption, {
+    allowVerifiedClaims,
+    language: input.language,
+    ctx: {
+      serviceType: input.serviceType,
+      serviceArea: input.serviceArea,
+    },
+    recentCaptions: history.map((h) => h.captionText),
+  });
   return {
     caption,
     source: usedSource,
