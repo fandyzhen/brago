@@ -871,7 +871,8 @@
       "title": "Product",
       "features": "Features",
       "pricing": "Pricing",
-      "documentation": "Documentation"
+      "documentation": "Documentation",
+      "sceneSelf": "SceneSelf - AI photo dump generator"
     },
     "company": {
       "title": "Company",

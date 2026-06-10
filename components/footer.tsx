@@ -11,6 +11,7 @@ export const Footer = () => {
     { name: t("navigation.main.templates"), href: "/templates" },
     { name: t("navigation.main.pricing"), href: "/pricing" },
     { name: t("navigation.main.contact"), href: "/contact" },
+    { name: t("footer.product.sceneSelf"), href: "https://sceneself.com" },
   ];
   const legal = [
     { name: t("navigation.footer.legal.terms"), href: "/terms" },
